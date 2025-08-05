@@ -11,7 +11,7 @@ module.exports = {
  theme: {
     extend: {
       colors: {
-        'primary-bg': {
+        'primary-background': {
           100: '#8C8C8C',
           200: '#7A7A7A',
           300: '#696969',
@@ -22,7 +22,7 @@ module.exports = {
           800: '#080808',
           900: '#040404',
         },
-        'secondary-bg': {
+        'secondary-background': {
           100: '#E9E9E9',
           200: '#D7D7D7',
           300: '#C5C5C5',
@@ -33,7 +33,7 @@ module.exports = {
           800: '#434343',
           900: '#353535',
         },
-        'text-primary': {
+        'primary-txt': {
           100: '#FFFFFF',
           200: '#FAFAFA',
           300: '#F5F5F5',
@@ -44,7 +44,7 @@ module.exports = {
           800: '#8A8A8A',
           900: '#6E6E6E',
         },
-        'text-secondary': {
+        'secondary-txt': {
           100: '#FFFFFF',
           200: '#F9F9F9',
           300: '#F5F5F5',
