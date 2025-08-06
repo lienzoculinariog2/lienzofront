@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
+    content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -8,7 +8,7 @@ module.exports = {
     // Or if using `src` directory:
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
- theme: {
+  theme: {
     extend: {
       colors: {
         'primary-background': {
@@ -67,15 +67,15 @@ module.exports = {
           900: '#800A0A',
         },
         "celiac": {
-          100: '#FFF8EC',
-          200: '#FFF3D9',
-          300: '#FFEECA',
-          400: '#FFE7A2',
-          500: '#FFE074',  //Color base
-          600: '#DBC263',
-          700: '#B8A453',
-          800: '#958742',
-          900: '#726932',
+          100: '#FFF2C6',
+          200: '#FFE699',
+          300: '#FFDA6B',
+          400: '#FFCE3E',
+          500: '#FEC90E',  // Nuevo color base
+          600: '#D5A80B',
+          700: '#AB8709',
+          800: '#806607',
+          900: '#554505',
         },
         "vegetarian": {
           100: '#CFF8D3',
@@ -111,13 +111,9 @@ module.exports = {
           900: '#092911',
         },
       },
+
     },
   },
   plugins: [],
 }
-
-
-
-
-
 
