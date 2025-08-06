@@ -28,8 +28,9 @@ body {
 }
 
 body {
+  @apply bg-primary-background-500;
   color: var(--foreground);
-  background: var(--background);
+  /* background: var(--background); */
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

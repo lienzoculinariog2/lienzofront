@@ -16,30 +16,30 @@ type ButtonVariant =
 
 const VariantClasses: Record<ButtonVariant, string> = {
   default:
-    "text-primary-txt-500 font-black bg-secondary-background-500 hover:bg-secondary-background-600 focus:ring-4 focus:ring-secondary-background-400 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-secondary-background-600 dark:hover:bg-secondary-background-700 focus:outline-none dark:focus:ring-secondary-background-800",
+    "text-primary-background-400 bg-primary-text-600 border border-primary-background-200 focus:outline-none hover:bg-primary-txt-600 focus:ring-4 focus:ring-daily-menu-500 font-medium rounded-lg text-extrabold px-5 py-2.5 me-2 mb-2",
 
   alternative:
-    "py-2.5 px-5 me-2 mb-2 text-primary-txt-500 focus:outline-none bg-primary-background-300 rounded-lg border border-primary-background-400 hover:bg-primary-background-400 hover:text-primary-txt-100 focus:z-10 focus:ring-4 focus:ring-primary-background-200 dark:focus:ring-primary-background-700 dark:bg-primary-background-400 dark:text-primary-txt-100 dark:border-primary-background-600 dark:hover:text-primary-txt-100 dark:hover:bg-primary-background-500",
+    "py-2.5 px-5 me-2 mb-2 text-primary-txt-500 focus:outline-none bg-primary-txt-800 rounded-lg border border-primary-background-400 hover:bg-primary-background-500 hover:text-primary-txt-100 ",
 
-    dark: "text-primary-txt-500 bg-primary-background-500 hover:bg-primary-background-600 focus:outline-none focus:ring-4 focus:ring-primary-background-400 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-primary-background-600 dark:hover:bg-primary-background-700 dark:focus:ring-primary-background-800 dark:border-primary-background-700",
+    dark: "text-primary-txt-500 bg-primary-background-500 hover:bg-primary-txt-800 rounded-lg border border-primary-background-400 focus:outline-none focus:ring-4 focus:ring-primary-background-400 font-medium rounded-lg text-extrabold px-5 py-2.5 me-2 mb-2 ",
 
     light:
     "text-primary-txt-500 bg-secondary-background-100 border border-secondary-background-200 focus:outline-none hover:bg-secondary-background-200 focus:ring-4 focus:ring-secondary-background-300 font-medium rounded-lg text-extrabold px-5 py-2.5 me-2 mb-2 dark:bg-secondary-background-800 dark:text-primary-txt-500 dark:border-secondary-background-600 dark:hover:bg-secondary-background-700 dark:hover:border-secondary-background-600 dark:focus:ring-secondary-background-700",
 
     dailyMenu:
-    "focus:outline-none text-primary-txt-500 bg-daily-menu-500 hover:bg-daily-menu-600 focus:ring-4 focus:ring-daily-menu-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-daily-menu-600 dark:hover:bg-daily-menu-700 dark:focus:ring-daily-menu-900",
+    "text-primary-txt-400 bg-daily-menu-600 border border-primary-background-200 focus:outline-none hover:bg-daily-menu-700 focus:ring-4 focus:ring-daily-menu-500 font-medium rounded-lg text-extrabold px-5 py-2.5 me-2 mb-2",
 
     celiac:
-    "focus:outline-none text-primary-txt-500 bg-celiac-500 hover:bg-celiac-600 focus:ring-4 focus:ring-celiac-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-celiac-600 dark:hover:bg-celiac-700 dark:focus:ring-celiac-900",
+     "text-primary-txt-400 bg-celiac-600 border border-primary-background-200 focus:outline-none hover:bg-celiac-700 focus:ring-4 focus:ring-secondary-background-300 font-medium rounded-lg text-extrabold px-5 py-2.5 me-2 mb-2",
 
     vegetarian:
-    "focus:outline-none text-primary-txt-500 bg-vegetarian-500 hover:bg-vegetarian-600 focus:ring-4 focus:ring-vegetarian-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-vegetarian-600 dark:hover:bg-vegetarian-700 dark:focus:ring-vegetarian-900",
+    "text-primary-txt-400 bg-vegetarian-600 border border-primary-background-200 focus:outline-none hover:bg-vegetarian-700 focus:ring-4 focus:ring-vegetarian-300 font-medium rounded-lg text-extrabold px-5 py-2.5 me-2 mb-2",
 
     lowCalories:
-    "focus:outline-none text-primary-txt-500 bg-low-calories-500 hover:bg-low-calories-600 focus:ring-4 focus:ring-low-calories-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-low-calories-600 dark:hover:bg-low-calories-700 dark:focus:ring-low-calories-900",
+   "text-primary-txt-400 bg-low-calories-500 border border-primary-background-200 focus:outline-none hover:bg-low-calories-600 focus:ring-4 focus:ring-low-calories-600 font-medium rounded-lg text-extrabold px-5 py-2.5 me-2 mb-2",
 
     vegan:
-    "focus:text-primary-txt-500 bg-vegan-500 ",
+    "text-primary-txt-400 bg-vegan-600 border border-primary-background-200 focus:outline-none hover:bg-vegan-700 focus:ring-4 focus:ring-vegan-700 font-medium rounded-lg text-extrabold px-5 py-2.5 me-2 mb-2",
 };
 
 
