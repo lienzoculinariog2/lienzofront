@@ -1,17 +1,7 @@
-type Producto = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  imgURL: string;
-  isActive: boolean;
-  categories_id: string[];
-  caloricLevel: number;
-};
+import { Product } from "@/types/Product";
 
-export const protoProduct: Producto = {
-  id: "1",
+export const protoProduct: Product = {
+  id: "550e8400-e29b-41d4-a716-446655440000",
   name: "Milanesa con arroz",
   description:
     "Es una milanesa que además tiene arroz. Es una milanesa con arroz.",
@@ -20,6 +10,7 @@ export const protoProduct: Producto = {
   imgURL:
     "https://ik.imagekit.io/o9qjvzw7n/frank_frazetta_deathdealeriii.jpg_w=640?updatedAt=1746727297310",
   isActive: true,
-  categories_id: ["carne", "grano"],
-  caloricLevel: 3,
+  ingredients: ["carne", "grano", "verdura"],
+  caloricLevel: 5,
+  categories_id: "550e8400-e29b-41d4-a716-446655440000",
 };
