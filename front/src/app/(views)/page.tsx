@@ -4,6 +4,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <>
+         
       <div>
         <div className="relative w-full h-[450px]">
           <Image
@@ -34,6 +35,7 @@ export default function Home() {
         <Button variant="celiac"> Boton de prueba </Button>
         <Button variant="vegan"> Boton de prueba </Button>
         <Button variant="vegetarian"> Boton de prueba </Button>
+        
       </div>
     </>
   );

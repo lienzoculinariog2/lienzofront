@@ -10,19 +10,11 @@ return (
     <div className="bg-primary-background-500">
 
       {/* Tu navbar sin el borde de abajo */}
-    <nav className="text-secondary-txt-400 shadow-md">
-        <div className="container mx-auto px-4 py-3 flex justify-center items-center">
+    <nav className="shadow-md text-secondary-txt-400">
+        <div className="container flex items-center justify-center px-4 py-3 mx-auto">
         
           {/* Todos los links están juntos y centrados */}
         <ul className="flex items-center space-x-6">
-            <li>
-            <Link
-                href="/"
-                className="uppercase font-semibold text-sm hover:text-primary-txt-100 transition-colors"
-            >
-                Home
-            </Link>
-            </li>
             
             {navbarLinks.map((item) => (
             <NavbarItem
@@ -36,7 +28,7 @@ return (
             <li>
                 <Link
                 href="/iniciar-sesion"
-                className="uppercase font-semibold text-sm hover:text-primary-txt-100 transition-colors"
+                className="text-sm font-semibold uppercase transition-colors hover:text-primary-txt-100"
                 >
                 Iniciar sesión
                 </Link>
@@ -45,7 +37,7 @@ return (
         </ul>
         </div>
     </nav>
-    <div className="h-1 w-full bg-gradient-to-r from-secondary-background-900 to-secondary-txt-400"></div>
+    <div className="w-full h-[2px] bg-secondary-txt-600 "></div>
     </div>
 );
 }

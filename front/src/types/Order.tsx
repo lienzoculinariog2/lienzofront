@@ -1,4 +1,4 @@
-export type StatusOrder = "pending" | "confirmed" | "delivered" | "cancelled";
+export type IStatusOrder = "pending" | "confirmed" | "delivered" | "cancelled";
 
 export interface Order {
   id: string;
@@ -6,6 +6,6 @@ export interface Order {
   date: Date;
   total: number;
   discountId: number;
-  statusOrder: StatusOrder;
+  statusOrder: IStatusOrder;
   isPaid: boolean;
 }

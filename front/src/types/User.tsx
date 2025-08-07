@@ -1,7 +1,7 @@
 export type Diet = "general" | "vegetariano" | "celiaco" | "fitness";
 export type IsAdmin = "customer" | "admin";
 
-export interface User {
+export interface IUser {
   id: string;
   name: string;
   email: string;
