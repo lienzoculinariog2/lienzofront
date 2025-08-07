@@ -12,12 +12,14 @@ export default function NotFound() {
         <p className="max-w-md mb-8 text-xl font-semibold text-gray-700 md:text-2xl dark:text-gray-300">
           ¡Oops! Parece que la página que estás buscando no existe.
         </p>
+        <div>
         <Link href="/">
           <Button
             variant="dailyMenu"
             className="px-16 py-4 text-lg rounded-lg "
           > Volver al Inicio</Button>
         </Link>
+        </div>
         <div>
           <h1>Prueba</h1>
         </div>
