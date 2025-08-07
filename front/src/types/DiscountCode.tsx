@@ -1,7 +1,8 @@
 export interface DiscountCode {
-  id: number;
+  id: string;
   code: string;
-  isSingleUserPerUser: boolean;
+  percentage: number;
+  isSingleUsePerUser: boolean;
   isActive: boolean;
   validUntil: Date;
 }
