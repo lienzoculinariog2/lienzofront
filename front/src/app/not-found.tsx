@@ -18,7 +18,9 @@ export default function NotFound() {
             className="px-16 py-4 text-lg rounded-lg "
           > Volver al Inicio</Button>
         </Link>
-        <div></div>
+        <div>
+          <h1>Prueba</h1>
+        </div>
       </div>
     </>
   )
