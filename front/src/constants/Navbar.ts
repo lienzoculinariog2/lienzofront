@@ -1,21 +1,22 @@
 // src/constants/navbarLinks.ts
 import { NavbarItemProps } from "@/components/ui/Navbar/NavbarItem";
+import { Routes } from "@/routes";
 
 export const navbarLinks: NavbarItemProps[] = [
 {
     label: "Página principal",
-    href: "/",
+    href: Routes.home,
 },
 {
     label: "Paleta de sabores",
-    href: "/paleta-de-sabores",
+    href: Routes.categories,
 },
 {
     label: "Carrito de compras",
-    href: "/carrito-de-compras",
+    href: Routes.cart,
 },
 {
     label: "Perfil",
-    href: "/perfil",
+    href: Routes.profile,
 },
 ];

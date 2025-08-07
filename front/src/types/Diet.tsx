@@ -1,4 +1,4 @@
-export interface Diet {
+export interface IDiet {
   id: string;
   name: string;
 }

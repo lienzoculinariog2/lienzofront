@@ -9,9 +9,13 @@ import { usePathname } from "next/navigation";
 export interface NavbarItemProps {
 label: string;
 href: string;
+isActive?: boolean;
 }
 
-const NavbarItem: FC<NavbarItemProps> = ({ label, href }) => {
+const NavbarItem: FC<NavbarItemProps> = ({ 
+    label,
+     href = "#",
+    isActive = false }) => {
 const pathname = usePathname();
 const isCurrentPage = pathname === href;
 
@@ -21,7 +25,7 @@ return (
         href={href} 
         className={cs(
         "uppercase font-semibold text-sm transition-colors",
-        isCurrentPage ? "text-primary-txt-100" : "text-secondary-txt-400 hover:text-primary-txt-100"
+        (isActive || isCurrentPage) ? "text-primary-txt-100" : "text-secondary-txt-400 hover:text-primary-txt-100"
         )}
     >
         {label}
