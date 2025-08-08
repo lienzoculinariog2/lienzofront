@@ -1,11 +1,13 @@
-import { protoProduct } from "@/helpers/prototype";
+import { productService } from "@/services/ProductServiceLocal";
 import ProductCard from "@/components/cards/HomeCard";
 import CartCard from "@/components/cards/CartCard";
 import OrderCard from "@/components/cards/OrderCard";
 import DetailCard from "@/components/cards/DetailCard";
+import { IProduct } from "@/types/Product";
 
-export default function ProductList() {
-  const producto = protoProduct;
+export default async function ProductList() {
+  const productos: IProduct[] = await productService.getAll();
+  const producto: IProduct = productos[1];
 
   return (
     <div className="">
