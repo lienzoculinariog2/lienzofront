@@ -81,7 +81,7 @@ return (
     </Link>
     
     {/* CAMBIO: Se ajusta el espaciado superior a "mt-4" en lugar de "mt-2" y se elimina el padding del div exterior*/}
-    <div className="mt-2 px-5 pb-5">
+    <div className="mt-4 px-5 pb-5">
         <Link href={generateUrl(id)}>
           {/* CAMBIO: El texto del nombre del producto ahora está centrado y es de color blanco */}
         <h5 className="text-xl font-semibold tracking-tight text-primary-txt-100 text-center">
