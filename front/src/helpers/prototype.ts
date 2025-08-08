@@ -9,7 +9,7 @@ export const protoProduct: IProduct[] = [
     price: 450.0,
     stock: 3,
     imgURL:
-      "https://ik.imagekit.io/o9qjvzw7n/frank_frazetta_deathdealeriii.jpg_w=640?updatedAt=1746727297310",
+      "https://ik.imagekit.io/xiqknvpxxh/Lienzo%20Culinario/Gemini_Generated_Image_q8noseq8noseq8no.png?updatedAt=1754607553700",
     isActive: true,
     categories_id: "550e8400-e29b-41d4-a716-446655440000",
     caloricLevel: 5,
@@ -23,7 +23,7 @@ export const protoProduct: IProduct[] = [
     price: 400.0,
     stock: 5,
     imgURL:
-      "https://ik.imagekit.io/o9qjvzw7n/frank_frazetta_deathdealeriii.jpg_w=640?updatedAt=1746727297310",
+      "https://ik.imagekit.io/xiqknvpxxh/Lienzo%20Culinario/Gemini_Generated_Image_6k2jo76k2jo76k2j.png?updatedAt=1754607408351",
     isActive: true,
     categories_id: "550e8400-e29b-41d4-a716-446655441000",
     caloricLevel: 3,
