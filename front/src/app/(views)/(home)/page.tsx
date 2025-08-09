@@ -1,7 +1,8 @@
-import ProductCard from "@/components/cards/flowbiteCard";
+
 import Button from "@/components/ui/Button";
-import { protoProduct } from "@/helpers/prototype";
+import { protoProduct } from "@/helpers/products";
 import Image from "next/image";
+import ProductCard from "./components/ProductCard";
 
 export default function Home() {
   return (
@@ -27,7 +28,8 @@ export default function Home() {
           </div>
         </div>
         <br />
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {protoProduct.map((product) => (
             <ProductCard
               key={product.id}

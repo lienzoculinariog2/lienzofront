@@ -1,5 +1,5 @@
 import { IProduct } from "@/types/Product";
-import { protoProduct } from "@/helpers/prototype";
+import { protoProduct } from "@/helpers/products";
 
 export const productService = {
   async getAll(): Promise<IProduct[]> {

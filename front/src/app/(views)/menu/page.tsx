@@ -3,8 +3,9 @@
 
 import React, { useState, useEffect } from 'react';
 import SearchBar from '@/components/ui/SerchBar';
-import { IProduct } from "@/types/Product";
-import ProductCard from '@/components/cards/flowbiteCard';
+import { IProduct } from '@/types/Product';
+import ProductCard from '../(home)/components/ProductCard';
+
 
 // **Tus datos de prueba (`protoProduct`) son usados aquí**
 const mockProducts: IProduct[] = [
@@ -80,8 +81,8 @@ const handleSearch = (category: string, term: string) => {
 const filteredProducts = allProducts.filter(product => {
     // Se ha eliminado el filtro por categoría para que coincida con la interfaz `IProduct`
     // y solo se filtre por el término de búsqueda.
-    const matchesSearchTerm = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        product.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearchTerm = (product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false) || 
+        (product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
 
     return matchesSearchTerm;
 });
