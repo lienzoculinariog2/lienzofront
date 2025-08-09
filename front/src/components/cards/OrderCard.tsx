@@ -2,13 +2,13 @@ import Image from "next/image";
 
 type OrderCardProps = {
   name: string;
-  imgURL: string;
+  imgUrl: string;
   ingredients: string[];
 };
 
 export default function OrderCard({
   name,
-  imgURL,
+  imgUrl,
   ingredients,
 }: OrderCardProps) {
   const tieneCarne = ingredients.includes("carne");
@@ -30,7 +30,7 @@ export default function OrderCard({
       </div>
       <div className="relative w-full h-40 rounded-md overflow-hidden">
         <Image
-          src={imgURL}
+          src={imgUrl}
           alt={name}
           fill
           className="object-cover inset-0"

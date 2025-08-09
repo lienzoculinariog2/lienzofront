@@ -1,4 +1,3 @@
-
 import ProductCard from "@/components/cards/flowbiteCard";
 import Button from "@/components/ui/Button";
 import { protoProduct } from "@/helpers/prototype";
@@ -7,7 +6,6 @@ import Image from "next/image";
 export default function Home() {
   return (
     <>
-         
       <div>
         <div className="relative w-full h-[450px]">
           <Image
@@ -29,23 +27,22 @@ export default function Home() {
           </div>
         </div>
         <br />
-       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {protoProduct.map((product) => (
-        
-        <ProductCard
-            key={product.id}
-            id={product.id}
-            name={product.name}
-            description={product.description}
-            price={product.price}
-            stock={product.stock}
-            imgURL={product.imgURL}
-            isActive={product.isActive}
-            caloricLevel={product.caloricLevel}
-            ingredients={product.ingredients}
-        />
-        ))}
-    </div>
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {protoProduct.map((product) => (
+            <ProductCard
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              description={product.description}
+              price={product.price}
+              stock={product.stock}
+              imgUrl={product.imgUrl}
+              isActive={product.isActive}
+              caloricLevel={product.caloricLevel}
+              ingredients={product.ingredients}
+            />
+          ))}
+        </div>
         <br />
         <Button variant="alternative"> Boton de prueba </Button>
         <Button variant="light"> Boton de prueba </Button>
@@ -56,7 +53,6 @@ export default function Home() {
         <Button variant="celiac"> Boton de prueba </Button>
         <Button variant="vegan"> Boton de prueba </Button>
         <Button variant="vegetarian"> Boton de prueba </Button>
-        
       </div>
     </>
   );

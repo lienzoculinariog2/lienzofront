@@ -6,14 +6,14 @@ type DetailCardProps = {
   description: string;
   price: number;
   stock: number;
-  imgURL: string;
+  imgUrl: string;
   caloricLevel: number;
   ingredients: string[];
 };
 
 export default function DetailCard({
   name,
-  imgURL,
+  imgUrl,
   description,
   price,
   stock,
@@ -64,7 +64,7 @@ export default function DetailCard({
         {/* Imagen */}
         <div className="relative w-32 h-32 overflow-hidden rounded-md flex-shrink-0">
           <Image
-            src={imgURL}
+            src={imgUrl}
             alt={name}
             fill
             className="object-cover"

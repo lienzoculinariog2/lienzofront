@@ -2,14 +2,14 @@ import Image from "next/image";
 
 type CartCardProps = {
   name: string;
-  imgURL: string;
+  imgUrl: string;
   price: number;
   ingredients: string[];
 };
 
 export default function CartCard({
   name,
-  imgURL,
+  imgUrl,
   price,
   ingredients,
 }: CartCardProps) {
@@ -37,7 +37,7 @@ export default function CartCard({
         {/* Imagen cuadrada */}
         <div className="relative w-20 h-20 overflow-hidden rounded-md flex-shrink-0">
           <Image
-            src={imgURL}
+            src={imgUrl}
             alt={name}
             fill
             className="object-cover"

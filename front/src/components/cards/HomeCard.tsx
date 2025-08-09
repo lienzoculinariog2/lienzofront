@@ -6,7 +6,7 @@ type ProductCardProps = {
   description: string;
   price: number;
   stock: number;
-  imgURL: string;
+  imgUrl: string;
   isActive: boolean;
   caloricLevel: number;
   ingredients: string[];
@@ -14,7 +14,7 @@ type ProductCardProps = {
 
 export default function ProductCard({
   name,
-  imgURL,
+  imgUrl,
   description,
   price,
   stock,
@@ -59,7 +59,7 @@ export default function ProductCard({
 
       <div className="relative w-full aspect-[16/9] overflow-hidden rounded-md">
         <Image
-          src={imgURL}
+          src={imgUrl}
           alt={name}
           fill
           className="object-contain"
