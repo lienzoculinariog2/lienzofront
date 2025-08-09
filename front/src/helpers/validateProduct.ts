@@ -34,9 +34,9 @@ export function validateProduct(data: Partial<IProduct>) {
   }
 
   // Imagen
-  if (!data.imgUrl || data.imgUrl.trim() === "") {
+  /* if (!data.imgUrl || data.imgUrl.trim() === "") {
     errors.imgUrl = "La URL de la imagen es obligatoria";
-  }
+  } */
 
   // Estado activo
   if (typeof data.isActive !== "boolean") {
@@ -44,8 +44,8 @@ export function validateProduct(data: Partial<IProduct>) {
   }
 
   // Categoría
-  if (!data.categories_id || data.categories_id.trim() === "") {
-    errors.categories_id = "La categoría es obligatoria";
+  if (!data.category || !data.category.id?.trim()) {
+    errors.category = "La categoría debe tener ID válido";
   }
 
   // Nivel calórico

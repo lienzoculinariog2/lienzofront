@@ -1,7 +1,7 @@
 // src/app/(views)/product-details/[...slug]/page.tsx
 import React from "react";
 import Image from "next/image";
-import { productService } from "@/services/ProductServiceLocal";
+import { productService } from "@/services/ProductService";
 import { IProduct } from "@/types/Product";
 import Button from "@/components/ui/Button";
 
