@@ -1,6 +1,5 @@
 // src/components/ProductCard.tsx
-
-import { IProduct } from "@/types/Product"; 
+import { IProduct } from "@/types/Product";
 import React, { FC } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -45,30 +44,30 @@ const specialIngredients = [
     { check: tieneCarne, className: "bg-daily-menu-900" },
 ];
 
-  // Función para generar la URL, adaptada a tus necesidades
+  // Función para generar la URL, adaptada para que solo use el ID
+  // Esto coincide con la ruta dinámica [...id]
 const generateUrl = (id: string | number | undefined) => {
-    return `/products/${id}/${name?.toLowerCase().replace(/\s+/g, '-')}`;
+    return `/product-details/${id}`;
 };
 
 return (
-    // CAMBIO: Se usa bg-primary-background-900 y border-primary-background-800 para el fondo oscuro
-    <div className="w-full max-w-sm bg-primary-background-900 border border-primary-background-800 rounded-lg shadow-lg">
-    
-      {/* Sección de barras de color */}
-    <div
-        className={`h-2 w-full rounded-t ${
-        caloricColors[caloricLevel as number] || "bg-secondary-background-300"
-        }`}
-    />
-    <div className="w-full flex flex-col gap-[2px]">
-        {specialIngredients.map((item, index) =>
-        item.check && (
-            <div key={index} className={`h-2 ${item.className} w-full`} />
-        )
-        )}
-    </div>
-
+    // CAMBIO: Se envuelve toda la tarjeta en un solo <Link> para que sea clicable
     <Link href={generateUrl(id)}>
+    <div className="w-full max-w-sm bg-primary-background-900 border border-primary-background-800 rounded-lg shadow-lg cursor-pointer transition-transform duration-200 hover:scale-105">
+        {/* Sección de barras de color */}
+        <div
+        className={`h-2 w-full rounded-t ${
+            caloricColors[caloricLevel as number] || "bg-secondary-background-300"
+        }`}
+        />
+        <div className="w-full flex flex-col gap-[2px]">
+        {specialIngredients.map((item, index) =>
+            item.check && (
+            <div key={index} className={`h-2 ${item.className} w-full`} />
+            )
+        )}
+        </div>
+
         <div className="relative w-full h-52">
         <Image
             fill
@@ -78,44 +77,35 @@ return (
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         </div>
-    </Link>
-    
-    {/* CAMBIO: Se ajusta el espaciado superior a "mt-4" en lugar de "mt-2" y se elimina el padding del div exterior*/}
-    <div className="mt-4 px-5 pb-5">
-        <Link href={generateUrl(id)}>
-          {/* CAMBIO: El texto del nombre del producto ahora está centrado y es de color blanco */}
+        
+        <div className="mt-4 px-5 pb-5">
+          {/* CAMBIO: El nombre del producto ya no es un link duplicado */}
         <h5 className="text-xl font-semibold tracking-tight text-primary-txt-100 text-center">
             {name || "Producto sin nombre"}
         </h5>
-        </Link>
-          {/* CAMBIO: La descripción también está centrada y usa un color de gris más oscuro para la descripción. */}
         <p className="text-center text-secondary-txt-600 text-sm mb-2">
             {description || "Sin descripción"}
         </p>
         
-          {/* CAMBIO: Espacio vertical entre la descripción y el precio */}
         <div className="mt-4"></div>
 
-          {/* Precio, stock y botón */}
         <div className="flex items-center justify-between">
             <div>
-                  {/* CAMBIO: El precio usa el color blanco */}
-                <span className="text-3xl font-bold text-primary-txt-100">
-                    {price !== undefined ? `$${price}` : "Sin precio"}
-                </span>
-                  {/* CAMBIO: El stock usa un color de gris más oscuro */}
-                <p className="text-xs text-secondary-txt-700 ml-2">
-                    {stock !== undefined ? `Stock: ${stock}` : "Sin stock"}
-                </p>
-            </div>
-            <Button variant="dailyMenu">
-            <p>
-                Añadir al carrito
+            <span className="text-3xl font-bold text-primary-txt-100">
+                {price !== undefined ? `$${price}` : "Sin precio"}
+            </span>
+            <p className="text-xs text-secondary-txt-700 ml-2">
+                {stock !== undefined ? `Stock: ${stock}` : "Sin stock"}
             </p>
+            </div>
+            {/* El botón ya no está dentro del Link para evitar un link anidado */}
+            <Button variant="dailyMenu">
+            <p>Añadir al carrito</p>
             </Button>
         </div>
+        </div>
     </div>
-    </div>
+    </Link>
 );
 };
 
