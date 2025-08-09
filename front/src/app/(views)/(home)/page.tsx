@@ -1,4 +1,3 @@
-
 import Button from "@/components/ui/Button";
 import { protoProduct } from "@/helpers/products";
 import Image from "next/image";
@@ -38,7 +37,7 @@ export default function Home() {
               description={product.description}
               price={product.price}
               stock={product.stock}
-              imgURL={product.imgURL}
+              imgUrl={product.imgUrl}
               isActive={product.isActive}
               caloricLevel={product.caloricLevel}
               ingredients={product.ingredients}

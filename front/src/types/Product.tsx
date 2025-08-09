@@ -4,9 +4,9 @@ export interface IProduct {
   description?: string;
   price?: number;
   stock?: number;
-  imgURL?: string;
+  imgUrl?: string;
   isActive?: boolean;
-  categories_id?: string;  // Este ellos no lo tienen en Entities
+  categories_id?: string; // Este ellos no lo tienen en Entities
   caloricLevel?: number;
   ingredients?: string[];
 }
