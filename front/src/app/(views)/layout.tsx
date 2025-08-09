@@ -9,7 +9,7 @@ const layout = ({children}: {children: React.ReactNode}) => {
       <Navbar/>
     </header>
     <main> {children} </main>
-    <Footer/>
+      <Footer/>
     </>
   )
 }

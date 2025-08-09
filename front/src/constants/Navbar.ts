@@ -9,7 +9,7 @@ export const navbarLinks: NavbarItemProps[] = [
 },
 {
     label: "Paleta de sabores",
-    href: Routes.categories,
+    href: Routes.products,
 },
 {
     label: "Carrito de compras",

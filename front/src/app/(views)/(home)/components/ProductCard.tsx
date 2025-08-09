@@ -4,7 +4,7 @@ import { IProduct } from "@/types/Product";
 import React, { FC } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Button from "../ui/Button";
+import Button from "../../../../components/ui/Button";
 
 // Objeto de mapeo para los colores del nivel calórico (más legible)
 const caloricColors: { [key: number]: string } = {
@@ -52,7 +52,7 @@ const generateUrl = (id: string | number | undefined) => {
 
 return (
     // CAMBIO: Se usa bg-primary-background-900 y border-primary-background-800 para el fondo oscuro
-    <div className="w-full max-w-sm bg-primary-background-900 border border-primary-background-800 rounded-lg shadow-lg">
+    <div className="w-full max-w-sm border rounded-lg shadow-lg bg-primary-background-900 border-primary-background-800">
     
       {/* Sección de barras de color */}
     <div
@@ -72,7 +72,7 @@ return (
         <div className="relative w-full h-52">
         <Image
             fill
-            className="rounded-t-lg object-cover"
+            className="object-cover rounded-t-lg"
             src={imgURL || "/docs/images/products/placeholder.png"}
             alt={name || "product image"}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -81,15 +81,15 @@ return (
     </Link>
     
     {/* CAMBIO: Se ajusta el espaciado superior a "mt-4" en lugar de "mt-2" y se elimina el padding del div exterior*/}
-    <div className="mt-4 px-5 pb-5">
+    <div className="px-5 pb-5 mt-4">
         <Link href={generateUrl(id)}>
           {/* CAMBIO: El texto del nombre del producto ahora está centrado y es de color blanco */}
-        <h5 className="text-xl font-semibold tracking-tight text-primary-txt-100 text-center">
+        <h5 className="text-xl font-semibold tracking-tight text-center text-primary-txt-100">
             {name || "Producto sin nombre"}
         </h5>
         </Link>
           {/* CAMBIO: La descripción también está centrada y usa un color de gris más oscuro para la descripción. */}
-        <p className="text-center text-secondary-txt-600 text-sm mb-2">
+        <p className="mb-2 text-sm text-center text-secondary-txt-600">
             {description || "Sin descripción"}
         </p>
         
@@ -104,7 +104,7 @@ return (
                     {price !== undefined ? `$${price}` : "Sin precio"}
                 </span>
                   {/* CAMBIO: El stock usa un color de gris más oscuro */}
-                <p className="text-xs text-secondary-txt-700 ml-2">
+                <p className="ml-2 text-xs text-secondary-txt-700">
                     {stock !== undefined ? `Stock: ${stock}` : "Sin stock"}
                 </p>
             </div>
