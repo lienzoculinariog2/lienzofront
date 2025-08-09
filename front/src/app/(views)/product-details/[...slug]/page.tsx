@@ -23,7 +23,7 @@ const specialColors: { [key: string]: string } = {
   fruta: "bg-vegetarian-500", // Verde para frutas
   vegetal: "bg-vegetarian-500", // Verde esmeralda para vegetales
   // Clase por defecto si no se encuentra el color
-  default: "bg-secondary-background-500" 
+  default: "bg-secondary-background-500",
 };
 
 // Función auxiliar para extraer el ID del slug.
@@ -44,7 +44,9 @@ export default async function ProductDetail({ params }: ProductDetailProps) {
   if (!id) {
     return (
       <div className="p-8 mt-20 mb-20 text-center">
-        <h2 className="mb-2 text-2xl font-bold text-primary-txt-200">Platillo no encontrado</h2>
+        <h2 className="mb-2 text-2xl font-bold text-primary-txt-200">
+          Platillo no encontrado
+        </h2>
         <p className="text-secondary-txt-500">
           Por favor, verifica la URL o vuelve a la lista de platillos.
         </p>
@@ -63,7 +65,9 @@ export default async function ProductDetail({ params }: ProductDetailProps) {
   if (!product) {
     return (
       <div className="p-8 text-center">
-        <h2 className="mb-2 text-2xl font-bold text-primary-txt-200">Platillo no encontrado</h2>
+        <h2 className="mb-2 text-2xl font-bold text-primary-txt-200">
+          Platillo no encontrado
+        </h2>
         <p className="text-secondary-txt-500">
           Por favor, vuelve a la lista de platillos.
         </p>
@@ -74,19 +78,24 @@ export default async function ProductDetail({ params }: ProductDetailProps) {
   // Lógica para detectar los tipos de ingredientes sin duplicados
   const ingredientTypes = new Set<string>();
   const categories = [
-    { category: 'carne', keywords: ['carne', 'pollo', 'pescado', 'cerdo'] },
-    { category: 'lacteo', keywords: ['leche', 'lacteo', 'queso', 'yogur'] },
-    { category: 'huevo', keywords: ['huevo', 'huevos'] },
-    { category: 'grano', keywords: ['grano', 'arroz', 'trigo', 'avena'] },
-    { category: 'harina', keywords: ['harina', 'pasta', 'pan'] },
-    { category: 'fruta', keywords: ['fruta', 'manzana', 'platano', 'naranja'] },
-    { category: 'vegetal', keywords: ['vegetal', 'verdura', 'lechuga', 'tomate', 'zanahoria'] },
+    { category: "carne", keywords: ["carne", "pollo", "pescado", "cerdo"] },
+    { category: "lacteo", keywords: ["leche", "lacteo", "queso", "yogur"] },
+    { category: "huevo", keywords: ["huevo", "huevos"] },
+    { category: "grano", keywords: ["grano", "arroz", "trigo", "avena"] },
+    { category: "harina", keywords: ["harina", "pasta", "pan"] },
+    { category: "fruta", keywords: ["fruta", "manzana", "platano", "naranja"] },
+    {
+      category: "vegetal",
+      keywords: ["vegetal", "verdura", "lechuga", "tomate", "zanahoria"],
+    },
   ];
 
   product?.ingredients?.forEach((ingredient) => {
     const lowerCaseIngredient = ingredient.toLowerCase();
     categories.forEach((cat) => {
-      if (cat.keywords.some(keyword => lowerCaseIngredient.includes(keyword))) {
+      if (
+        cat.keywords.some((keyword) => lowerCaseIngredient.includes(keyword))
+      ) {
         ingredientTypes.add(cat.category);
       }
     });
@@ -97,14 +106,14 @@ export default async function ProductDetail({ params }: ProductDetailProps) {
       <div className="flex flex-col items-center lg:flex-row lg:items-start lg:space-x-8">
         <div className="relative w-full mb-6 overflow-hidden lg:w-1/2 h-96 rounded-xl lg:mb-0">
           <Image
-            src={product.imgURL || "/docs/images/products/placeholder.png"}
+            src={product.imgUrl || "/docs/images/products/placeholder.png"}
             alt={product.name || "product image"}
             fill
             className="object-cover"
             priority
           />
         </div>
-        
+
         <div className="flex flex-col justify-between w-full lg:w-1/2">
           <div>
             <h1 className="mb-2 text-4xl font-bold text-primary-txt-100">
@@ -113,33 +122,49 @@ export default async function ProductDetail({ params }: ProductDetailProps) {
             <p className="mb-6 text-lg text-secondary-txt-300">
               {product.description || "Sin descripción"}
             </p>
-            
+
             <div className="mb-6">
-              <h3 className="mb-2 font-semibold text-primary-txt-200">Ingredientes:</h3>
+              <h3 className="mb-2 font-semibold text-primary-txt-200">
+                Ingredientes:
+              </h3>
               <div className="flex flex-wrap gap-2">
-              {Array.from(ingredientTypes).map((type, index) => (
-                <span
-                  key={index}
-                  className={`px-3 py-1 rounded-full text-xs font-medium text-white ${specialColors[type]}`}
+                {Array.from(ingredientTypes).map((type, index) => (
+                  <span
+                    key={index}
+                    className={`px-3 py-1 rounded-full text-xs font-medium text-white ${specialColors[type]}`}
                   >
-                  {type}
+                    {type}
                   </span>
-              ))}
+                ))}
               </div>
             </div>
 
             <div className="mb-6">
               <div className="flex items-center mb-2 text-primary-txt-300">
-              <span className="mr-2 font-semibold">Nivel Calórico:</span>
-              <span className={`px-3 py-1 rounded-full text-xs font-medium text-white ${specialColors[product.caloricLevel as keyof typeof specialColors] || specialColors.default}`}>
-                {product.caloricLevel || "No especificado"}
-              </span>
+                <span className="mr-2 font-semibold">Nivel Calórico:</span>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium text-white ${
+                    specialColors[
+                      product.caloricLevel as keyof typeof specialColors
+                    ] || specialColors.default
+                  }`}
+                >
+                  {product.caloricLevel || "No especificado"}
+                </span>
               </div>
               <div className="flex items-center text-primary-txt-300">
-              <span className="mr-2 font-semibold">Stock:</span>
-              <span className={`px-3 py-1 rounded-full text-xs font-medium text-white ${(product.stock ?? 0) > 0 ? "bg-daily-menu-500" : "bg-low-calories-500"}`}>
-                {(product.stock ?? 0) > 0 ? `En stock: ${product.stock}` : "Sin stock"}
-              </span>
+                <span className="mr-2 font-semibold">Stock:</span>
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-medium text-white ${
+                    (product.stock ?? 0) > 0
+                      ? "bg-daily-menu-500"
+                      : "bg-low-calories-500"
+                  }`}
+                >
+                  {(product.stock ?? 0) > 0
+                    ? `En stock: ${product.stock}`
+                    : "Sin stock"}
+                </span>
               </div>
             </div>
           </div>
@@ -157,4 +182,3 @@ export default async function ProductDetail({ params }: ProductDetailProps) {
     </div>
   );
 }
-

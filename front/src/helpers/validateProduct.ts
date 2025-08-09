@@ -36,8 +36,6 @@ export function validateProduct(data: Partial<IProduct>) {
   // Imagen
   if (!data.imgUrl || data.imgUrl.trim() === "") {
     errors.imgUrl = "La URL de la imagen es obligatoria";
-  } else if (!/^https?:\/\/.+\.(jpg|jpeg|png|webp)$/.test(data.imgUrl)) {
-    errors.imgUrl = "Debe ser una URL válida de imagen";
   }
 
   // Estado activo
