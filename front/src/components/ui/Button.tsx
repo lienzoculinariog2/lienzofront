@@ -1,6 +1,16 @@
 import React from "react";
 import cs from "classnames"; 
 
+// Mapeo de IDs de categoría a los nombres de las variantes de botón
+const categoryColorMap: Record<string, ButtonVariant> = {
+  "550e8400-e29b-41d4-a716-446655440000": "vegetarian", // La Huella del Jardin
+  "550e8400-e29b-41d4-a716-446655440001": "vegan", // Creación Pura
+  "550e8400-e29b-41d4-a716-446655440002": "celiac", // Toque Delicado
+  "550e8400-e29b-41d4-a716-446655440003": "lowCalories", // Equilibrio de Colores
+  "550e8400-e29b-41d4-a716-446655440004": "dailyMenu", // La Obra Maestra
+  "550e8400-e29b-41d4-a716-446655440005": "dark", // El Lienzo en Blanco (o la que corresponda)
+  "550e8400-e29b-41d4-a716-446655440006": "dark", // Silueta de Sabor (o la que corresponda)
+};
 
 type ButtonVariant =
   | "default"
@@ -11,7 +21,8 @@ type ButtonVariant =
   | "celiac"
   | "vegetarian"
   | "lowCalories"
-  | "vegan";
+  | "vegan"
+  | "category"; ;
 
 
 const VariantClasses: Record<ButtonVariant, string> = {
@@ -40,6 +51,8 @@ const VariantClasses: Record<ButtonVariant, string> = {
 
     vegan:
     "text-primary-txt-400 bg-vegan-600 border border-primary-background-200 focus:outline-none hover:bg-vegan-700 focus:ring-4 focus:ring-vegan-700 font-medium rounded-lg text-extrabold px-5 py-2.5 me-2 mb-2",
+
+    category: "",
 };
 
 
@@ -47,6 +60,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant; 
   children: React.ReactNode; 
   loading?: boolean; 
+  categoryId?: string; 
 }
 
 
@@ -55,15 +69,23 @@ const Button: React.FC<ButtonProps> = ({
   children, 
   className,
   loading = false,
+   categoryId,
   ...props
 }) => {
+  let finalVariant = variant;
+  if (variant === "category" && categoryId) {
+    // Usa la variante del mapa si existe, de lo contrario, usa 'default'
+    finalVariant = categoryColorMap[categoryId] || "default";
+  }
+
+  const combinedClasses = cs(
+    VariantClasses[finalVariant],
+    className,
+    props.disabled && "opacity-50 cursor-not-allowed"
+  );
   return (
-    <button
-      className={cs(
-        VariantClasses[variant],
-        className,
-        props.disabled && "opacity-50 cursor-not-allowed"
-      )}
+<button
+      className={combinedClasses}
       {...props}
     >
       {!loading && children}{" "}
