@@ -16,47 +16,45 @@ const caloricColors: { [key: number]: string } = {
 
 const ProductCard: FC<Partial<IProduct>> = (product) => {
 const {
-    id,
-    name,
-    description,
-    price,
-    stock,
-    imgURL,
-    caloricLevel,
-    ingredients,
+id,
+name,
+description,
+price,
+stock,
+imgURL,
+caloricLevel,
+ingredients,
 } = product;
 
-  // Lógica para detectar ingredientes
+// Lógica para detectar ingredientes
 const tieneCarne = ingredients?.includes("carne");
 const tieneHarina = ingredients?.some(
-    (i) => i.includes("pasta") || i.includes("pan") || i.includes("harina")
+(i) => i.includes("pasta") || i.includes("pan") || i.includes("harina")
 );
 const tieneLacteo = ingredients?.some(
-    (i) => i.includes("leche") || i.includes("lacteo")
+(i) => i.includes("leche") || i.includes("lacteo")
 );
 const tieneVerdura = ingredients?.includes("verdura");
 
-  // Array de ingredientes especiales para mapear (más escalable)
+// Array de ingredientes especiales para mapear (más escalable)
 const specialIngredients = [
-    { check: tieneVerdura, className: "bg-vegetarian-900" },
-    { check: tieneLacteo, className: "bg-secondary-txt-500" },
-    { check: tieneHarina, className: "bg-daily-menu-700" },
-    { check: tieneCarne, className: "bg-daily-menu-900" },
+{ check: tieneVerdura, className: "bg-vegetarian-900" },
+{ check: tieneLacteo, className: "bg-secondary-txt-500" },
+{ check: tieneHarina, className: "bg-daily-menu-700" },
+{ check: tieneCarne, className: "bg-daily-menu-900" },
 ];
 
-  // Función para generar la URL, adaptada para que solo use el ID
-  // Esto coincide con la ruta dinámica [...id]
+// Función para generar la URL, adaptada para que solo use el ID
+// Esto coincide con la ruta dinámica [...id]
 const generateUrl = (id: string | number | undefined) => {
-    return `/product-details/${id}`;
+return `/product-details/${id}`;
 };
 
 return (
-<<<<<<< HEAD:front/src/components/cards/flowbiteCard.tsx
-    // CAMBIO: Se envuelve toda la tarjeta en un solo <Link> para que sea clicable
-=======
-    // CAMBIO: Se usa bg-primary-background-900 y border-primary-background-800 para el fondo oscuro
-    <div className="w-full max-w-sm border rounded-lg shadow-lg bg-primary-background-900 border-primary-background-800">
-    
+    // CAMBIO CLAVE: Se usa una sola estructura para la tarjeta.
+    // El 'Link' ahora envuelve solo las partes que deberían ser clicables
+    // para ir a la página de detalles, no el botón de "Añadir al carrito".
+    <div className="w-full max-w-sm rounded-lg shadow-lg bg-primary-background-900 border border-primary-background-800 transition-transform duration-200 hover:scale-105">
       {/* Sección de barras de color */}
     <div
         className={`h-2 w-full rounded-t ${
@@ -64,30 +62,15 @@ return (
         }`}
     />
     <div className="w-full flex flex-col gap-[2px]">
-        {specialIngredients.map((item, index) =>
-        item.check && (
-            <div key={index} className={`h-2 ${item.className} w-full`} />
-        )
-        )}
-    </div>
-
->>>>>>> bf3e652295cc7fb040e069ae76246b81766f03b8:front/src/app/(views)/(home)/components/ProductCard.tsx
-    <Link href={generateUrl(id)}>
-    <div className="w-full max-w-sm bg-primary-background-900 border border-primary-background-800 rounded-lg shadow-lg cursor-pointer transition-transform duration-200 hover:scale-105">
-        {/* Sección de barras de color */}
-        <div
-        className={`h-2 w-full rounded-t ${
-            caloricColors[caloricLevel as number] || "bg-secondary-background-300"
-        }`}
-        />
-        <div className="w-full flex flex-col gap-[2px]">
-        {specialIngredients.map((item, index) =>
+        {specialIngredients.map(
+        (item, index) =>
             item.check && (
             <div key={index} className={`h-2 ${item.className} w-full`} />
             )
         )}
-        </div>
+    </div>
 
+    <Link href={generateUrl(id)}>
         <div className="relative w-full h-52">
         <Image
             fill
@@ -97,65 +80,34 @@ return (
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
         </div>
-<<<<<<< HEAD:front/src/components/cards/flowbiteCard.tsx
-        
-        <div className="mt-4 px-5 pb-5">
-          {/* CAMBIO: El nombre del producto ya no es un link duplicado */}
-        <h5 className="text-xl font-semibold tracking-tight text-primary-txt-100 text-center">
-            {name || "Producto sin nombre"}
-        </h5>
-        <p className="text-center text-secondary-txt-600 text-sm mb-2">
-=======
-    </Link>
-    
-    {/* CAMBIO: Se ajusta el espaciado superior a "mt-4" en lugar de "mt-2" y se elimina el padding del div exterior*/}
-    <div className="px-5 pb-5 mt-4">
-        <Link href={generateUrl(id)}>
-          {/* CAMBIO: El texto del nombre del producto ahora está centrado y es de color blanco */}
+
+        <div className="px-5 mt-4">
         <h5 className="text-xl font-semibold tracking-tight text-center text-primary-txt-100">
             {name || "Producto sin nombre"}
         </h5>
-        </Link>
-          {/* CAMBIO: La descripción también está centrada y usa un color de gris más oscuro para la descripción. */}
         <p className="mb-2 text-sm text-center text-secondary-txt-600">
->>>>>>> bf3e652295cc7fb040e069ae76246b81766f03b8:front/src/app/(views)/(home)/components/ProductCard.tsx
             {description || "Sin descripción"}
         </p>
-        
-        <div className="mt-4"></div>
+        </div>
+    </Link>
 
-        <div className="flex items-center justify-between">
-            <div>
-<<<<<<< HEAD:front/src/components/cards/flowbiteCard.tsx
+      {/* Sección de precio, stock y botón fuera del Link */}
+    <div className="px-5 pb-5">
+        <div className="flex items-center justify-between mt-4">
+        <div>
             <span className="text-3xl font-bold text-primary-txt-100">
-                {price !== undefined ? `$${price}` : "Sin precio"}
+            {price !== undefined ? `$${price}` : "Sin precio"}
             </span>
             <p className="text-xs text-secondary-txt-700 ml-2">
-                {stock !== undefined ? `Stock: ${stock}` : "Sin stock"}
-=======
-                  {/* CAMBIO: El precio usa el color blanco */}
-                <span className="text-3xl font-bold text-primary-txt-100">
-                    {price !== undefined ? `$${price}` : "Sin precio"}
-                </span>
-                  {/* CAMBIO: El stock usa un color de gris más oscuro */}
-                <p className="ml-2 text-xs text-secondary-txt-700">
-                    {stock !== undefined ? `Stock: ${stock}` : "Sin stock"}
-                </p>
-            </div>
-            <Button variant="dailyMenu">
-            <p>
-                Añadir al carrito
->>>>>>> bf3e652295cc7fb040e069ae76246b81766f03b8:front/src/app/(views)/(home)/components/ProductCard.tsx
+            {stock !== undefined ? `Stock: ${stock}` : "Sin stock"}
             </p>
-            </div>
-            {/* El botón ya no está dentro del Link para evitar un link anidado */}
-            <Button variant="dailyMenu">
-            <p>Añadir al carrito</p>
-            </Button>
         </div>
+        <Button variant="dailyMenu">
+            <p>Añadir al carrito</p>
+        </Button>
         </div>
     </div>
-    </Link>
+    </div>
 );
 };
 
