@@ -1,4 +1,3 @@
-import ProductList from "@/app/(views)/(home)/components/ProductList";
 import React from "react";
 import { notFound } from "next/navigation";
 import { protoCategories } from "@/helpers/categories";
@@ -37,10 +36,10 @@ const CategoryPage = ({ params }: CategoryPageProps) => {
 
   return (
     <div className="container py-8 mx-auto">
-      <h1 className="mb-6 text-3xl font-bold">
+      <h1 className="mb-6 text-3xl font-bold text-primary-txt-300">
         Productos de la Categoría: {category.name}
       </h1>
-      <ProductList products={filteredProducts} />
+     
     </div>
   );
 };
