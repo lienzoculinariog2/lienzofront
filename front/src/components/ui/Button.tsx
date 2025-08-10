@@ -1,15 +1,14 @@
 import React from "react";
 import cs from "classnames"; 
 
-// Mapeo de IDs de categoría a los nombres de las variantes de botón
 const categoryColorMap: Record<string, ButtonVariant> = {
-  "550e8400-e29b-41d4-a716-446655440000": "vegetarian", // La Huella del Jardin
-  "550e8400-e29b-41d4-a716-446655440001": "vegan", // Creación Pura
-  "550e8400-e29b-41d4-a716-446655440002": "celiac", // Toque Delicado
-  "550e8400-e29b-41d4-a716-446655440003": "lowCalories", // Equilibrio de Colores
-  "550e8400-e29b-41d4-a716-446655440004": "dailyMenu", // La Obra Maestra
-  "550e8400-e29b-41d4-a716-446655440005": "dark", // El Lienzo en Blanco (o la que corresponda)
-  "550e8400-e29b-41d4-a716-446655440006": "dark", // Silueta de Sabor (o la que corresponda)
+  "550e8400-e29b-41d4-a716-446655440000": "vegetarian", 
+  "550e8400-e29b-41d4-a716-446655440001": "vegan", 
+  "550e8400-e29b-41d4-a716-446655440002": "celiac", 
+  "550e8400-e29b-41d4-a716-446655440003": "lowCalories", 
+  "550e8400-e29b-41d4-a716-446655440004": "dailyMenu", 
+  "550e8400-e29b-41d4-a716-446655440005": "dark", 
+  "550e8400-e29b-41d4-a716-446655440006": "dark", 
 };
 
 type ButtonVariant =
@@ -74,7 +73,6 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   let finalVariant = variant;
   if (variant === "category" && categoryId) {
-    // Usa la variante del mapa si existe, de lo contrario, usa 'default'
     finalVariant = categoryColorMap[categoryId] || "default";
   }
 
