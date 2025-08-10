@@ -64,7 +64,7 @@ export default function AdminPanel() {
 
     try {
       setLoading(true);
-      console.log("submit exitoso");
+      console.log("submit exitoso.");
       await productPoster.create(formData as IProduct);
       setSuccess(true);
       setFormData({
