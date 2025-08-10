@@ -13,7 +13,7 @@ export default function AdminPanel() {
     stock: 0,
     imgUrl: "",
     isActive: true,
-    categories_id: "",
+    category: { id: "", name: "", description: "", isActive: false },
     caloricLevel: 1,
     ingredients: [],
   });
@@ -27,21 +27,29 @@ export default function AdminPanel() {
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    const target = e.target;
-    const name = target.name;
-    const type = target.type;
-    const value = target.value;
+    const { name, value, type } = e.target;
 
     const parsedValue =
-      type === "checkbox" && target instanceof HTMLInputElement
-        ? target.checked
+      type === "checkbox"
+        ? (e.target as HTMLInputElement).checked
         : name === "ingredients"
         ? value.split(",")
         : type === "number"
         ? Number(value)
         : value;
 
-    setFormData((prev) => ({ ...prev, [name]: parsedValue }));
+    if (name.includes(".")) {
+      const [parentKey, childKey] = name.split(".");
+      setFormData((prev) => ({
+        ...prev,
+        [parentKey]: {
+          ...(prev[parentKey as keyof typeof prev] as object),
+          [childKey]: parsedValue,
+        },
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: parsedValue }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -56,7 +64,7 @@ export default function AdminPanel() {
 
     try {
       setLoading(true);
-      console.log("Payload simulado:", formData);
+      console.log("submit exitoso.");
       await productPoster.create(formData as IProduct);
       setSuccess(true);
       setFormData({
@@ -66,7 +74,7 @@ export default function AdminPanel() {
         stock: 0,
         imgUrl: "",
         isActive: true,
-        categories_id: "",
+        category: { id: "", name: "", description: "", isActive: false },
         caloricLevel: 1,
         ingredients: [],
       });
@@ -125,25 +133,25 @@ export default function AdminPanel() {
           <input
             name="imgUrl"
             placeholder="URL de imagen"
-            value={formData.imgUrl}
+            value={formData.imgUrl ?? ""}
             onChange={handleChange}
           />
           {errors.imgUrl && <p>{errors.imgUrl}</p>}
-          <p>Categorias</p>
+          <p>Categoria ID</p>
           <input
-            name="categories_id"
-            placeholder="ID de categoría"
-            value={formData.categories_id}
+            name="category.id"
+            value={formData.category?.id || ""}
             onChange={handleChange}
           />
-          {errors.categories_id && <p>{errors.categories_id}</p>}
+
+          {errors.category && <p>{errors.category}</p>}
           <p>Nivel calorico</p>
           <input
             name="caloricLevel"
             type="number"
             min="1"
             max="5"
-            value={formData.caloricLevel}
+            value={formData.caloricLevel ?? ""}
             onChange={handleChange}
           />
           {errors.caloricLevel && <p>{errors.caloricLevel}</p>}

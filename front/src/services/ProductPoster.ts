@@ -13,7 +13,12 @@ const api = axios.create({
 export const productPoster = {
   async create(product: IProduct): Promise<IProduct> {
     try {
-      const { data } = await api.post<IProduct>("/products", product);
+      const payload = {
+        ...product,
+        categoryId: product.category?.id,
+      };
+
+      const { data } = await api.post<IProduct>("/products", payload);
       return data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {

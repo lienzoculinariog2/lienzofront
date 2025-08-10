@@ -11,7 +11,7 @@ json
   "stock": number,
   "imgUrl": "string (URL)",
   "isActive": boolean,
-  "categories_id": "uuid-string",
+  "category": "uuid-string",
   "caloricLevel": number,
   "ingredients": ["string"]
 }
@@ -35,7 +35,7 @@ json
     "stock": 3,
     "imgUrl": "https://ik.imagekit.io/xiqknvpxxh/Lienzo%20Culinario/Gemini_Generated_Image_q8noseq8noseq8no.png",
     "isActive": true,
-    "categories_id": "550e8400-e29b-41d4-a716-446655440000",
+    "category": "550e8400-e29b-41d4-a716-446655440000",
     "caloricLevel": 5,
     "ingredients": ["carne", "grano", "verdura"]
   }
@@ -58,7 +58,7 @@ json
   "stock": 3,
   "imgUrl": "https://ik.imagekit.io/xiqknvpxxh/Lienzo%20Culinario/Gemini_Generated_Image_q8noseq8noseq8no.png",
   "isActive": true,
-  "categories_id": "550e8400-e29b-41d4-a716-446655440000",
+  "category": "550e8400-e29b-41d4-a716-446655440000",
   "caloricLevel": 5,
   "ingredients": ["carne", "grano", "verdura"]
 }
@@ -87,7 +87,7 @@ json
   "stock": 3,
   "imgUrl": "https://ik.imagekit.io/xiqknvpxxh/Lienzo%20Culinario/Gemini_Generated_Image_q8noseq8noseq8no.png",
   "isActive": true,
-  "categories_id": "550e8400-e29b-41d4-a716-446655440000",
+  "category": "550e8400-e29b-41d4-a716-446655440000",
   "caloricLevel": 5,
   "ingredients": ["carne", "grano", "verdura"]
 }
@@ -102,7 +102,7 @@ json
   "stock": 3,
   "imgUrl": "https://ik.imagekit.io/xiqknvpxxh/Lienzo%20Culinario/Gemini_Generated_Image_q8noseq8noseq8no.png",
   "isActive": true,
-  "categories_id": "550e8400-e29b-41d4-a716-446655440000",
+  "category": "550e8400-e29b-41d4-a716-446655440000",
   "caloricLevel": 5,
   "ingredients": ["carne", "grano", "verdura"]
 }

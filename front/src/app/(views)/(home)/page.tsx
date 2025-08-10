@@ -1,9 +1,11 @@
 import Button from "@/components/ui/Button";
-import { protoProduct } from "@/helpers/products";
 import Image from "next/image";
 import ProductCard from "./components/ProductCard";
+import { productService } from "@/services/ProductService";
+import { IProduct } from "@/types/Product";
 
-export default function Home() {
+export default async function Home() {
+  const productosMap: IProduct[] = await productService.getAll();
   return (
     <>
       <div>
@@ -29,7 +31,7 @@ export default function Home() {
         <br />
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {protoProduct.map((product) => (
+          {productosMap.map((product) => (
             <ProductCard
               key={product.id}
               id={product.id}
