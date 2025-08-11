@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+/* import Button from "@/components/ui/Button"; */
 import Image from "next/image";
 import ProductCard from "./components/ProductCard";
 import { productService } from "@/services/ProductService";
@@ -47,7 +47,7 @@ export default async function Home() {
           ))}
         </div>
         <br />
-        <Button variant="alternative"> Boton de prueba </Button>
+        {/* <Button variant="alternative"> Boton de prueba </Button>
         <Button variant="light"> Boton de prueba </Button>
         <Button variant="default"> Boton de prueba </Button>
         <Button variant="dark"> Boton de prueba </Button>
@@ -55,7 +55,7 @@ export default async function Home() {
         <Button variant="lowCalories"> Boton de prueba </Button>
         <Button variant="celiac"> Boton de prueba </Button>
         <Button variant="vegan"> Boton de prueba </Button>
-        <Button variant="vegetarian"> Boton de prueba </Button>
+        <Button variant="vegetarian"> Boton de prueba </Button> */}
       </div>
     </>
   );
