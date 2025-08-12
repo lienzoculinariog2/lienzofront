@@ -43,8 +43,8 @@ Crea un archivo `.env.local` en la raíz del proyecto con el siguiente contenido
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_AUTH0_DOMAIN=dev-jvzx6wuzztoi4x6n.us.auth0.com
-NEXT_PUBLIC_AUTH0_CLIENT_ID=SRwBwzmrS5piIGyK70KHk6EMjNtFbw96
+NEXT_PUBLIC_AUTH0_DOMAIN=dev-o0214d7ljnyrdg3m.us.auth0.com
+NEXT_PUBLIC_AUTH0_CLIENT_ID=iqCxbjcAamMcNFXBuVt6CepjP2zpNYD3
 ```
 
 ## Estructura del proyecto

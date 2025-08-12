@@ -8,7 +8,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 // Datos ficticios (mockeados) para usar mientras el backend no está listo.
 const mockUsers: IUser[] = [
   {
-    id: "auth0|mocked-user-id-123", // Importante: Este ID debe coincidir con el 'sub' de un usuario mock de Auth0.
+    id: "auth0|689b7607b514312f414ccbde", // Importante: Este ID debe coincidir con el 'sub' de un usuario mock de Auth0.
     name: "John Doe",
     email: "john.doe@example.com",
     password: "hashed_password",
@@ -32,7 +32,7 @@ export const userService = {
 
     // ---- LÓGICA DE SIMULACIÓN (MOCKEADA) PARA TRABAJAR AHORA ----
     console.log(`Mocking getById for id: ${id}.`);
-    const user = mockUsers.find(u => u.id === id);
+    const user = mockUsers.find((u) => u.id === id);
     if (user) {
       return Promise.resolve(user);
     }
@@ -49,7 +49,7 @@ export const userService = {
 
     // ---- LÓGICA DE SIMULACIÓN (MOCKEADA) PARA TRABAJAR AHORA ----
     console.log(`Mocking update for user: ${id}. Updating mock data.`);
-    const userIndex = mockUsers.findIndex(u => u.id === id);
+    const userIndex = mockUsers.findIndex((u) => u.id === id);
     if (userIndex !== -1) {
       mockUsers[userIndex] = { ...mockUsers[userIndex], ...payload };
       console.log("Mock user updated:", mockUsers[userIndex]);
@@ -57,7 +57,7 @@ export const userService = {
     }
     return Promise.reject(new Error("Could not update user (mock)"));
   },
-  
+
   // Puedes dejar las funciones getAll y remove intactas si no necesitas mockearlas por ahora.
   // Esto es un ejemplo de cómo se verían si el backend ya estuviera listo.
   async getAll(): Promise<IUser[]> {
@@ -69,4 +69,3 @@ export const userService = {
     return axios.delete(`${BASE_URL}/users/${id}`);
   },
 };
-
