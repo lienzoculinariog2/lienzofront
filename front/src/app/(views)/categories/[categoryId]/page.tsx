@@ -1,8 +1,8 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getAllCategories } from "@/services/CategoryService";
-import { productService } from "@/services/ProductService"; 
 import ProductCard from "../../(home)/components/ProductCard";
+import { getAllCategories } from "@/services/CategoryService";
+import { productService } from "@/services/ProductService";
 
 
 interface CategoryPageProps {

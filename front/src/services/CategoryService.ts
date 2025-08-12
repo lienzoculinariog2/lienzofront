@@ -12,7 +12,13 @@ const api = axios.create({
 
 export const getAllCategories = {
   async getAll(): Promise<ICategories[]> {
-    const { data } = await api.get<ICategories[]>("/categories");
-    return data;
+    try {
+      const { data } = await api.get<ICategories[]>("/categories");
+      console.log('Datos de categorías recibidos:', data); 
+      return data;
+    } catch (error) {
+      console.error("Error en la llamada a la API de categorías:", error); 
+      return []; 
+    }
   },
 };
