@@ -43,6 +43,7 @@ export default async function Home() {
               isActive={product.isActive}
               caloricLevel={product.caloricLevel}
               ingredients={product.ingredients}
+              category={product.category}
             />
           ))}
         </div>

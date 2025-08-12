@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { IProduct } from "@/types/Product";
 import { productPoster } from "@/services/ProductPoster";
-// import { validateProduct } from "@/helpers/validateProduct";
 import Button from "@/components/ui/Button";
 import { ICategories } from "@/types/Categories";
 import { getAllCategories } from "@/services/CategoryService";
