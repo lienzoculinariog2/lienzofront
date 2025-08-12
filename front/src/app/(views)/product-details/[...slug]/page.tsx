@@ -173,7 +173,7 @@ export default async function ProductDetail({ params }: ProductDetailProps) {
             <span className="text-4xl font-bold text-primary-txt-400">
               {product.price !== undefined ? `$${product.price}` : "Sin precio"}
             </span>
-            <Button variant="dailyMenu" className="px-5 py-3">
+            <Button variant="category" categoryId={product.category.id} className="px-5 py-3">
               Añadir al carrito
             </Button>
           </div>
