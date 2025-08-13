@@ -8,7 +8,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 // Datos ficticios (mockeados) para usar mientras el backend no está listo.
 const mockUsers: IUser[] = [
   {
-    id: "auth0|689b7607b514312f414ccbde", // Importante: Este ID debe coincidir con el 'sub' de un usuario mock de Auth0.
+    id: "auth0|689b7607b514312f414ccbde!!!!", // Importante: Este ID debe coincidir con el 'sub' de un usuario mock de Auth0.
     name: "John Doe",
     email: "john.doe@example.com",
     password: "hashed_password",
@@ -24,21 +24,20 @@ export const userService = {
   // getById con lógica mockeada.
   // Tu lógica original para getById() está comentada abajo.
   async getById(id: string): Promise<IUser> {
-    // ---- LÓGICA ORIGINAL PARA CUANDO EL BACKEND ESTÉ LISTO (COMENTADA) ----
-    /*
-    const { data } = await axios.get(`${BASE_URL}/users/${id}`);
-    return data;
-    */
-
-    // ---- LÓGICA DE SIMULACIÓN (MOCKEADA) PARA TRABAJAR AHORA ----
-    console.log(`Mocking getById for id: ${id}.`);
-    const user = mockUsers.find((u) => u.id === id);
-    if (user) {
-      return Promise.resolve(user);
-    }
-    return Promise.reject(new Error("User not found (mock)"));
+    // Devuelve un usuario temporal basado en el sub de Auth0
+    console.log(`Fetching user profile for id: ${id}`);
+    return Promise.resolve({
+      id, // ✅ sub real de Auth0
+      name: "", // se puede completar luego con el formulario
+      email: "", // se puede completar luego con el formulario
+      password: "",
+      address: "asdasd",
+      phone: 0,
+      diet: "general",
+      birthday: new Date(),
+      isAdmin: "customer",
+    });
   },
-
   // update con lógica mockeada.
   // Tu lógica original para update() está comentada abajo.
   async update(id: string, payload: Partial<Omit<IUser, "id">>) {

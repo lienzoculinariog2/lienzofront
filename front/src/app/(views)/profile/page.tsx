@@ -16,16 +16,19 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (isAuthenticated && user?.sub) {
+        // 🔹 Logueamos el objeto de Auth0 y el sub real
+        console.log("Auth0 user object:", user);
+        console.log("Auth0 sub (real ID):", user.sub);
+        console.log("Auth0 email:", user.email);
+        console.log("Auth0 address:", user.address);
+
         setIsFetchingProfile(true);
         try {
           // Usamos el `userService` para obtener el perfil.
-          // En una implementación real, el 'sub' de Auth0 sería el `id` de tu base de datos.
           const profile = await userService.getById(user.sub);
           setProfileData(profile);
         } catch (error) {
           console.error("Error fetching user profile:", error);
-          // Opcional: Manejar el caso de que el usuario no exista en tu DB
-          // Podríamos crear un registro mínimo aquí.
         } finally {
           setIsFetchingProfile(false);
         }
