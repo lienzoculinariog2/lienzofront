@@ -24,6 +24,7 @@ const ProductCard: FC<Partial<IProduct>> = (product) => {
     imgUrl,
     caloricLevel,
     ingredients,
+    category,
   } = product;
 
   // Lógica para detectar ingredientes
@@ -54,7 +55,7 @@ const ProductCard: FC<Partial<IProduct>> = (product) => {
     // CAMBIO CLAVE: Se usa una sola estructura para la tarjeta.
     // El 'Link' ahora envuelve solo las partes que deberían ser clicables
     // para ir a la página de detalles, no el botón de "Añadir al carrito".
-    <div className="w-full max-w-sm rounded-lg shadow-lg bg-primary-background-900 border border-primary-background-800 transition-transform duration-200 hover:scale-105">
+    <div className="w-full max-w-sm transition-transform duration-200 border rounded-lg shadow-lg bg-primary-background-900 border-primary-background-800 hover:scale-105">
       {/* Sección de barras de color */}
       <div
         className={`h-2 w-full rounded-t ${
@@ -98,11 +99,11 @@ const ProductCard: FC<Partial<IProduct>> = (product) => {
             <span className="text-3xl font-bold text-primary-txt-100">
               {price !== undefined ? `$${price}` : "Sin precio"}
             </span>
-            <p className="text-xs text-secondary-txt-700 ml-2">
+            <p className="ml-2 text-xs text-secondary-txt-700">
               {stock !== undefined ? `Stock: ${stock}` : "Sin stock"}
             </p>
           </div>
-          <Button variant="dailyMenu">
+          <Button variant="category" categoryId={category?.id}>
             <p>Añadir al carrito</p>
           </Button>
         </div>

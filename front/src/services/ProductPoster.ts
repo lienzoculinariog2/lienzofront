@@ -22,10 +22,26 @@ export const productPoster = {
       return data;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        console.error(
-          "Error al crear el producto:",
-          error.response?.data || error.message
-        );
+        console.error("Error al crear el producto:", error.response?.data || error.message);
+        throw new Error(error.message);
+      } else {
+        console.error("Error inesperado:", error);
+        throw new Error("Error desconocido al crear el producto");
+      }
+    }
+  },
+
+  async createWithImage(formData: FormData): Promise<IProduct> {
+    try {
+      const { data } = await axios.post<IProduct>(`${BASE_URL}/products`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return data;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("Error al crear el producto con imagen:", error.response?.data || error.message);
         throw new Error(error.message);
       } else {
         console.error("Error inesperado:", error);

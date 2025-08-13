@@ -1,6 +1,6 @@
-import React, { FC } from "react";
+import CategoryCard from "@/app/(views)/products/[categoryId]/components/CategoryCard";
 import { ICategories } from "@/types/Categories";
-import CategoryCard from "./CategoryCard";
+import React, { FC } from "react";
 
 interface CategoriesListProps {
   categories: ICategories[];

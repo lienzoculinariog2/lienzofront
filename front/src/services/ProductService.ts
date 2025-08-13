@@ -20,4 +20,14 @@ export const productService = {
     const { data } = await api.get<IProduct>(`/products/${id}`);
     return data;
   },
+
+  async getByCategoryId(categoryId: string): Promise<IProduct[]> {
+    try {
+      const { data } = await api.get<IProduct[]>(`/products?categoryId=${categoryId}`);
+      return data;
+    } catch (error) {
+      console.error(`Error al obtener productos de la categoría ${categoryId}:`, error);
+      return [];
+    }
+  },
 };
