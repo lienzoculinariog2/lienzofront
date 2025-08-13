@@ -1,6 +1,6 @@
-import React, { FC } from "react";
+import CategoryCard from "@/app/(views)/products/[categoryId]/components/CategoryCard";
 import { ICategories } from "@/types/Categories";
-import CategoryCard from "./CategoryCard";
+import React, { FC } from "react";
 
 interface CategoriesListProps {
   categories: ICategories[];
@@ -19,7 +19,7 @@ const CategoriesList: FC<CategoriesListProps> = ({ categories }) => {
     <div>
       <div className="flex flex-col gap-8">
         {categories.map((c) => (
-             <CategoryCard {...c} key={c.id} />
+          <CategoryCard {...c} key={c.id} />
         ))}
       </div>
     </div>

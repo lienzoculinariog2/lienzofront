@@ -33,9 +33,9 @@ const CategoryPage = async ({ params }: CategoryPageProps) => {
   }
 
   return (
-    <div className="container py-8 mx-auto">
-      <h1 className="mb-6 text-3xl font-bold text-primary-txt-300">
-        Productos de la Categoría: {category.name}
+    <div className="container p-4 mx-auto">
+      <h1 className="my-6 text-3xl font-bold text-center border-b border-secondary-background-400 text-primary-txt-400">
+         {category.name}
       </h1>
       
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

@@ -8,7 +8,12 @@ const categories = async () => {
 
   return (
     <>
-      <h1 className="text-primary-txt-200"> Paletas de sabores: </h1>
+      <div className="container p-4 mx-auto">
+        <h1 className="my-6 text-3xl font-bold text-center border-b border-secondary-background-400 text-primary-txt-400">
+          Paleta de sabores:
+        </h1>
+      </div>
+
       <CategoriesList categories={categoriesFromBackend} />
       <br />
     </>

@@ -1,6 +1,5 @@
 import React, { FC } from "react";
 import { ICategories } from "@/types/Categories";
-import Link from "next/link"; 
 import CategoryCard from "./CategoryCard";
 
 interface CategoriesListProps {
@@ -20,9 +19,7 @@ const CategoriesList: FC<CategoriesListProps> = ({ categories }) => {
     <div>
       <div className="flex flex-col gap-8">
         {categories.map((c) => (
-          <Link href={`/products/${c.id}`} key={c.id}>
-            <CategoryCard {...c} />
-          </Link>
+          <CategoryCard {...c} key={c.id} />
         ))}
       </div>
     </div>

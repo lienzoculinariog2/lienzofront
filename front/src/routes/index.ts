@@ -2,7 +2,7 @@ export const Routes = {
   home: "/",
   cart: "/cart",
   profile: "/profile",
-  products: "/products"
+  products: "/products",
 }
 
 
