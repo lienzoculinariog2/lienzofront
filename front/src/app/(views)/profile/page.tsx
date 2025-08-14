@@ -1,12 +1,20 @@
-// app/profile/page.tsx
 "use client";
+
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import ProfileForm from "./components/ProfileForm";
-import { userService } from "@/services/draft/userService"; // Importamos el servicio
+import ProtectedContent from "@/components/ui/ProtectedContent"; // Importamos el componente de contenido protegido
+import Spinner from "@/components/ui/Spinner";
+import { userService } from "@/services/draft/userService";
 import { IUser } from "@/types/User";
-import Spinner from "@/components/ui/Spinner"; // Asumiendo que tienes un componente Spinner
 
+/**
+ * @name ProfilePage
+ * @description
+ * Esta página principal del perfil de usuario maneja el estado de autenticación,
+ * la carga inicial de los datos del usuario y el guardado del formulario.
+ * Integra el componente ProtectedContent para el saludo y ProfileForm para la edición.
+ */
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const [profileData, setProfileData] = useState<IUser | null>(null);
@@ -15,38 +23,36 @@ export default function ProfilePage() {
   // useEffect para cargar los datos del usuario la primera vez
   useEffect(() => {
     const fetchUserProfile = async () => {
+      // Solo intentamos cargar el perfil si el usuario está autenticado y tiene un 'sub' (id de Auth0)
       if (isAuthenticated && user?.sub) {
-        // 🔹 Logueamos el objeto de Auth0 y el sub real
-        console.log("Auth0 user object:", user);
-        console.log("Auth0 sub (real ID):", user.sub);
-        console.log("Auth0 email:", user.email);
-        console.log("Auth0 address:", user.address);
-
         setIsFetchingProfile(true);
         try {
-          // Usamos el `userService` para obtener el perfil.
+          // Usamos el servicio mockeado para obtener el perfil
           const profile = await userService.getById(user.sub);
           setProfileData(profile);
         } catch (error) {
           console.error("Error fetching user profile:", error);
+          // Opcional: manejar el error mostrando un mensaje al usuario
         } finally {
           setIsFetchingProfile(false);
         }
+      } else if (!isLoading) {
+        // Si no está autenticado y no está cargando, terminamos la carga del perfil
+        setIsFetchingProfile(false);
       }
     };
     fetchUserProfile();
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user, isLoading]);
 
-  // Esta es la función clave que recibe el formulario.
-  // Se la pasamos al `ProfileForm` a través de la prop `onSave`.
+  /**
+   * Maneja el guardado del formulario de perfil.
+   * @param {Partial<IUser>} formData - Los datos del formulario que se van a guardar.
+   */
   const handleSaveProfile = async (formData: Partial<IUser>) => {
     if (isAuthenticated && user?.sub) {
       try {
-        // Llama al `userService` para actualizar los datos.
-        // Aquí es donde los datos van al "backend mockeado".
+        // Llama al `userService` para actualizar los datos
         const response = await userService.update(user.sub, formData);
-
-        // El servicio mockeado devuelve los datos actualizados en `response.data`.
         setProfileData(response.data);
         alert("¡Perfil guardado con éxito!");
       } catch (error) {
@@ -56,7 +62,7 @@ export default function ProfilePage() {
     }
   };
 
-  // Muestra un spinner mientras se cargan los datos del perfil
+  // 1. Si Auth0 está cargando O estamos buscando el perfil, mostramos un Spinner
   if (isLoading || isFetchingProfile) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -65,6 +71,7 @@ export default function ProfilePage() {
     );
   }
 
+  // 2. Si el usuario no está autenticado, mostramos un mensaje
   if (!isAuthenticated || !user) {
     return (
       <p className="text-center p-8">
@@ -73,17 +80,19 @@ export default function ProfilePage() {
     );
   }
 
-  // Muestra el formulario si el perfil se ha cargado correctamente
+  // 3. Si todo está listo, mostramos la interfaz completa
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Mi Perfil</h1>
+    <div className="container mx-auto p-4 md:p-8">
+      {/* 🔹 Primero, mostramos el componente de saludo y foto */}
+      <ProtectedContent />
+
+      {/* 🔹 Luego, el formulario de edición, que solo se renderiza si hay datos */}
       {profileData ? (
-        <ProfileForm
-          user={profileData}
-          onSave={handleSaveProfile} // Aquí conectamos el formulario con la función
-        />
+        <div className="mt-8">
+          <ProfileForm user={profileData} onSave={handleSaveProfile} />
+        </div>
       ) : (
-        <p>No se encontraron datos del perfil.</p>
+        <p className="mt-8 text-center">No se encontraron datos del perfil.</p>
       )}
     </div>
   );
