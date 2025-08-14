@@ -4,9 +4,8 @@ import React, { useState, useEffect } from "react";
 import SearchBar from "@/components/ui/SerchBar";
 import { IProduct } from "@/types/Product";
 import { productService } from "@/services/ProductService";
-import { getAllCategories } from "@/services/CategoryService"; 
 import ProductCard from "@/app/(views)/(home)/components/ProductCard";
-
+import { categoriesServices } from "@/services/CategoryService";
 
 interface RenderBarProps {
   title?: string;
@@ -18,7 +17,9 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Todas las categorías");
+  const [selectedCategory, setSelectedCategory] = useState(
+    "Todas las categorías"
+  );
   const [categories, setCategories] = useState<string[]>([]);
 
   const pageTitle = title || "Nuestros Menus";
@@ -30,15 +31,14 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
       try {
         const [products, fetchedCategories] = await Promise.all([
           productService.getAll(),
-          getAllCategories.getAll(),
+          categoriesServices.getAll(),
         ]);
 
         setAllProducts(products);
         setFilteredProducts(products);
 
-        const categoryNames = fetchedCategories.map(cat => cat.name);
+        const categoryNames = fetchedCategories.map((cat) => cat.name);
         setCategories(["Todas las categorías", ...categoryNames]);
-
       } catch (err) {
         setError("No se pudieron cargar los datos.");
         console.error("Error fetching data:", err);
@@ -50,32 +50,53 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
   }, []);
 
   useEffect(() => {
-    const filterProducts = () => {
-      let results = allProducts;
-  
-      if (selectedCategory !== "Todas las categorías") {
-        results = results.filter(product => product.category?.name === selectedCategory);
-      }
-  
-      if (searchTerm !== "") {
-        const lowercasedTerm = searchTerm.toLowerCase();
-        results = results.filter((product) => {
-          const hasMatchingIngredient = product.ingredients?.some(
-            (ingredient) => ingredient.toLowerCase().includes(lowercasedTerm)
-          );
-  
-          return (
-            product.name?.toLowerCase().includes(lowercasedTerm) ||
-            product.description?.toLowerCase().includes(lowercasedTerm) ||
-            hasMatchingIngredient
-          );
-        });
-      }
-  
-      setFilteredProducts(results);
-    };
-  
-    filterProducts();
+    let results = allProducts;
+
+    // 1. Aplicar filtro de categoría
+    if (selectedCategory !== "Todas las categorías") {
+      results = results.filter(
+        (product) => product.category?.name === selectedCategory
+      );
+    }
+
+    // 2. Aplicar filtro de búsqueda
+    if (searchTerm !== "") {
+      const normalizedTerm = searchTerm
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+      results = results.filter((product) => {
+        const normalizedName = product.name
+          ?.toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+
+        const normalizedDescription = product.description
+          ?.toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+
+        const nameMatches = normalizedName?.includes(normalizedTerm);
+        const descriptionMatches =
+          normalizedDescription?.includes(normalizedTerm);
+
+        const hasMatchingIngredient = product.ingredients?.some(
+          (ingredient) => {
+            const normalizedIngredient = ingredient.name
+              .toLowerCase()
+              .normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "");
+            return normalizedIngredient.includes(normalizedTerm);
+          }
+        );
+
+        return nameMatches || descriptionMatches || hasMatchingIngredient;
+      });
+    }
+
+    // 3. Actualizar los productos filtrados con el resultado final
+    setFilteredProducts(results);
   }, [searchTerm, selectedCategory, allProducts]);
 
   const handleSearch = (category: string, term: string) => {
@@ -116,6 +137,6 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
       )}
     </main>
   );
-}
+};
 
 export default RenderBar;

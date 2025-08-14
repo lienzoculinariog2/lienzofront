@@ -1,10 +1,10 @@
 import React from "react";
 
-import { getAllCategories } from "@/services/CategoryService";
 import CategoriesList from "./[categoryId]/components/CategoriesList";
+import { categoriesServices } from "@/services/CategoryService";
 
 const categories = async () => {
-  const categoriesFromBackend = await getAllCategories.getAll();
+  const categoriesFromBackend = await categoriesServices.getAll();
 
   return (
     <>

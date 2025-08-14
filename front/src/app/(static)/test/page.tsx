@@ -5,9 +5,9 @@ import { IProduct } from "@/types/Product";
 import { productPoster } from "@/services/ProductPoster";
 import Button from "@/components/ui/Button";
 import { ICategories } from "@/types/Categories";
-import { getAllCategories } from "@/services/CategoryService";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { categoriesServices } from "@/services/CategoryService";
 
 export default function AdminPanel() {
   const router = useRouter();
@@ -32,7 +32,7 @@ export default function AdminPanel() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const categoriesData = await getAllCategories.getAll();
+        const categoriesData = await categoriesServices.getAll();
         setCategories(categoriesData);
       } catch (error) {
         console.error("Error al obtener las categorías:", error);
