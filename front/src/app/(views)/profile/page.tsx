@@ -59,7 +59,7 @@ export default function ProfilePage() {
   // Muestra un spinner mientras se cargan los datos del perfil
   if (isLoading || isFetchingProfile) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex items-center justify-center h-screen">
         <Spinner />
       </div>
     );
@@ -67,7 +67,7 @@ export default function ProfilePage() {
 
   if (!isAuthenticated || !user) {
     return (
-      <p className="text-center p-8">
+      <p className="p-8 text-center">
         Debes iniciar sesión para ver esta página.
       </p>
     );
@@ -75,8 +75,8 @@ export default function ProfilePage() {
 
   // Muestra el formulario si el perfil se ha cargado correctamente
   return (
-    <div className="container mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Mi Perfil</h1>
+    <div className="container p-8 mx-auto">
+      <h1 className="mb-6 text-3xl font-bold text-gray-800">Mi Perfil</h1>
       {profileData ? (
         <ProfileForm
           user={profileData}

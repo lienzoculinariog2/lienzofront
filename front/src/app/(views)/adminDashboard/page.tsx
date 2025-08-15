@@ -2,23 +2,33 @@
 
 import Link from "next/link";
 import Button from "@/components/ui/Button";
+import { useEffect, useState } from "react";
+import { IProduct } from "@/types/Product";
+import { productService } from "@/services/ProductService";
 
 const AdminDashboardPage = () => {
-  return (
-    <div className="container p-8 mx-auto text-center">
-      <h1 className="my-6 text-3xl font-bold text-center border-b border-secondary-background-400 text-primary-txt-400">
-        Panel de Administración
-      </h1>
+  const [products, setProducts] = useState<IProduct[]>([]);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const allProducts = await productService.getAll();
+      setProducts(allProducts.slice(0, 4)); // solo 4 para previsualización
+    };
+    fetchProducts();
+  }, []);
+
+  return (
+    <div>
       <div className="flex flex-col items-center gap-4 mt-8">
-        <Link href="/adminDashboard/edit-products">
+        <Link href="/adminDashboard/products/edit-products">
           <Button variant="dailyMenu">Ver y Editar Productos</Button>
         </Link>
-        <Link href="/adminDashboard/create-product">
+
+        <Link href="/adminDashboard/products/create-product">
           <Button variant="dailyMenu">Crear Nuevo Producto</Button>
         </Link>
-        <Link href="/adminDashboard/categories">
-          <Button variant="dailyMenu">Ver y Editar Categorías</Button>
+        <Link href="/adminDashboard/categories/edit-category">
+          <Button variant="dailyMenu">Editar Categoría</Button>
         </Link>
         <Link href="/adminDashboard/categories/create-category">
           <Button variant="dailyMenu">Crear Nueva Categoría</Button>

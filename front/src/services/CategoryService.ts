@@ -138,4 +138,24 @@ export const categoriesServices = {
       }
     }
   },
+
+  async updateWithImage(id: string, formData: FormData): Promise<ICategories> {
+  try {
+    const { data } = await api.put<ICategories>(`/categories/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      console.error(
+        "Error al actualizar la categoría con imagen:",
+        error.response?.data || error.message
+      );
+      throw new Error(error.message);
+    } else {
+      console.error("Error inesperado:", error);
+      throw new Error("Error desconocido al actualizar la categoría");
+    }
+  }
+}
 };

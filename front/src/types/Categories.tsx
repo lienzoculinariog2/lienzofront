@@ -11,6 +11,8 @@ export interface ICategories {
 export interface ICategoryCreate {
   name: string;
   description?: string;
+  imgUrl?: string;
+  isActive?: boolean;
 }
 
 export interface ICategoryUpdate {
