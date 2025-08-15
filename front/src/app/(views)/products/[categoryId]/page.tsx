@@ -1,8 +1,8 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getAllCategories } from "@/services/CategoryService";
 import { productService } from "@/services/ProductService"; 
 import ProductCard from "../../(home)/components/ProductCard";
+import { categoriesServices } from "@/services/CategoryService";
 
 
 interface CategoryPageProps {
@@ -14,7 +14,7 @@ interface CategoryPageProps {
 const CategoryPage = async ({ params }: CategoryPageProps) => {
   const categoryId = params.categoryId;
 
-  const categories = await getAllCategories.getAll();
+  const categories = await categoriesServices.getAll();
 
   const filteredProducts = await productService.getByCategoryId(categoryId);
   console.log('Productos recibidos del backend:', filteredProducts); 

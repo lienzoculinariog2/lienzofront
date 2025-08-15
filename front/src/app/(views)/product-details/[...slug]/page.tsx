@@ -5,42 +5,23 @@ import { productService } from "@/services/ProductService";
 import { IProduct } from "@/types/Product";
 import Button from "@/components/ui/Button";
 
-// Definición de tipos para los parámetros de la URL.
-// '[...slug]' significa que 'slug' será un array de strings.
-type ProductDetailProps = {
-  params: {
-    slug: string[];
-  };
-};
 
-// Objeto de mapeo para los colores de los ingredientes, usando tu paleta de Tailwind
 const specialColors: { [key: string]: string } = {
-  carne: "bg-daily-menu-500", // Rojo para carnes
-  lacteo: "bg-secondary-txt-500", // Gris azulado para lácteos
-  huevo: "bg-celiac-500", // Amarillo para huevo (usando el color de celiac)
-  grano: "bg-celiac-500", // Amarillo para granos
-  harina: "bg-celiac-500", // Amarillo para harinas y pastas
-  fruta: "bg-vegetarian-500", // Verde para frutas
-  vegetal: "bg-vegetarian-500", // Verde esmeralda para vegetales
-  // Clase por defecto si no se encuentra el color
+  carne: "bg-daily-menu-500", 
+  lacteo: "bg-secondary-txt-500", 
+  huevo: "bg-celiac-500", 
+  grano: "bg-celiac-500", 
+  harina: "bg-celiac-500", 
+  fruta: "bg-vegetarian-500", 
+  vegetal: "bg-vegetarian-500", 
   default: "bg-secondary-background-500",
 };
 
-// Función auxiliar para extraer el ID del slug.
-// Esto ayuda a encapsular la lógica y podría resolver la advertencia del linter.
-function getSlugFromParams(params: { slug: string[] }) {
-  if (params.slug?.length > 0) {
-    return params.slug[params.slug.length - 1];
-  }
-  return undefined;
-}
 
-// Mantenemos el componente como async porque es un Server Component.
-export default async function ProductDetail({ params }: ProductDetailProps) {
-  // Ahora llamamos a la función auxiliar para obtener el ID.
-  const id = getSlugFromParams(params);
+export default async function ProductDetail({ params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug } = await params;
+  const id = slug[slug.length - 1];
 
-  // Si no hay ID, muestra directamente el mensaje de "no encontrado"
   if (!id) {
     return (
       <div className="p-8 mt-20 mb-20 text-center">
@@ -61,7 +42,6 @@ export default async function ProductDetail({ params }: ProductDetailProps) {
     console.error("Error fetching product:", error);
   }
 
-  // Si hay un error o no se encuentra el producto, mostramos el mensaje de "no encontrado"
   if (!product) {
     return (
       <div className="p-8 text-center">
@@ -75,7 +55,6 @@ export default async function ProductDetail({ params }: ProductDetailProps) {
     );
   }
 
-  // Lógica para detectar los tipos de ingredientes sin duplicados
   const ingredientTypes = new Set<string>();
   const categories = [
     { category: "carne", keywords: ["carne", "pollo", "pescado", "cerdo"] },
@@ -90,16 +69,14 @@ export default async function ProductDetail({ params }: ProductDetailProps) {
     },
   ];
 
-  product?.ingredients?.forEach((ingredient) => {
-    const lowerCaseIngredient = ingredient.toLowerCase();
-    categories.forEach((cat) => {
-      if (
-        cat.keywords.some((keyword) => lowerCaseIngredient.includes(keyword))
-      ) {
-        ingredientTypes.add(cat.category);
-      }
-    });
+product?.ingredients?.forEach((ingredient) => {
+  const lowerCaseIngredient = ingredient.name.toLowerCase(); // ahora sí es string
+  categories.forEach((cat) => {
+    if (cat.keywords.some((keyword) => lowerCaseIngredient.includes(keyword))) {
+      ingredientTypes.add(cat.category);
+    }
   });
+});
 
   return (
     <div className="max-w-4xl p-8 mx-auto mt-10 mb-20 overflow-hidden border shadow-lg bg-primary-background-900 border-primary-background-800 rounded-xl">

@@ -28,13 +28,20 @@ const SearchBar = ({ onSearch, categories }: SearchBarProps) => {
     onSearch(category, searchTerm);
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTerm = e.target.value;
+    setSearchTerm(newTerm);
+    // ✅ Se llama a onSearch con la categoría actual y el nuevo término
+    onSearch(selectedCategory, newTerm);
+  };
+  
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(selectedCategory, searchTerm);
   };
 
   return (
-    <form className="mx-auto my-4" onSubmit={handleSearch}>
+    <form className="mx-auto my-4" onSubmit={handleFormSubmit}>
       <div className="relative flex w-full rounded-lg shadow-md">
         <div className="relative w-1/4 min-w-max">
           <Button
@@ -78,7 +85,7 @@ const SearchBar = ({ onSearch, categories }: SearchBarProps) => {
             type="search"
             id="search-dropdown"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
             className="block w-full p-2.5 text-sm rounded-lg ml-2 mr-2 text-primary-txt-100 bg-primary-background-700 border-l-2 border-l-primary-background-800 border border-primary-background-800 focus:ring-daily-menu-500 focus:border-daily-menu-500 placeholder-secondary-txt-500 outline-none"
             placeholder="Buscar..."
             required
