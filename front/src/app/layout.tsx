@@ -2,6 +2,7 @@
 import '../styles/globals.css'
 import { Inter } from 'next/font/google'
 import Auth0ProviderWithNavigate from '@/components/ui/Auth0ProviderWithNavigate';
+import UserSync from '@/components/ui/auth/UserSync';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         <Auth0ProviderWithNavigate>
+          <UserSync/>
           {children}
         </Auth0ProviderWithNavigate>
       </body>
