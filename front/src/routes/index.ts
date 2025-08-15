@@ -3,7 +3,5 @@ export const Routes = {
   cart: "/cart",
   profile: "/profile",
   products: "/products",
-}
-
-
-
+  testauth0: "/auth0test",
+};
