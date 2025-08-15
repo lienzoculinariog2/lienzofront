@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import { ICategories } from "@/types/Categories";
 import Image from "next/image";
 import { categoriesServices } from "@/services/CategoryService";
+import { useRouter } from "next/navigation";
 
 
 interface ProductFormProps {
@@ -16,6 +17,7 @@ interface ProductFormProps {
 
 
 const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) => {
+  const router = useRouter();
   const [formData, setFormData] = useState<Partial<IProduct>>(
     product || {
       name: "",
@@ -111,7 +113,6 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
     e.preventDefault();
     setSuccess(false);
 
-    // Valida si el producto es nuevo y no tiene imagen
     if (!product && !selectedImage) {
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -123,10 +124,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
     try {
       setLoading(true);
       
-      // ✅ Aquí llamamos a la prop onSave que se encarga de llamar a la API
-      // Enviar solo los datos relevantes para la API
-      onSave(formData);
-      // No reseteamos el formulario ni redirigimos aquí. Esto lo maneja el componente padre.
+      await onSave(formData);
+      router.replace("/adminDashboard")
     } catch (err) {
       console.error("Error al enviar:", err);
     } finally {
