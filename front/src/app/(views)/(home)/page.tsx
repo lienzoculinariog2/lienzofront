@@ -1,11 +1,7 @@
-// import Button from "@/components/ui/Button";
 import Image from "next/image";
-import ProductCard from "./components/ProductCard";
-import { productService } from "@/services/ProductService";
-import { IProduct } from "@/types/Product";
+import RenderBar from "@/components/RenderBar";
 
 export default async function Home() {
-  const productosMap: IProduct[] = await productService.getAll();
   return (
     <>
       <div>
@@ -28,34 +24,9 @@ export default async function Home() {
             />
           </div>
         </div>
-        <br />
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {productosMap.map((product) => (
-            <ProductCard
-              key={product.id}
-              id={product.id}
-              name={product.name}
-              description={product.description}
-              price={product.price}
-              stock={product.stock}
-              imgUrl={product.imgUrl}
-              isActive={product.isActive}
-              caloricLevel={product.caloricLevel}
-              ingredients={product.ingredients}
-            />
-          ))}
-        </div>
+        <RenderBar />
         <br />
-        {/* <Button variant="alternative"> Boton de prueba </Button>
-        <Button variant="light"> Boton de prueba </Button>
-        <Button variant="default"> Boton de prueba </Button>
-        <Button variant="dark"> Boton de prueba </Button>
-        <Button variant="dailyMenu"> Boton de prueba </Button>
-        <Button variant="lowCalories"> Boton de prueba </Button>
-        <Button variant="celiac"> Boton de prueba </Button>
-        <Button variant="vegan"> Boton de prueba </Button>
-        <Button variant="vegetarian"> Boton de prueba </Button> */}
       </div>
     </>
   );

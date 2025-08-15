@@ -10,7 +10,8 @@ import { userService } from "@/services/draft/userService";
 import { IUser } from "@/types/User";
 
 export default function ProfilePage() {
-  const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
+    useAuth0();
   const [profileData, setProfileData] = useState<IUser | null>(null);
   const [isFetchingProfile, setIsFetchingProfile] = useState(true);
 
@@ -21,7 +22,11 @@ export default function ProfilePage() {
         try {
           const accessToken = await getAccessTokenSilently();
           // Usamos 'getOrCreateUser' por seguridad, aunque ya debería existir
-          const profile = await userService.getOrCreateUser(user.sub, user.email || '', accessToken);
+          const profile = await userService.getOrCreateUser(
+            user.sub,
+            user.email || "",
+            accessToken
+          );
           setProfileData(profile);
         } catch (error) {
           console.error("Error fetching user profile:", error);
@@ -38,7 +43,11 @@ export default function ProfilePage() {
     try {
       const accessToken = await getAccessTokenSilently();
       // La lógica de guardado ahora solo actualiza
-      const updatedProfile = await userService.update(user.sub, formData, accessToken);
+      const updatedProfile = await userService.update(
+        user.sub,
+        formData,
+        accessToken
+      );
       setProfileData(updatedProfile);
       alert("¡Perfil actualizado con éxito!");
     } catch (error) {

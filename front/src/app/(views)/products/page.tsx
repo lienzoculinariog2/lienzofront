@@ -1,13 +1,21 @@
 import React from "react";
-import CategoriesList from "./[categoryId]/components/CategoriesList";
-import { protoCategories } from "@/helpers/categories";
 
-const categories = () => {
+import CategoriesList from "./[categoryId]/components/CategoriesList";
+import { categoriesServices } from "@/services/CategoryService";
+
+const categories = async () => {
+  const categoriesFromBackend = await categoriesServices.getAll();
+
   return (
     <>
-      <h1 className="text-primary-txt-200"> Paletas de sabores: </h1>
-      <CategoriesList categories={protoCategories} />
-      <br/>
+      <div className="container p-4 mx-auto">
+        <h1 className="my-6 text-3xl font-bold text-center border-b border-secondary-background-400 text-primary-txt-400">
+          Paleta de sabores:
+        </h1>
+      </div>
+
+      <CategoriesList categories={categoriesFromBackend} />
+      <br />
     </>
   );
 };

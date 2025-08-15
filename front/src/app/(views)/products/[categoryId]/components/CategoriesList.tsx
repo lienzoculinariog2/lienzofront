@@ -17,11 +17,11 @@ const CategoriesList: FC<CategoriesListProps> = ({ categories }) => {
 
   return (
     <div>
-        <div className="flex flex-col gap-8">
-          {categories.map((c) => (
-            <CategoryCard {...c} key={c.id} />
-          ))}
-        </div>
+      <div className="flex flex-col gap-8">
+        {categories.map((c) => (
+          <CategoryCard {...c} key={c.id} />
+        ))}
+      </div>
     </div>
   );
 };

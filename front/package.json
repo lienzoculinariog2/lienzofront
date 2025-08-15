@@ -11,6 +11,7 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.4.0",
     "axios": "^1.11.0",
+    "browser-image-compression": "^2.0.2",
     "classnames": "^2.5.1",
     "formik": "^2.4.6",
     "lucide-react": "^0.539.0",

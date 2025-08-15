@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { IProduct } from "@/types/Product";
-import { productPoster } from "@/services/ProductPoster";
-import { validateProduct } from "@/helpers/validateProduct";
 import Button from "@/components/ui/Button";
 import { ICategories } from "@/types/Categories";
-import { getAllCategories } from "@/services/CategoryService";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { categoriesServices } from "@/services/CategoryService";
+import { productService } from "@/services/ProductService";
 
 export default function AdminPanel() {
   const router = useRouter();
@@ -23,6 +23,7 @@ export default function AdminPanel() {
     ingredients: [],
   });
 
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [categories, setCategories] = useState<ICategories[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,7 @@ export default function AdminPanel() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const categoriesData = await getAllCategories.getAll();
+        const categoriesData = await categoriesServices.getAll();
         setCategories(categoriesData);
       } catch (error) {
         console.error("Error al obtener las categorías:", error);
@@ -39,6 +40,19 @@ export default function AdminPanel() {
     };
     fetchCategories();
   }, []);
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    setFormData((prev) => ({ ...prev, imgUrl: "" }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      setFormData((prev) => ({ ...prev, imgUrl: URL.createObjectURL(file) }));
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -79,19 +93,40 @@ export default function AdminPanel() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("submit iniciado");
     e.preventDefault();
     setSuccess(false);
-    const { isValid, errors } = validateProduct(formData);
-    if (!isValid) {
-      setErrors(errors);
+
+    if (!selectedImage) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        imgUrl: "Por favor, sube una imagen.",
+      }));
       return;
     }
 
     try {
       setLoading(true);
-      console.log("submit exitoso.");
-      await productPoster.create(formData as IProduct);
+
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name || "");
+      formDataToSend.append("description", formData.description || "");
+      formDataToSend.append("price", String(formData.price || 0));
+      formDataToSend.append("stock", String(formData.stock || 0));
+
+      if (selectedImage) {
+        formDataToSend.append("image", selectedImage);
+      }
+
+      formDataToSend.append("isActive", String(formData.isActive || false));
+      formDataToSend.append("categoryId", formData.category?.id || "");
+      formDataToSend.append("caloricLevel", String(formData.caloricLevel || 1));
+      formDataToSend.append(
+        "ingredients",
+        JSON.stringify(formData.ingredients || [])
+      );
+
+      await productService.createWithImage(formDataToSend);
+
       setSuccess(true);
       router.push("/");
       setFormData({
@@ -105,6 +140,7 @@ export default function AdminPanel() {
         caloricLevel: 1,
         ingredients: [],
       });
+      setSelectedImage(null);
       setErrors({});
     } catch (err) {
       console.error("Error al enviar:", err);
@@ -205,22 +241,42 @@ export default function AdminPanel() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label htmlFor="imgUrl" className="text-primary-txt-600">
-              URL de la imagen
+            <label htmlFor="imgFile" className="text-primary-txt-600">
+              Imagen
             </label>
             <input
-              id="imgUrl"
-              name="imgUrl"
-              type="text"
-              placeholder="URL de imagen del producto"
-              value={formData.imgUrl ?? ""}
-              onChange={handleChange}
+              id="imgFile"
+              name="imgFile"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
               className="p-3 border rounded-md bg-primary-background-600 border-primary-background-400 text-primary-txt-300 focus:outline-none focus:ring-2 focus:ring-daily-menu-500"
             />
             {errors.imgUrl && (
               <p className="mt-1 text-sm text-daily-menu-500">
                 {errors.imgUrl}
               </p>
+            )}
+            {formData.imgUrl && (
+              <div className="mt-4">
+                <label className="text-primary-txt-600">Vista Previa:</label>
+                <div className="relative mt-2 h-52 w-62">
+                  <Image
+                    src={formData.imgUrl}
+                    alt="Vista previa de la imagen del producto"
+                    className="object-cover w-full h-full rounded-md"
+                    width={350}
+                    height={160}
+                  />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="absolute flex items-center justify-center w-6 h-6 font-bold text-m text-primary-txt-400 top-1 right-1 hover:opacity-100"
+                >
+                  X
+                </button>
+                </div>
+              </div>
             )}
           </div>
 
