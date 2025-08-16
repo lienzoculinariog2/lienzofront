@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import SearchBar from "@/components/ui/SerchBar";
 import { IProduct } from "@/types/Product";
 import { productService } from "@/services/ProductService";
@@ -13,99 +13,93 @@ interface RenderBarProps {
 }
 
 const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
-  const [allProducts, setAllProducts] = useState<IProduct[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<IProduct[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(
-    "Todas las categorías"
-  );
+  const [selectedCategory, setSelectedCategory] = useState("Todas las categorías");
   const [categories, setCategories] = useState<string[]>([]);
 
   const pageTitle = title || "Nuestros Menus";
 
+  // Fetch categorías al montar
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCategories = async () => {
+      try {
+        const fetchedCategories = await categoriesServices.getAll();
+        const categoryNames = fetchedCategories
+          .filter((cat: ICategories) => cat.isActive)
+          .map((cat) => cat.name);
+        setCategories(["Todas las categorías", ...categoryNames]);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Resetear productos al cambiar búsqueda o categoría
+  useEffect(() => {
+    setProducts([]);
+    setPage(1);
+    setHasMore(true);
+  }, [searchTerm, selectedCategory]);
+
+  // Cargar productos cuando cambia página, búsqueda o categoría
+  useEffect(() => {
+    if (!hasMore) return;
+
+    const fetchProducts = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const [products, fetchedCategories] = await Promise.all([
-          productService.getAll(),
-          categoriesServices.getAll(),
-        ]);
+        const res = await productService.getPaginatedAndFiltered({
+          page,
+          limit: 20,
+          term: searchTerm,
+          category: selectedCategory !== "Todas las categorías" ? selectedCategory : undefined,
+        });
 
-        setAllProducts(products);
-        setFilteredProducts(products);
+        // Evitar duplicados
+        setProducts(prev => {
+          const newProducts = res.data.filter(p => !prev.some(prevP => prevP.id === p.id));
+          return [...prev, ...newProducts];
+        });
 
-        const categoryNames = fetchedCategories
-        .filter((cat: ICategories) => cat.isActive)
-        .map((cat) => cat.name);
-        setCategories(["Todas las categorías", ...categoryNames]);
+        setHasMore(res.hasNextPage);
       } catch (err) {
-        setError("No se pudieron cargar los datos.");
-        console.error("Error fetching data:", err);
+        console.error(err);
+        setError("No se pudieron cargar los productos.");
       } finally {
         setIsLoading(false);
       }
     };
-    fetchData();
-  }, []);
 
+    fetchProducts();
+  }, [page, searchTerm, selectedCategory, hasMore]);
+
+  // Scroll infinito
   useEffect(() => {
-    let results = allProducts;
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 &&
+        !isLoading &&
+        hasMore
+      ) {
+        setPage(prev => prev + 1);
+      }
+    };
 
-    // 1. Aplicar filtro de categoría
-    if (selectedCategory !== "Todas las categorías") {
-      results = results.filter(
-        (product) => product.category?.name === selectedCategory
-      );
-    }
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isLoading, hasMore]);
 
-    // 2. Aplicar filtro de búsqueda
-    if (searchTerm !== "") {
-      const normalizedTerm = searchTerm
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-
-      results = results.filter((product) => {
-        const normalizedName = product.name
-          ?.toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "");
-
-        const normalizedDescription = product.description
-          ?.toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "");
-
-        const nameMatches = normalizedName?.includes(normalizedTerm);
-        const descriptionMatches =
-          normalizedDescription?.includes(normalizedTerm);
-
-        const hasMatchingIngredient = product.ingredients?.some(
-          (ingredient) => {
-            const normalizedIngredient = ingredient.name
-              .toLowerCase()
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "");
-            return normalizedIngredient.includes(normalizedTerm);
-          }
-        );
-
-        return nameMatches || descriptionMatches || hasMatchingIngredient;
-      });
-    }
-
-    // 3. Actualizar los productos filtrados con el resultado final
-    setFilteredProducts(results);
-  }, [searchTerm, selectedCategory, allProducts]);
-
-  const handleSearch = (category: string, term: string) => {
+  const handleSearch = useCallback((category: string, term: string) => {
     setSelectedCategory(category);
     setSearchTerm(term);
-  };
+  }, []);
 
   return (
     <main className="container p-4 mx-auto">
@@ -115,32 +109,27 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
 
       <SearchBar onSearch={handleSearch} categories={categories} />
 
-      {isLoading && (
-        <p className="mt-8 text-lg text-center text-primary-txt-400">
-          Cargando productos...
-        </p>
-      )}
-
-      {error && (
-        <p className="mt-8 text-lg text-center text-red-500">{error}</p>
-      )}
-
-      {!isLoading && !error && (
-        <div className="grid grid-cols-1 gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))
-          ) : (
+      <div className="grid grid-cols-1 gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {products.length > 0 ? (
+          products.map(product => <ProductCard key={product.id} {...product} />)
+        ) : (
+          !isLoading && (
             <p className="text-lg text-center text-secondary-txt-500 col-span-full">
               No se encontraron productos que coincidan con la búsqueda.
             </p>
-          )}
-        </div>
+          )
+        )}
+      </div>
+
+      {isLoading && (
+        <p className="mt-4 text-center text-primary-txt-400">Cargando productos...</p>
       )}
+      {/* {!hasMore && products.length > 0 && (
+        <p className="mt-8 text-center text-secondary-txt-500">No hay más productos</p>
+      )} */}
+      {error && <p className="mt-4 text-center text-red-500">{error}</p>}
     </main>
   );
 };
 
 export default RenderBar;
-

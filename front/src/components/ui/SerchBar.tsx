@@ -16,25 +16,25 @@ const SearchBar = ({ onSearch, categories }: SearchBarProps) => {
   );
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Siempre inicializa la categoría seleccionada cuando cambian las categorías
   useEffect(() => {
-    if (categories.length > 0 && !categories.includes(selectedCategory)) {
+    if (categories.length > 0) {
       setSelectedCategory(categories[0]);
     }
-  }, [categories, selectedCategory]);
+  }, [categories]);
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
     setIsDropdownOpen(false);
-    onSearch(category, searchTerm);
+    onSearch(category, searchTerm); // pasar nombre de categoría
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTerm = e.target.value;
     setSearchTerm(newTerm);
-    // ✅ Se llama a onSearch con la categoría actual y el nuevo término
-    onSearch(selectedCategory, newTerm);
+    onSearch(selectedCategory, newTerm); // categoría seleccionada + término
   };
-  
+
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSearch(selectedCategory, searchTerm);
@@ -86,7 +86,7 @@ const SearchBar = ({ onSearch, categories }: SearchBarProps) => {
             id="search-dropdown"
             value={searchTerm}
             onChange={handleSearchChange}
-            className="block w-full p-2.5 text-sm rounded-lg ml-2 mr-2 text-primary-txt-100 bg-primary-background-700 border-l-2  border border-secondary-background-700 focus:ring-daily-menu-500 focus:border-daily-menu-500 placeholder-secondary-txt-500 outline-none"
+            className="block w-full p-2.5 text-sm rounded-lg ml-2 mr-2 text-primary-txt-100 bg-primary-background-700 border-l-2 border border-secondary-background-700 focus:ring-daily-menu-500 focus:border-daily-menu-500 placeholder-secondary-txt-500 outline-none"
             placeholder="Buscar..."
             required
           />
@@ -100,3 +100,5 @@ const SearchBar = ({ onSearch, categories }: SearchBarProps) => {
 };
 
 export default SearchBar;
+
+
