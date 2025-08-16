@@ -158,20 +158,50 @@ export const productService = {
     return data;
   },
 
+  // async getPaginatedAndFiltered(params: {
+  //   page: number;
+  //   limit: number;
+  //   category: string;
+  //   term: string;
+  // }): Promise<{ products: IProduct[]; totalPages: number }> {
+  //   // Aquí tu llamada al backend. Ejemplo con fetch:
+  //   const response = await fetch(
+  //     `/api/products?page=${params.page}&limit=${params.limit}&category=${params.category}&term=${params.term}`
+  //   );
+  //   const data = await response.json(); // data ahora contiene { products: [], total: number }
+
+  //   const totalPages = Math.ceil(data.total / params.limit);
+
+  //   return { products: data.products, totalPages };
+  // },
   async getPaginatedAndFiltered(params: {
-    page: number;
-    limit: number;
-    category: string;
-    term: string;
-  }): Promise<{ products: IProduct[]; totalPages: number }> {
-    // Aquí tu llamada al backend. Ejemplo con fetch:
-    const response = await fetch(
-      `/api/products?page=${params.page}&limit=${params.limit}&category=${params.category}&term=${params.term}`
-    );
-    const data = await response.json(); // data ahora contiene { products: [], total: number }
+  page: number;
+  limit: number;
+  category?: string;
+  term?: string;
+}): Promise<PaginatedResponse<IProduct>> {
+  try {
+    const response = await api.get<PaginatedResponse<IProduct>>("/products", {
+      params: {
+        page: params.page,
+        limit: params.limit,
+        categoryId: params.category,
+        name: params.term,
+      },
+    });
 
-    const totalPages = Math.ceil(data.total / params.limit);
+    return response.data;
+  } catch (error) {
+    console.error("Error al obtener productos paginados y filtrados:", error);
+    return {
+      data: [],
+      totalItems: 0,
+      page: params.page,
+      limit: params.limit,
+      totalPages: 0,
+      hasNextPage: false,
+    };
+  }
+}
 
-    return { products: data.products, totalPages };
-  },
 };

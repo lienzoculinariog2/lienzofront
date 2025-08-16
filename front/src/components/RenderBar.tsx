@@ -13,99 +13,93 @@ interface RenderBarProps {
 }
 
 const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
-  const [allProducts, setAllProducts] = useState<IProduct[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<IProduct[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(
-    "Todas las categorías"
-  );
+  const [selectedCategory, setSelectedCategory] = useState("Todas las categorías");
   const [categories, setCategories] = useState<string[]>([]);
 
   const pageTitle = title || "Nuestros Menus";
 
+  // Fetch categorías al montar
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
+    const fetchCategories = async () => {
       try {
-        // Obtenemos todos los productos (sin paginación) y las categorías.
-        const [products, fetchedCategories] = await Promise.all([
-          productService.getAll(),
-          categoriesServices.getAll(),
-        ]);
-
-        setAllProducts(products);
-        setFilteredProducts(products);
-
+        const fetchedCategories = await categoriesServices.getAll();
         const categoryNames = fetchedCategories
           .filter((cat: ICategories) => cat.isActive)
           .map((cat) => cat.name);
         setCategories(["Todas las categorías", ...categoryNames]);
       } catch (err) {
-        setError("No se pudieron cargar los datos.");
-        console.error("Error fetching data:", err);
+        console.error("Error fetching categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Resetear productos al cambiar búsqueda o categoría
+  useEffect(() => {
+    setProducts([]);
+    setPage(1);
+    setHasMore(true);
+  }, [searchTerm, selectedCategory]);
+
+  // Cargar productos cuando cambia página, búsqueda o categoría
+  useEffect(() => {
+    if (!hasMore) return;
+
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await productService.getPaginatedAndFiltered({
+          page,
+          limit: 20,
+          term: searchTerm,
+          category: selectedCategory !== "Todas las categorías" ? selectedCategory : undefined,
+        });
+
+        // Evitar duplicados
+        setProducts(prev => {
+          const newProducts = res.data.filter(p => !prev.some(prevP => prevP.id === p.id));
+          return [...prev, ...newProducts];
+        });
+
+        setHasMore(res.hasNextPage);
+      } catch (err) {
+        console.error(err);
+        setError("No se pudieron cargar los productos.");
       } finally {
         setIsLoading(false);
       }
     };
-    fetchData();
-  }, []);
+
+    fetchProducts();
+  }, [page, searchTerm, selectedCategory, hasMore]);
+
+  // Scroll infinito
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 &&
+        !isLoading &&
+        hasMore
+      ) {
+        setPage(prev => prev + 1);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isLoading, hasMore]);
 
   const handleSearch = useCallback((category: string, term: string) => {
     setSelectedCategory(category);
     setSearchTerm(term);
   }, []);
-
-  useEffect(() => {
-    let results = allProducts;
-
-    // Aplicar filtro de categoría
-    if (selectedCategory !== "Todas las categorías") {
-      results = results.filter(
-        (product) => product.category?.name === selectedCategory
-      );
-    }
-
-    // Aplicar filtro de búsqueda
-    if (searchTerm !== "") {
-      const normalizedTerm = searchTerm
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-
-      results = results.filter((product) => {
-        const normalizedName = product.name
-          ?.toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "");
-
-        const normalizedDescription = product.description
-          ?.toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "");
-
-        const nameMatches = normalizedName?.includes(normalizedTerm);
-        const descriptionMatches =
-          normalizedDescription?.includes(normalizedTerm);
-
-        const hasMatchingIngredient = product.ingredients?.some(
-          (ingredient) => {
-            const normalizedIngredient = ingredient.name
-              .toLowerCase()
-              .normalize("NFD")
-              .replace(/[\u0300-\u036f]/g, "");
-            return normalizedIngredient.includes(normalizedTerm);
-          }
-        );
-
-        return nameMatches || descriptionMatches || hasMatchingIngredient;
-      });
-    }
-
-    setFilteredProducts(results);
-  }, [searchTerm, selectedCategory, allProducts]);
 
   return (
     <main className="container p-4 mx-auto">
@@ -115,29 +109,25 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
 
       <SearchBar onSearch={handleSearch} categories={categories} />
 
-      {isLoading && (
-        <p className="mt-8 text-lg text-center text-primary-txt-400">
-          Cargando productos...
-        </p>
-      )}
-
-      {error && (
-        <p className="mt-8 text-lg text-center text-red-500">{error}</p>
-      )}
-
-      {!isLoading && !error && (
-        <div className="grid grid-cols-1 gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))
-          ) : (
+      <div className="grid grid-cols-1 gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {products.length > 0 ? (
+          products.map(product => <ProductCard key={product.id} {...product} />)
+        ) : (
+          !isLoading && (
             <p className="text-lg text-center text-secondary-txt-500 col-span-full">
               No se encontraron productos que coincidan con la búsqueda.
             </p>
-          )}
-        </div>
+          )
+        )}
+      </div>
+
+      {isLoading && (
+        <p className="mt-4 text-center text-primary-txt-400">Cargando productos...</p>
       )}
+      {/* {!hasMore && products.length > 0 && (
+        <p className="mt-8 text-center text-secondary-txt-500">No hay más productos</p>
+      )} */}
+      {error && <p className="mt-4 text-center text-red-500">{error}</p>}
     </main>
   );
 };

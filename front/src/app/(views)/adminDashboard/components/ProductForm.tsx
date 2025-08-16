@@ -89,7 +89,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
         type === "checkbox"
           ? (e.target as HTMLInputElement).checked
           : name === "ingredients"
-          ? value.split(",").map((item) => item.trim())
+          ? value.split(",").map((item) => ({ name: item.trim() }))
           : type === "number"
           ? Number(value)
           : value;
