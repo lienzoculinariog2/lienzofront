@@ -8,6 +8,7 @@ import ProfileForm from "./components/ProfileForm";
 import Spinner from "@/components/ui/Spinner";
 import { userService } from "@/services/draft/userService";
 import { IUser } from "@/types/User";
+import { UserInfoPanel } from "./components/UserInfoPanel";
 
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
@@ -66,7 +67,10 @@ export default function ProfilePage() {
 
   return (
     <div className="container mx-auto p-4 md:p-8">
-      {/* ... tu componente ProtectedContent ... */}
+      {/* Panel informativo del usuario */}
+      <UserInfoPanel profileData={profileData} />
+
+      {/* Formulario de edición */}
       <div className="mt-8">
         <ProfileForm user={profileData} onSave={handleSaveProfile} />
       </div>
