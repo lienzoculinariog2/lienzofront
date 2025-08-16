@@ -1,4 +1,3 @@
-// src/components/ProductCard.tsx
 import { IProduct } from "@/types/Product";
 import React, { FC } from "react";
 import Image from "next/image";
@@ -27,9 +26,9 @@ const ProductCard: FC<Partial<IProduct>> = (product) => {
     category,
   } = product;
 
-   // ✅ SOLUCIÓN: Usamos .some() para buscar coincidencias parciales
- const ingredientNames = ingredients?.map(ingredient => 
-    typeof ingredient === 'string' ? ingredient : ingredient.name
+  // ✅ SOLUCIÓN: Usamos .some() para buscar coincidencias parciales
+  const ingredientNames = ingredients?.map((ingredient) =>
+    typeof ingredient === "string" ? ingredient : ingredient.name
   );
 
   // Usamos ingredientNames para todas las comprobaciones
@@ -66,7 +65,6 @@ const ProductCard: FC<Partial<IProduct>> = (product) => {
         i.toLowerCase().includes("vegetal"))
   );
 
-
   // Array de ingredientes especiales para mapear (más escalable)
   const specialIngredients = [
     { check: tieneVerdura, className: "bg-vegetarian-900" },
@@ -75,8 +73,6 @@ const ProductCard: FC<Partial<IProduct>> = (product) => {
     { check: tieneCarne, className: "bg-daily-menu-900" },
   ];
 
-  // Función para generar la URL, adaptada para que solo use el ID
-  // Esto coincide con la ruta dinámica [...id]
   const generateUrl = (id: string | number | undefined) => {
     return `/product-details/${id}`;
   };
@@ -100,13 +96,17 @@ const ProductCard: FC<Partial<IProduct>> = (product) => {
 
       <Link href={generateUrl(id)}>
         <div className="relative w-full h-52">
-          <Image
-            fill
-            className="object-cover rounded-t-lg"
-            src={imgUrl || "/docs/images/products/placeholder.png"}
-            alt={name || "product image"}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
+          {imgUrl && typeof imgUrl === "string" && (
+            <div className="relative w-full h-52">
+            <Image
+              fill
+              className="object-cover rounded-t-lg"
+              src={imgUrl} 
+              alt={name || "product image"}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+            </div>
+          )}
         </div>
 
         <div className="px-5 mt-4">
@@ -143,3 +143,5 @@ const ProductCard: FC<Partial<IProduct>> = (product) => {
 };
 
 export default ProductCard;
+
+

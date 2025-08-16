@@ -1,16 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { IProduct } from "@/types/Product";
 import { productService } from "@/services/ProductService";
 import ProductForm from "../../components/ProductForm";
 
 const CreateNewProduct = () => {
   const router = useRouter();
 
-  const handleCreateProduct = async (formData: Partial<IProduct>) => {
+  const handleCreateProduct = async (formData: FormData) => {
     try {
-      await productService.create(formData as IProduct);
+      await productService.create(formData);
       alert("Producto creado con éxito!");
       router.push("/adminDashboard/edit-products"); 
     } catch (error) {

@@ -31,7 +31,6 @@ const SearchBar = ({ onSearch, categories }: SearchBarProps) => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTerm = e.target.value;
     setSearchTerm(newTerm);
-    // ✅ Se llama a onSearch con la categoría actual y el nuevo término
     onSearch(selectedCategory, newTerm);
   };
   

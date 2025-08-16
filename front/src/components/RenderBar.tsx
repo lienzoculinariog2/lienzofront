@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import SearchBar from "@/components/ui/SerchBar";
 import { IProduct } from "@/types/Product";
 import { productService } from "@/services/ProductService";
@@ -30,6 +30,7 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
       setIsLoading(true);
       setError(null);
       try {
+        // Obtenemos todos los productos (sin paginación) y las categorías.
         const [products, fetchedCategories] = await Promise.all([
           productService.getAll(),
           categoriesServices.getAll(),
@@ -39,8 +40,8 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
         setFilteredProducts(products);
 
         const categoryNames = fetchedCategories
-        .filter((cat: ICategories) => cat.isActive)
-        .map((cat) => cat.name);
+          .filter((cat: ICategories) => cat.isActive)
+          .map((cat) => cat.name);
         setCategories(["Todas las categorías", ...categoryNames]);
       } catch (err) {
         setError("No se pudieron cargar los datos.");
@@ -52,17 +53,22 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
     fetchData();
   }, []);
 
+  const handleSearch = useCallback((category: string, term: string) => {
+    setSelectedCategory(category);
+    setSearchTerm(term);
+  }, []);
+
   useEffect(() => {
     let results = allProducts;
 
-    // 1. Aplicar filtro de categoría
+    // Aplicar filtro de categoría
     if (selectedCategory !== "Todas las categorías") {
       results = results.filter(
         (product) => product.category?.name === selectedCategory
       );
     }
 
-    // 2. Aplicar filtro de búsqueda
+    // Aplicar filtro de búsqueda
     if (searchTerm !== "") {
       const normalizedTerm = searchTerm
         .toLowerCase()
@@ -98,14 +104,8 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
       });
     }
 
-    // 3. Actualizar los productos filtrados con el resultado final
     setFilteredProducts(results);
   }, [searchTerm, selectedCategory, allProducts]);
-
-  const handleSearch = (category: string, term: string) => {
-    setSelectedCategory(category);
-    setSearchTerm(term);
-  };
 
   return (
     <main className="container p-4 mx-auto">
@@ -143,4 +143,3 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
 };
 
 export default RenderBar;
-
