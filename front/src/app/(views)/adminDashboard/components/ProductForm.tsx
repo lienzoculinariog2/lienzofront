@@ -6,16 +6,18 @@ import Button from "@/components/ui/Button";
 import { ICategories } from "@/types/Categories";
 import Image from "next/image";
 import { categoriesServices } from "@/services/CategoryService";
+import { useRouter } from "next/navigation";
 
 
 interface ProductFormProps {
   product: IProduct | null;
-  onSave: (formData: Partial<IProduct>) => void;
+  onSave: (formData: FormData) => void;
   onCancel: () => void;
 }
 
 
 const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) => {
+  const router = useRouter();
   const [formData, setFormData] = useState<Partial<IProduct>>(
     product || {
       name: "",
@@ -87,7 +89,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
         type === "checkbox"
           ? (e.target as HTMLInputElement).checked
           : name === "ingredients"
-          ? value.split(",").map((item) => item.trim())
+          ? value.split(",").map((item) => ({ name: item.trim() }))
           : type === "number"
           ? Number(value)
           : value;
@@ -107,32 +109,50 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSuccess(false);
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setSuccess(false);
 
-    // Valida si el producto es nuevo y no tiene imagen
-    if (!product && !selectedImage) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        imgUrl: "Por favor, sube una imagen.",
-      }));
-      return;
-    }
+  if (!product && !selectedImage) {
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      imgUrl: "Por favor, sube una imagen.",
+    }));
+    return;
+  }
 
-    try {
-      setLoading(true);
-      
-      // ✅ Aquí llamamos a la prop onSave que se encarga de llamar a la API
-      // Enviar solo los datos relevantes para la API
-      onSave(formData);
-      // No reseteamos el formulario ni redirigimos aquí. Esto lo maneja el componente padre.
-    } catch (err) {
-      console.error("Error al enviar:", err);
-    } finally {
-      setLoading(false);
+  try {
+    setLoading(true);
+
+    const multipartData = new FormData();
+    multipartData.append("name", formData.name || "");
+    multipartData.append("description", formData.description || "");
+    multipartData.append("price", String(formData.price || 0));
+    multipartData.append("stock", String(formData.stock || 0));
+    multipartData.append("caloricLevel", String(formData.caloricLevel || 1));
+    multipartData.append("isActive", String(formData.isActive ?? true));
+    multipartData.append("categoryId", formData.category?.id || "");
+
+   if (formData.ingredients && formData.ingredients.length > 0) {
+  formData.ingredients.forEach((ingredient) =>
+    multipartData.append("ingredients", ingredient.name) // 👈 usar name
+  );
+}
+
+    if (selectedImage) {
+      multipartData.append("image", selectedImage); // 👈 clave correcta
     }
-  };
+for (const pair of multipartData.entries()) {
+  console.log(pair[0], pair[1]);
+}
+    await onSave(multipartData); // 👈 ahora concuerda con tu ProductService
+    router.replace("/adminDashboard");
+  } catch (err) {
+    console.error("Error al enviar:", err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <section className="flex items-center justify-center min-h-screen bg-primary-background-500">
@@ -230,8 +250,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
               Imagen
             </label>
             <input
-              id="imgFile"
-              name="imgFile"
+              id="image"
+              name="image"
               type="file"
               accept="image/*"
               onChange={handleFileChange}

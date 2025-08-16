@@ -29,6 +29,23 @@ export default function CategoryListPage() {
     }
   };
 
+  const handleToggleActive = async (category: ICategories) => {
+    try {
+      setLoading(true);
+      if (category.isActive) {
+        await categoriesServices.inactivate(category.id);
+      } else {
+        await categoriesServices.activate(category.id);
+      }
+      await fetchCategories();
+    } catch (err) {
+      console.error("Error al cambiar estado de la categoría:", err);
+      setError("Ocurrió un error al cambiar el estado de la categoría.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -129,6 +146,14 @@ export default function CategoryListPage() {
                     className="mt-2"
                   >
                     Editar
+                  </Button>
+
+                  <Button
+                    onClick={() => handleToggleActive(category)}
+                    variant={category.isActive ? "dark" : "default"}
+                    className="mt-2"
+                  >
+                    {category.isActive ? "Inactivar" : "Activar"}
                   </Button>
                 </div>
               </li>

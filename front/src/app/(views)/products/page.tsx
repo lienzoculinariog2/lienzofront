@@ -5,7 +5,8 @@ import { categoriesServices } from "@/services/CategoryService";
 
 const categories = async () => {
   const categoriesFromBackend = await categoriesServices.getAll();
-
+   const activeCategories = categoriesFromBackend.filter(c => c.isActive);
+   
   return (
     <>
       <div className="container p-4 mx-auto">
@@ -14,7 +15,7 @@ const categories = async () => {
         </h1>
       </div>
 
-      <CategoriesList categories={categoriesFromBackend} />
+      <CategoriesList categories={activeCategories} />
       <br />
     </>
   );
