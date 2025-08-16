@@ -1,24 +1,32 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { IProduct } from "@/types/Product";
 import { productService } from "@/services/ProductService";
 import Button from "@/components/ui/Button";
 import ProductForm from "../../components/ProductForm";
 import Image from "next/image";
+import SearchBar from "@/components/ui/SerchBar"; 
+import { categoriesServices } from "@/services/CategoryService";
+import { ICategories } from "@/types/Categories";
 
 export default function ProductListPage() {
-  const [products, setProducts] = useState<IProduct[]>([]);
+  const [allProducts, setAllProducts] = useState<IProduct[]>([]); 
+  const [filteredProducts, setFilteredProducts] = useState<IProduct[]>([]); 
   const [editingProduct, setEditingProduct] = useState<IProduct | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Todas las categorías");
 
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
     try {
-      const allProducts = await productService.getAll();
-      setProducts(allProducts);
+      const allProducts = await productService.getAll(); 
+      setAllProducts(allProducts);
+      setFilteredProducts(allProducts); 
     } catch (err) {
       setError("Error al obtener los productos.");
       console.error("Error fetching products:", err);
@@ -27,9 +35,50 @@ export default function ProductListPage() {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const fetchedCategories = await categoriesServices.getAll();
+      const categoryNames = fetchedCategories
+        .filter((cat: ICategories) => cat.isActive)
+        .map((cat) => cat.name);
+      setCategories(["Todas las categorías", ...categoryNames]);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
+
+  const handleSearch = useCallback((category: string, term: string) => {
+    setSelectedCategory(category);
+    setSearchTerm(term);
+    
+    let results = [...allProducts]; 
+    
+    if (category !== "Todas las categorías") {
+      results = results.filter(
+        (product) => product.category?.name === category
+      );
+    }
+    
+    if (term) {
+      const normalizedTerm = term.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      results = results.filter((product) => {
+        const normalizedName = product.name?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const nameMatches = normalizedName?.includes(normalizedTerm);
+        return nameMatches;
+      });
+    }
+    
+    setFilteredProducts(results);
+  }, [allProducts]);
+
+  useEffect(() => {
+    handleSearch(selectedCategory, searchTerm);
+  }, [selectedCategory, searchTerm, handleSearch]);
 
   const handleSaveProduct = async (formData: Partial<IProduct>) => {
     try {
@@ -48,7 +97,7 @@ export default function ProductListPage() {
         await productService.update(editingProduct.id, updatePayload);
       }
       setEditingProduct(null);
-      await fetchProducts();
+      await fetchProducts(); 
     } catch (err) {
       setError("Error al guardar el producto.");
       console.error("Error saving product:", err);
@@ -87,18 +136,23 @@ export default function ProductListPage() {
             onSave={handleSaveProduct}
             onCancel={handleCancelEdit}
           />
-        </div>
+        </div> 
       ) : (
         <div className="p-6 mt-8 shadow-lg rounded-2xl bg-black/50 backdrop-blur-md">
           <h2 className="mb-6 text-2xl font-bold text-primary-txt-500">
             Lista de Productos
           </h2>
 
+          <SearchBar 
+            onSearch={handleSearch} 
+            categories={categories} 
+          /> 
+
           {loading && <p className="text-gray-300">Cargando productos...</p>}
           {error && <p className="text-red-500">{error}</p>}
 
           <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {products.map((product) => (
+            {filteredProducts.map((product) => ( 
               <li
                 key={product.id}
                 className="flex items-center justify-between px-4 py-4 mb-2 transition-colors border border-gray-700 rounded-lg hover:bg-gray-800/50"
@@ -121,13 +175,10 @@ export default function ProductListPage() {
                   </h3>
                   <div className="mt-2 text-sm">
                     <span className="font-semibold text-vegetarian-500">
-                      Precio: $
-                      {product.price
-                        ? Number(product.price).toFixed(2)
-                        : "0.00"}
+                      Precio: ${Number(product.price).toFixed(2)}
                     </span>
                     <br />
-                    <span className="ml-4 font-semibold text-celiac-500">
+                    <span className="ml-2 font-semibold text-celiac-500">
                       Stock: {product.stock}
                     </span>
                   </div>
