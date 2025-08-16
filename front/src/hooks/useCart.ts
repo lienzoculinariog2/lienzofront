@@ -68,5 +68,9 @@ export const useCart = () => {
         toast.info("El carrito ha sido vaciado.");
     };
 
-    return { cartItems, addToCart, removeFromCart, resetCart };
+    // Añadimos el total de items
+    const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+    // Corregimos el return para que devuelva totalQuantity
+    return { cartItems, addToCart, removeFromCart, resetCart, totalQuantity };
 };
