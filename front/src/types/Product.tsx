@@ -13,3 +13,7 @@ export interface IProduct {
   caloricLevel: number | null;
   ingredients: IIngredients[];
 }
+
+export type CartItem = IProduct & {
+    quantity: number;
+};
