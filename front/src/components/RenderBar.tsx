@@ -6,6 +6,7 @@ import { IProduct } from "@/types/Product";
 import { productService } from "@/services/ProductService";
 import ProductCard from "@/app/(views)/(home)/components/ProductCard";
 import { categoriesServices } from "@/services/CategoryService";
+import { ICategories } from "@/types/Categories";
 
 interface RenderBarProps {
   title?: string;
@@ -37,7 +38,9 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
         setAllProducts(products);
         setFilteredProducts(products);
 
-        const categoryNames = fetchedCategories.map((cat) => cat.name);
+        const categoryNames = fetchedCategories
+        .filter((cat: ICategories) => cat.isActive)
+        .map((cat) => cat.name);
         setCategories(["Todas las categorías", ...categoryNames]);
       } catch (err) {
         setError("No se pudieron cargar los datos.");
@@ -140,3 +143,4 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
 };
 
 export default RenderBar;
+

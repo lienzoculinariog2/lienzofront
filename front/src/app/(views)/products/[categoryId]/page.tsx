@@ -4,7 +4,6 @@ import { productService } from "@/services/ProductService";
 import ProductCard from "../../(home)/components/ProductCard";
 import { categoriesServices } from "@/services/CategoryService";
 
-
 interface CategoryPageProps {
   params: {
     categoryId: string;
@@ -14,15 +13,17 @@ interface CategoryPageProps {
 const CategoryPage = async ({ params }: CategoryPageProps) => {
   const categoryId = params.categoryId;
 
-  const categories = await categoriesServices.getAll();
+  // Solo categorías activas
+  const categories = (await categoriesServices.getAll()).filter(c => c.isActive);
 
-  const filteredProducts = await productService.getByCategoryId(categoryId);
-  console.log('Productos recibidos del backend:', filteredProducts); 
+  // Buscar la categoría activa correspondiente
   const category = categories.find((c) => c.id === categoryId);
-
   if (!category) {
-    notFound();
+    notFound(); // Redirige a 404 si la categoría no existe o está desactivada
   }
+
+  // Traer productos de la categoría
+  const filteredProducts = await productService.getByCategoryId(categoryId);
 
   if (!filteredProducts || filteredProducts.length === 0) {
     return (
@@ -43,7 +44,6 @@ const CategoryPage = async ({ params }: CategoryPageProps) => {
           <ProductCard key={product.id} {...product} />
         ))}
       </div>
-
     </div>
   );
 };

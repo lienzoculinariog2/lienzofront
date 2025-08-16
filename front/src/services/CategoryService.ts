@@ -117,6 +117,23 @@ export const categoriesServices = {
     }
   },
 
+  
+  // Activar categoría
+async activate(
+  id: string
+): Promise<{ message: string; category: ICategories }> {
+  try {
+    const { data } = await api.put<{
+      message: string;
+      category: ICategories;
+    }>(`/categories/activate/${id}`);
+    return data;
+  } catch (error) {
+    console.error(`Error al activar la categoría con ID ${id}:`, error);
+    throw error;
+  }
+},
+
   async createWithImage(formData: FormData): Promise<ICategories> {
     try {
       const { data } = await api.post<ICategories>("/categories", formData, {

@@ -86,7 +86,7 @@ const SearchBar = ({ onSearch, categories }: SearchBarProps) => {
             id="search-dropdown"
             value={searchTerm}
             onChange={handleSearchChange}
-            className="block w-full p-2.5 text-sm rounded-lg ml-2 mr-2 text-primary-txt-100 bg-primary-background-700 border-l-2 border-l-primary-background-800 border border-primary-background-800 focus:ring-daily-menu-500 focus:border-daily-menu-500 placeholder-secondary-txt-500 outline-none"
+            className="block w-full p-2.5 text-sm rounded-lg ml-2 mr-2 text-primary-txt-100 bg-primary-background-700 border-l-2  border border-secondary-background-700 focus:ring-daily-menu-500 focus:border-daily-menu-500 placeholder-secondary-txt-500 outline-none"
             placeholder="Buscar..."
             required
           />
