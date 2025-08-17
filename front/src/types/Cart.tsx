@@ -1,5 +1,5 @@
 // src/types/Cart.ts
-import { CartItem } from "./Product";
+import { CartItem } from "./CartItem";
 import { IUser } from "./User"; // Asumo que tienes una interfaz de usuario
 
 export interface Cart {

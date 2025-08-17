@@ -1,17 +1,12 @@
 // src/types/FullCartSummaryDto.ts
-import { IProduct } from "./Product";
+import { CartItem } from "./CartItem";
 
-// Esta interfaz describe la respuesta que tu backend envía para el resumen del carrito
 export interface FullCartSummaryDto {
     id: string;
     user: {
         id: string;
     };
-    cartItems: {
-        id: string;
-        quantity: number;
-        product: IProduct;
-    }[];
+    cartItems: CartItem[];
     subtotal: number;
     total: number;
 }
