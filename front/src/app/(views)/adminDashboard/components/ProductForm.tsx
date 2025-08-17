@@ -255,7 +255,7 @@ for (const pair of multipartData.entries()) {
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              className="p-3 border rounded-md bg-primary-background-600 border-primary-background-400 text-primary-txt-300 focus:outline-none focus:ring-2 focus:ring-daily-menu-500"
+              className="p-3 border rounded-md bg-primary-background-600 border-primary-background-400 text-primary-txt-500 focus:outline-none focus:ring-2 focus:ring-daily-menu-500"
             />
             {errors.imgUrl && (
               <p className="mt-1 text-sm text-daily-menu-500">

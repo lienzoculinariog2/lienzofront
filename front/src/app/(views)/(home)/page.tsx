@@ -1,7 +1,16 @@
 import Image from "next/image";
 import RenderBar from "@/components/RenderBar";
+import IngredientLegendButton from "@/components/ui/IngredientListButton";
 
 export default async function Home() {
+  const specialIngredients = [
+    { name: "Verduras", className: "bg-vegetarian-700", check: true },
+    { name: "Queso", className: "bg-celiac-500", check: true },
+    { name: "Harina", className: "bg-vegan-600", check: true },
+    { name: "Carne", className: "bg-daily-menu-700", check: true },
+  ];
+
+  
   return (
     <>
       <div>
@@ -26,6 +35,7 @@ export default async function Home() {
         </div>
 
         <RenderBar />
+        <IngredientLegendButton specialIngredients={specialIngredients} />
         <br />
       </div>
     </>
