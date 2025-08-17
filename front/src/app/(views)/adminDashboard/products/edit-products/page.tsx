@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { IProduct } from "@/types/Product";
-import { ICategories } from "@/types/Categories";
+import { CategoryOption, ICategories } from "@/types/Categories";
 import { productService } from "@/services/ProductService";
 import { categoriesServices } from "@/services/CategoryService";
 import Button from "@/components/ui/Button";
@@ -10,14 +10,18 @@ import ProductForm from "../../components/ProductForm";
 import Image from "next/image";
 import SearchBar from "@/components/ui/SerchBar";
 
+
 export default function ProductListPage() {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [editingProduct, setEditingProduct] = useState<IProduct | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Todas las categorías");
+  const [selectedCategory, setSelectedCategory] = useState<CategoryOption>({
+    id: "all",
+    name: "Todas las categorías",
+  });
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
@@ -43,13 +47,13 @@ export default function ProductListPage() {
       const res = await productService.getPaginatedAndFiltered({
         page: pageToLoad,
         limit: 20,
-        category: selectedCategory !== "Todas las categorías" ? selectedCategory : undefined,
+        category: selectedCategory.id !== "all" ? selectedCategory.id : undefined,
         term: searchTerm || undefined,
       });
 
       setProducts((prev) =>
-  pageToLoad === 1 ? res.data : [...prev, ...res.data]
-);
+        pageToLoad === 1 ? res.data : [...prev, ...res.data]
+      );
 
       setPage(pageToLoad);
       setHasMore(res.data.length > 0);
@@ -66,8 +70,9 @@ export default function ProductListPage() {
       const fetchedCategories = await categoriesServices.getAll();
       const activeCategories = fetchedCategories
         .filter((cat: ICategories) => cat.isActive)
-        .map((cat) => cat.name);
-      setCategories(["Todas las categorías", ...activeCategories]);
+        .map((cat) => ({ id: cat.id, name: cat.name }));
+
+      setCategories([{ id: "all", name: "Todas las categorías" }, ...activeCategories]);
     } catch (err) {
       console.error("Error fetching categories:", err);
     }
@@ -78,40 +83,43 @@ export default function ProductListPage() {
     loadProducts(1);
   }, []);
 
-  const handleSearch = useCallback((category: string, term: string) => {
-    setSelectedCategory(category);
-    setSearchTerm(term);
-    loadProducts(1);
-  }, []);
+ const handleSearch = useCallback((category: CategoryOption, term: string) => {
+  setSelectedCategory(category);
+  setSearchTerm(term);
+}, []);
+
+  useEffect(() => {
+  loadProducts(1);
+}, [selectedCategory, searchTerm]);
+
 
   const handleSaveProduct = async (formData: FormData) => {
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    // Creamos el payload directamente desde el FormData
-    const payload = new FormData();
-    payload.append("name", formData.get("name") as string);
-    payload.append("description", formData.get("description") as string);
-    payload.append("price", String(formData.get("price")));
-    payload.append("stock", String(formData.get("stock")));
-    payload.append("isActive", String(formData.get("isActive") === "true"));
-    payload.append("caloricLevel", String(formData.get("caloricLevel")));
-    payload.append("ingredients", formData.get("ingredients") as string);
-    payload.append("categoryId", formData.get("categoryId") as string);
+      const payload = new FormData();
+      payload.append("name", formData.get("name") as string);
+      payload.append("description", formData.get("description") as string);
+      payload.append("price", String(formData.get("price")));
+      payload.append("stock", String(formData.get("stock")));
+      payload.append("isActive", String(formData.get("isActive") === "true"));
+      payload.append("caloricLevel", String(formData.get("caloricLevel")));
+      payload.append("ingredients", formData.get("ingredients") as string);
+      payload.append("categoryId", formData.get("categoryId") as string);
 
-    if (editingProduct && editingProduct.id) {
-      await productService.update(editingProduct.id, payload);
+      if (editingProduct && editingProduct.id) {
+        await productService.update(editingProduct.id, payload);
+      }
+
+      setEditingProduct(null);
+      loadProducts(1);
+    } catch (err) {
+      setError("Error al guardar el producto.");
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-
-    setEditingProduct(null);
-    loadProducts(1); // recargamos la primera página
-  } catch (err) {
-    setError("Error al guardar el producto.");
-    console.error(err);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleEdit = async (productId: string) => {
     setLoading(true);
@@ -201,7 +209,6 @@ export default function ProductListPage() {
           </ul>
 
           {loading && <p className="mt-4 text-gray-300">Cargando más productos...</p>}
-          {/* {!hasMore && <p className="mt-4 text-center text-gray-400">No hay más productos</p>} */}
         </div>
       )}
     </div>

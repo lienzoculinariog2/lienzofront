@@ -3,36 +3,37 @@
 import React, { useState, useEffect } from "react";
 import { Search, ChevronDown } from "lucide-react";
 import Button from "./Button";
+import { CategoryOption } from "@/types/Categories";
+
 
 type SearchBarProps = {
-  onSearch: (category: string, term: string) => void;
-  categories: string[];
+  onSearch: (category: CategoryOption, term: string) => void;
+  categories: CategoryOption[];
 };
 
 const SearchBar = ({ onSearch, categories }: SearchBarProps) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(
-    categories[0] || "Todas las categorías"
+  const [selectedCategory, setSelectedCategory] = useState<CategoryOption>(
+    categories[0] || { id: "all", name: "Todas las categorías" }
   );
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Siempre inicializa la categoría seleccionada cuando cambian las categorías
   useEffect(() => {
     if (categories.length > 0) {
       setSelectedCategory(categories[0]);
     }
   }, [categories]);
 
-  const handleCategorySelect = (category: string) => {
+  const handleCategorySelect = (category: CategoryOption) => {
     setSelectedCategory(category);
     setIsDropdownOpen(false);
-    onSearch(category, searchTerm); // pasar nombre de categoría
+    onSearch(category, searchTerm);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTerm = e.target.value;
     setSearchTerm(newTerm);
-    onSearch(selectedCategory, newTerm); // categoría seleccionada + término
+    onSearch(selectedCategory, newTerm);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -51,7 +52,7 @@ const SearchBar = ({ onSearch, categories }: SearchBarProps) => {
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="flex items-center justify-between w-full h-full px-4 py-2.5 text-sm font-medium text-center rounded-l-lg"
           >
-            {selectedCategory}
+            {selectedCategory.name}
             <ChevronDown className="w-4 h-4 ms-2.5" />
           </Button>
 
@@ -64,14 +65,14 @@ const SearchBar = ({ onSearch, categories }: SearchBarProps) => {
                 className="py-2 text-sm text-secondary-txt-500"
                 aria-labelledby="dropdown-button"
               >
-                {categories.map((category, index) => (
-                  <li key={index}>
+                {categories.map((category) => (
+                  <li key={category.id}>
                     <button
                       type="button"
                       onClick={() => handleCategorySelect(category)}
                       className="inline-flex w-full px-4 py-2 transition-colors hover:bg-primary-background-700 hover:text-primary-txt-100"
                     >
-                      {category}
+                      {category.name}
                     </button>
                   </li>
                 ))}

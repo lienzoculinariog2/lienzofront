@@ -42,10 +42,6 @@ const CreateCategoryPage = () => {
   return (
     <div className="flex items-center justify-center min-h-screen p-6 bg-primary-background-500">
       <div className="w-full max-w-2xl">
-        <h1 className="mb-6 text-3xl font-bold text-center text-primary-txt-500">
-          Crear Nueva Categoría
-        </h1>
-
         {error && <p className="mb-4 text-center text-red-500">{error}</p>}
 
         <CategoryForm onSave={handleSaveCategory} onCancel={handleCancel} />
@@ -56,4 +52,3 @@ const CreateCategoryPage = () => {
 };
 
 export default CreateCategoryPage;
-

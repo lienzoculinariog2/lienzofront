@@ -4,116 +4,98 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "../../../../components/ui/Button";
 
-// Objeto de mapeo para los colores del nivel calórico (más legible)
-const caloricColors: { [key: number]: string } = {
-  1: "bg-low-calories-100",
-  2: "bg-low-calories-500",
-  3: "bg-celiac-500",
-  4: "bg-daily-menu-300",
-  5: "bg-daily-menu-700",
-};
+const ProductCard: FC<Partial<IProduct>> = ({ id, name, description, price, stock, imgUrl, ingredients = [], category }) => {
 
-const ProductCard: FC<Partial<IProduct>> = (product) => {
-  const {
-    id,
-    name,
-    description,
-    price,
-    stock,
-    imgUrl,
-    caloricLevel,
-    ingredients,
-    category,
-  } = product;
+  const ingredientNames = ingredients.map((i) => i.name.toLowerCase());
 
-  // ✅ SOLUCIÓN: Usamos .some() para buscar coincidencias parciales
-  const ingredientNames = ingredients?.map((ingredient) =>
-    typeof ingredient === "string" ? ingredient : ingredient.name
-  );
-
-  // Usamos ingredientNames para todas las comprobaciones
-  const tieneHarina = ingredientNames?.some(
+  // Nuevas categorías más completas
+  const tieneHarina = ingredientNames.some(
     (i) =>
-      typeof i === "string" &&
-      (i.toLowerCase().includes("harina") ||
-        i.toLowerCase().includes("pan") ||
-        i.toLowerCase().includes("trigo") ||
-        i.toLowerCase().includes("pasta"))
+      i.includes("harina") ||
+      i.includes("pan") ||
+      i.includes("trigo") ||
+      i.includes("pasta") ||
+      i.includes("pizza") ||
+      i.includes("tortilla")
   );
 
-  const tieneLacteo = ingredientNames?.some(
+  const tieneQueso = ingredientNames.some(
     (i) =>
-      typeof i === "string" &&
-      (i.toLowerCase().includes("leche") ||
-        i.toLowerCase().includes("lacteo") ||
-        i.toLowerCase().includes("queso"))
+      i.includes("queso") ||
+      i.includes("mozzarella") ||
+      i.includes("cheddar") ||
+      i.includes("parmesano") ||
+      i.includes("gouda")
   );
 
-  const tieneCarne = ingredientNames?.some(
+  const tieneCarne = ingredientNames.some(
     (i) =>
-      typeof i === "string" &&
-      (i.toLowerCase().includes("carne") ||
-        i.toLowerCase().includes("pollo") ||
-        i.toLowerCase().includes("pescado"))
+      i.includes("carne") ||
+      i.includes("pollo") ||
+      i.includes("pescado") ||
+      i.includes("res") ||
+      i.includes("cerdo") ||
+      i.includes("jamón") ||
+      i.includes("salchicha")
   );
 
-  const tieneVerdura = ingredientNames?.some(
+  const tieneVerdura = ingredientNames.some(
     (i) =>
-      typeof i === "string" &&
-      (i.toLowerCase().includes("verdura") ||
-        i.toLowerCase().includes("ensalada") ||
-        i.toLowerCase().includes("vegetal"))
+      i.includes("verdura") ||
+      i.includes("ensalada") ||
+      i.includes("vegetal") ||
+      i.includes("tomate") ||
+      i.includes("lechuga") ||
+      i.includes("pepino") ||
+      i.includes("espinaca")
   );
 
-  // Array de ingredientes especiales para mapear (más escalable)
   const specialIngredients = [
-    { check: tieneVerdura, className: "bg-vegetarian-900" },
-    { check: tieneLacteo, className: "bg-secondary-txt-500" },
-    { check: tieneHarina, className: "bg-daily-menu-700" },
-    { check: tieneCarne, className: "bg-daily-menu-900" },
+    { check: tieneVerdura, className: "bg-vegetarian-700" },
+    { check: tieneCarne, className: "bg-daily-menu-700" },
+    { check: tieneQueso, className: "bg-vegan-400" },
+    { check: tieneHarina, className: "bg-celiac-500" },
   ];
 
-  const generateUrl = (id: string | number | undefined) => {
-    return `/product-details/${id}`;
-  };
+  const generateUrl = (id: string | number | undefined) => `/product-details/${id}`;
 
   return (
     <div className="flex flex-col justify-between w-full max-w-sm transition-transform duration-200 border rounded-lg shadow-lg bg-primary-background-900 border-primary-background-800 hover:scale-105">
-      {/* Sección de barras de color */}
-      <div
-        className={`h-2 w-full rounded-t ${
-          caloricColors[caloricLevel as number] || "bg-secondary-background-300"
-        }`}
-      />
-      <div className="w-full flex flex-col gap-[2px] text-primary-txt-200">
-        {specialIngredients.map(
-          (item, index) =>
-            item.check && (
-              <div key={index} className={`h-2 ${item.className} w-full`} />
-            )
-        )}
-      </div>
+      
+      {/* Barras de colores según ingredientes */}
+    <div className="flex w-full h-2 rounded-full overflow-hidden gap-[2px]">
+  {specialIngredients.map(
+    (item, index) =>
+      item.check && (
+        <div
+          key={index}
+          className={`${item.className} h-full rounded-full`}
+          style={{
+            width: `${100 / specialIngredients.filter(i => i.check).length}%`,
+          }}
+        />
+      )
+  )}
+</div>
 
+      {/* Imagen + link al detalle */}
       <Link href={generateUrl(id)}>
         <div className="relative w-full h-52">
           {imgUrl && typeof imgUrl === "string" && (
-            <div className="relative w-full h-52">
             <Image
               fill
               className="object-cover rounded-t-lg"
-              src={imgUrl} 
+              src={imgUrl}
               alt={name || "product image"}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
-            </div>
           )}
         </div>
 
+        {/* Info básica */}
         <div className="px-5 mt-4">
           <h5 className="text-xl font-semibold tracking-tight text-center text-primary-txt-100">
-            {name && name.length > 28
-              ? `${name.substring(0, 28)}...`
-              : name || "Sin nombre"}
+            {name && name.length > 28 ? `${name.substring(0, 28)}...` : name || "Sin nombre"}
           </h5>
           <p className="mt-4 mb-2 text-sm text-center text-secondary-txt-600">
             {description && description.length > 90
@@ -123,6 +105,7 @@ const ProductCard: FC<Partial<IProduct>> = (product) => {
         </div>
       </Link>
 
+      {/* Precio + stock + botón */}
       <div className="px-5 pb-5 mt-4">
         <div className="flex flex-col items-center justify-center">
           <div className="mb-2 text-center">
@@ -143,5 +126,7 @@ const ProductCard: FC<Partial<IProduct>> = (product) => {
 };
 
 export default ProductCard;
+
+
 
 
