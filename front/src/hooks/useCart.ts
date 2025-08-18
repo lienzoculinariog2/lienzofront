@@ -1,76 +1,219 @@
-// src/hooks/useCart.ts
 "use client";
 
 import { IProduct } from "@/types/Product";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 
-const CART_LOCAL_STORAGE_KEY = "demo_cart";
-
 // Interfaz para los productos del carrito con cantidad
-export interface CartItem extends Partial<IProduct> {
+export interface CartItem {
+    id: string; // ID del CartItem (UUID)
+    name: string;
+    price: number;
     quantity: number;
+    imgUrl?: string;
+    totalItemPrice: number;
+    description: string;
+    stock: number;
 }
 
-export const useCart = () => {
+// Interfaz que devuelve tu back-end
+interface FullCartSummaryDto {
+    items: CartItem[];
+    totalItems: number;
+    subTotal: number;
+}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
+export const useCart = (userId: string | null) => {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        const storedCart = localStorage.getItem(CART_LOCAL_STORAGE_KEY);
-        if (storedCart) {
-            setCartItems(JSON.parse(storedCart));
+    const fetchCart = useCallback(async () => {
+        if (!userId) {
+            setIsLoading(false);
+            setCartItems([]);
+            return;
         }
-    }, []);
+
+        setIsLoading(true);
+        try {
+            const response = await fetch(`${API_URL}/cart/${userId}`);
+            if (!response.ok) {
+                if (response.status === 404) {
+                    setCartItems([]);
+                    return;
+                }
+                throw new Error('No se pudo cargar el carrito.');
+            }
+            const data: FullCartSummaryDto = await response.json();
+            setCartItems(data.items);
+        } catch (error: unknown) {
+            console.error('Error fetching cart:', error);
+            if (error instanceof Error) {
+                toast.error(error.message || 'Error al cargar el carrito.');
+            } else {
+                toast.error('Ocurrió un error inesperado al cargar el carrito.');
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    }, [userId]);
 
     useEffect(() => {
-        localStorage.setItem(CART_LOCAL_STORAGE_KEY, JSON.stringify(cartItems));
-    }, [cartItems]);
+        fetchCart();
+    }, [fetchCart]);
 
-    const addToCart = (product: Partial<IProduct>) => {
-        setCartItems((prevItems) => {
-            const existingItem = prevItems.find((item) => item.id === product.id);
+    const addToCart = async (product: Partial<IProduct>) => {
+        if (!userId || !product.id) {
+            toast.error("Error: Se requiere iniciar sesión y un ID de producto válido.");
+            return;
+        }
 
-            if (existingItem) {
-                // Si el producto ya existe, incrementamos la cantidad
-                const updatedItems = prevItems.map((item) =>
-                    item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-                );
-                return updatedItems;
-            } else {
-                // Si no existe, lo agregamos con cantidad 1
-                return [...prevItems, { ...product, quantity: 1 }];
+        try {
+            const response = await fetch(`${API_URL}/cart/addsingle/${userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId: product.id, quantity: 1 }),
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al añadir producto al carrito.');
             }
-        });
-        toast.success(`'${product.name}' agregado al carrito!`);
-    };
-
-    const removeFromCart = (productId: string) => {
-        setCartItems((prevItems) => {
-            const existingItem = prevItems.find((item) => item.id === productId);
-
-            if (existingItem && existingItem.quantity > 1) {
-                // Si la cantidad es mayor a 1, la decrementamos
-                const updatedItems = prevItems.map((item) =>
-                    item.id === productId ? { ...item, quantity: item.quantity - 1 } : item
-                );
-                return updatedItems;
+            const updatedCart: FullCartSummaryDto = await response.json();
+            setCartItems(updatedCart.items);
+            toast.success(`'${product.name}' agregado al carrito!`);
+        } catch (error: unknown) {
+            console.error('Error adding to cart:', error);
+            if (error instanceof Error) {
+                toast.error(error.message || 'Error al añadir producto al carrito.');
             } else {
-                // Si la cantidad es 1, eliminamos el ítem
-                return prevItems.filter((item) => item.id !== productId);
+                toast.error('Ocurrió un error inesperado.');
             }
-        });
-        toast.info("Producto eliminado del carrito");
+        }
     };
+    
+    // CORRECCIÓN: Envuelto en useCallback
+    const updateCartQuantity = useCallback(async (itemId: string, newQuantity: number) => {
+        if (!userId) {
+            toast.error("Debes iniciar sesión para actualizar el carrito.");
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_URL}/cart/${userId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    updates: [{ itemId: itemId, quantity: newQuantity }],
+                }),
+            });
 
-    const resetCart = () => {
-        setCartItems([]);
-        localStorage.removeItem(CART_LOCAL_STORAGE_KEY);
-        toast.info("El carrito ha sido vaciado.");
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al actualizar el carrito.');
+            }
+            const updatedCart: FullCartSummaryDto = await response.json();
+            setCartItems(updatedCart.items);
+            toast.info("Cantidad del producto actualizada.");
+        } catch (error: unknown) {
+            console.error('Error updating cart:', error);
+            if (error instanceof Error) {
+                toast.error(error.message || 'Error al actualizar el carrito.');
+            } else {
+                toast.error('Ocurrió un error inesperado.');
+            }
+        }
+    }, [userId]);
+
+    // CORRECCIÓN: Envuelto en useCallback
+    const deleteCartItem = useCallback(async (itemId: string) => {
+        if (!userId) {
+            toast.error("Debes iniciar sesión para eliminar productos del carrito.");
+            return;
+        }
+        try {
+            const response = await fetch(`${API_URL}/cart/${userId}/${itemId}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al eliminar el producto.');
+            }
+            const updatedCart: FullCartSummaryDto = await response.json();
+            setCartItems(updatedCart.items);
+            toast.info("Producto eliminado del carrito.");
+        } catch (error: unknown) {
+            console.error('Error deleting from cart:', error);
+            if (error instanceof Error) {
+                toast.error(error.message || 'Error al eliminar el producto.');
+            } else {
+                toast.error('Ocurrió un error inesperado.');
+            }
+        }
+    }, [userId]);
+
+    const resetCart = async () => {
+        if (!userId) {
+            toast.error("Debes iniciar sesión para vaciar el carrito.");
+            return;
+        }
+        try {
+            const response = await fetch(`${API_URL}/cart/${userId}`, {
+                method: 'DELETE',
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al vaciar el carrito.');
+            }
+            setCartItems([]);
+            toast.info("El carrito ha sido vaciado.");
+        } catch (error: unknown) {
+            console.error('Error resetting cart:', error);
+            if (error instanceof Error) {
+                toast.error(error.message || 'Error al vaciar el carrito.');
+            } else {
+                toast.error('Ocurrió un error inesperado.');
+            }
+        }
     };
+    
+    // Función para manejar el evento de clic en el botón de añadir en CartItem
+    const handleAddQuantity = useCallback((itemId: string) => {
+        const item = cartItems.find(i => i.id === itemId);
+        if (item) {
+            updateCartQuantity(itemId, item.quantity + 1);
+        }
+    }, [cartItems, updateCartQuantity]);
 
-    // Añadimos el total de items
+    // Función para manejar el evento de clic en el botón de restar en CartItem
+    const handleRemoveQuantity = useCallback((itemId: string) => {
+        const item = cartItems.find(i => i.id === itemId);
+        if (item && item.quantity > 1) {
+            updateCartQuantity(itemId, item.quantity - 1);
+        } else if (item && item.quantity === 1) {
+            deleteCartItem(itemId);
+        }
+    }, [cartItems, updateCartQuantity, deleteCartItem]);
+
     const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-    // Corregimos el return para que devuelva totalQuantity
-    return { cartItems, addToCart, removeFromCart, resetCart, totalQuantity };
+    return { 
+        cartItems, 
+        addToCart, 
+        updateCartQuantity, 
+        deleteCartItem, 
+        resetCart, 
+        totalQuantity, 
+        isLoading,
+        handleAddQuantity,
+        handleRemoveQuantity
+    };
 };
+
+
+
+
+
+

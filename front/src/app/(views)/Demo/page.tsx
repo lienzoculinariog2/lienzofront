@@ -8,11 +8,21 @@ import 'react-toastify/dist/ReactToastify.css';
 import ProductCard from "./ProductCard";
 import { getProducts } from "@/services/draft/ProductServiceMock";
 import { IProduct } from "@/types/Product";
-import { useCart } from "@/hooks/useCart"; // Importa el hook
+// IMPORTAMOS EL HOOK DE AUTH0
+import { useAuth0 } from "@auth0/auth0-react";
+// Importamos el hook
+import { useCart } from "@/hooks/useCart";
 
 
 export default function DemoPage() {
-    const { addToCart } = useCart();
+    // OBTENEMOS EL USUARIO DEL HOOK DE AUTH0
+    const { user } = useAuth0();
+    // USAMOS EL ID REAL DEL USUARIO (user?.sub) PARA PASARLO AL HOOK DEL CARRITO
+    const userId = user?.sub || null;
+    
+    // CAMBIAMOS ESTA LÍNEA PARA PASAR EL userId REAL A TU HOOK
+    const { addToCart } = useCart(userId);
+    
     const [products, setProducts] = useState<IProduct[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);

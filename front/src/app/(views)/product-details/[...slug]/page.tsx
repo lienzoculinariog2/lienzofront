@@ -2,7 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { productService } from "@/services/ProductService";
 import { IProduct } from "@/types/Product";
-import Button from "@/components/ui/Button";
+import AddToCartButton from "@/components/ui/AddToCartButton";
 
 const specialColors: { [key: string]: string } = {
   carne: "bg-daily-menu-600",
@@ -179,14 +179,9 @@ export default async function ProductDetail({
             <div className="w-full mb-4 border-t border-secondary-background-800"></div>
 
             {/* Botón centrado */}
-            <div className="flex justify-center w-full">
-              <Button
-                variant="category"
-                categoryId={product.category.id}
-                className="px-5 py-3"
-              >
-                Añadir al carrito
-              </Button>
+            <div className="flex flex-col items-center gap-4 pt-4 mt-6">
+              <div className="w-full mb-4 border-t border-secondary-background-800"></div>
+              <AddToCartButton product={product} />
             </div>
           </div>
         </div>
