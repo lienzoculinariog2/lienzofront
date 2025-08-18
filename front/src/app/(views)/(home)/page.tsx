@@ -1,5 +1,5 @@
 import Image from "next/image";
-import RenderBar from "@/components/RenderBar";
+import RenderBarWithCart from "@/components/RenderBarWithCart";
 import IngredientLegendButton from "@/components/ui/IngredientListButton";
 
 export default async function Home() {
@@ -10,7 +10,6 @@ export default async function Home() {
     { name: "Carne", className: "bg-daily-menu-700", check: true },
   ];
 
-  
   return (
     <>
       <div>
@@ -34,7 +33,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <RenderBar />
+        <RenderBarWithCart />
         <IngredientLegendButton specialIngredients={specialIngredients} />
         <br />
       </div>
