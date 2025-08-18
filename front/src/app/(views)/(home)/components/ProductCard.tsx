@@ -5,152 +5,129 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "../../../../components/ui/Button";
 
-// Se agrega una nueva interfaz para las props que incluirán la función onAddToCart
-interface ProductCardProps extends Partial<IProduct> {
-    onAddToCart: (product: Partial<IProduct>) => void;
-}
+const ProductCard: FC<Partial<IProduct>> = ({ id, name, description, price, stock, imgUrl, ingredients = [], category }) => {
 
-// Se tipan las props con la nueva interfaz
-const ProductCard: FC<ProductCardProps> = (product) => {
-    const {
-        id,
-        name,
-        description,
-        price,
-        stock,
-        imgUrl,
-        caloricLevel,
-        ingredients,
-        category,
-        onAddToCart // Se desestructura la nueva prop
-    } = product;
+  const ingredientNames = ingredients.map((i) => i.name.toLowerCase());
 
-    const caloricColors: { [key: number]: string } = {
-        1: "bg-low-calories-100",
-        2: "bg-low-calories-500",
-        3: "bg-celiac-500",
-        4: "bg-daily-menu-300",
-        5: "bg-daily-menu-700",
-    };
+  // Nuevas categorías más completas
+  const tieneHarina = ingredientNames.some(
+    (i) =>
+      i.includes("harina") ||
+      i.includes("pan") ||
+      i.includes("trigo") ||
+      i.includes("pasta") ||
+      i.includes("pizza") ||
+      i.includes("tortilla")
+  );
 
-    const ingredientNames = ingredients?.map((ingredient) =>
-        typeof ingredient === "string" ? ingredient : ingredient.name
-    );
+  const tieneQueso = ingredientNames.some(
+    (i) =>
+      i.includes("queso") ||
+      i.includes("mozzarella") ||
+      i.includes("cheddar") ||
+      i.includes("parmesano") ||
+      i.includes("gouda")
+  );
 
-    const tieneHarina = ingredientNames?.some(
-        (i) =>
-            typeof i === "string" &&
-            (i.toLowerCase().includes("harina") ||
-                i.toLowerCase().includes("pan") ||
-                i.toLowerCase().includes("trigo") ||
-                i.toLowerCase().includes("pasta"))
-    );
+  const tieneCarne = ingredientNames.some(
+    (i) =>
+      i.includes("carne") ||
+      i.includes("pollo") ||
+      i.includes("pescado") ||
+      i.includes("res") ||
+      i.includes("cerdo") ||
+      i.includes("jamón") ||
+      i.includes("salchicha")
+  );
 
-    const tieneLacteo = ingredientNames?.some(
-        (i) =>
-            typeof i === "string" &&
-            (i.toLowerCase().includes("leche") ||
-                i.toLowerCase().includes("lacteo") ||
-                i.toLowerCase().includes("queso"))
-    );
+  const tieneVerdura = ingredientNames.some(
+    (i) =>
+      i.includes("verdura") ||
+      i.includes("ensalada") ||
+      i.includes("vegetal") ||
+      i.includes("tomate") ||
+      i.includes("lechuga") ||
+      i.includes("pepino") ||
+      i.includes("espinaca")
+  );
 
-    const tieneCarne = ingredientNames?.some(
-        (i) =>
-            typeof i === "string" &&
-            (i.toLowerCase().includes("carne") ||
-                i.toLowerCase().includes("pollo") ||
-                i.toLowerCase().includes("pescado"))
-    );
+  const specialIngredients = [
+    { check: tieneVerdura, className: "bg-vegetarian-700" },
+    { check: tieneCarne, className: "bg-daily-menu-700" },
+    { check: tieneQueso, className: "bg-vegan-400" },
+    { check: tieneHarina, className: "bg-celiac-500" },
+  ];
 
-    const tieneVerdura = ingredientNames?.some(
-        (i) =>
-            typeof i === "string" &&
-            (i.toLowerCase().includes("verdura") ||
-                i.toLowerCase().includes("ensalada") ||
-                i.toLowerCase().includes("vegetal"))
-    );
+  const generateUrl = (id: string | number | undefined) => `/product-details/${id}`;
 
-    const specialIngredients = [
-        { check: tieneVerdura, className: "bg-vegetarian-900" },
-        { check: tieneLacteo, className: "bg-secondary-txt-500" },
-        { check: tieneHarina, className: "bg-daily-menu-700" },
-        { check: tieneCarne, className: "bg-daily-menu-900" },
-    ];
+  return (
+    <div className="flex flex-col justify-between w-full max-w-sm transition-transform duration-200 border rounded-lg shadow-lg bg-primary-background-900 border-primary-background-800 hover:scale-105">
+      
+      {/* Barras de colores según ingredientes */}
+    <div className="flex w-full h-2 rounded-full overflow-hidden gap-[2px]">
+  {specialIngredients.map(
+    (item, index) =>
+      item.check && (
+        <div
+          key={index}
+          className={`${item.className} h-full rounded-full`}
+          style={{
+            width: `${100 / specialIngredients.filter(i => i.check).length}%`,
+          }}
+        />
+      )
+  )}
+</div>
 
-    const generateUrl = (id: string | number | undefined) => {
-        return `/product-details/${id}`;
-    };
-
-    return (
-        <div className="flex flex-col justify-between w-full max-w-sm transition-transform duration-200 border rounded-lg shadow-lg bg-primary-background-900 border-primary-background-800 hover:scale-105">
-            <div
-                className={`h-2 w-full rounded-t ${
-                    caloricColors[caloricLevel as number] || "bg-secondary-background-300"
-                }`}
+      {/* Imagen + link al detalle */}
+      <Link href={generateUrl(id)}>
+        <div className="relative w-full h-52">
+          {imgUrl && typeof imgUrl === "string" && (
+            <Image
+              fill
+              className="object-cover rounded-t-lg"
+              src={imgUrl}
+              alt={name || "product image"}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
-            <div className="w-full flex flex-col gap-[2px] text-primary-txt-200">
-                {specialIngredients.map(
-                    (item, index) =>
-                        item.check && (
-                            <div key={index} className={`h-2 ${item.className} w-full`} />
-                        )
-                )}
-            </div>
-
-            <Link href={generateUrl(id)}>
-                <div className="relative w-full h-52">
-                    {imgUrl && typeof imgUrl === "string" && (
-                        <div className="relative w-full h-52">
-                            <Image
-                                fill
-                                className="object-cover rounded-t-lg"
-                                src={imgUrl}
-                                alt={name || "product image"}
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            />
-                        </div>
-                    )}
-                </div>
-
-                <div className="px-5 mt-4">
-                    <h5 className="text-xl font-semibold tracking-tight text-center text-primary-txt-100">
-                        {name && name.length > 28
-                            ? `${name.substring(0, 28)}...`
-                            : name || "Sin nombre"}
-                    </h5>
-                    <p className="mt-4 mb-2 text-sm text-center text-secondary-txt-600">
-                        {description && description.length > 90
-                            ? `${description.substring(0, 90)}...`
-                            : description || "Sin descripción"}
-                    </p>
-                </div>
-            </Link>
-
-            <div className="px-5 pb-5 mt-4">
-                <div className="flex flex-col items-center justify-center">
-                    <div className="mb-2 text-center">
-                        <span className="text-3xl font-bold text-primary-txt-100">
-                            {price !== undefined ? `$${price}` : "Sin precio"}
-                        </span>
-                        <p className="mt-1 text-xs text-secondary-txt-700">
-                            {stock !== undefined ? `Stock: ${stock}` : "Sin stock"}
-                        </p>
-                    </div>
-                    {/* SE AGREGA EL BOTÓN CON LA LÓGICA ONCLICK */}
-                    <Button
-                        variant="category"
-                        categoryId={category?.id}
-                        onClick={() => onAddToCart(product)}
-                    >
-                        <p>Añadir al carrito</p>
-                    </Button>
-                </div>
-            </div>
+          )}
         </div>
-    );
+
+        {/* Info básica */}
+        <div className="px-5 mt-4">
+          <h5 className="text-xl font-semibold tracking-tight text-center text-primary-txt-100">
+            {name && name.length > 28 ? `${name.substring(0, 28)}...` : name || "Sin nombre"}
+          </h5>
+          <p className="mt-4 mb-2 text-sm text-center text-secondary-txt-600">
+            {description && description.length > 90
+              ? `${description.substring(0, 90)}...`
+              : description || "Sin descripción"}
+          </p>
+        </div>
+      </Link>
+
+      {/* Precio + stock + botón */}
+      <div className="px-5 pb-5 mt-4">
+        <div className="flex flex-col items-center justify-center">
+          <div className="mb-2 text-center">
+            <span className="text-3xl font-bold text-primary-txt-100">
+              {price !== undefined ? `$${price}` : "Sin precio"}
+            </span>
+            <p className="mt-1 text-xs text-secondary-txt-700">
+              {stock !== undefined ? `Stock: ${stock}` : "Sin stock"}
+            </p>
+          </div>
+          <Button variant="category" categoryId={category?.id}>
+            <p>Añadir al carrito</p>
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default ProductCard;
+
 
 
 
