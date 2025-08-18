@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  
+
   // Configuración de optimización de imágenes de Next.js
   images: {
     // remotePatterns es la forma moderna de permitir dominios externos
@@ -30,6 +30,12 @@ const nextConfig: NextConfig = {
         hostname: "s.gravatar.com",
         port: "", // No es necesario especificar el puerto aquí
         pathname: "/avatar/**", // Permitimos todas las rutas que empiecen con /avatar/
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+        pathname: "/**",
       },
     ],
   },

@@ -20,10 +20,6 @@ export const navbarLinks: NavbarItemProps[] = [
     href: Routes.profile,
   },
   {
-    label: "Auth0",
-    href: Routes.testauth0,
-  },
-   {
     label: "Panel de Admin",
     href: Routes.adminDashboard,
   },
