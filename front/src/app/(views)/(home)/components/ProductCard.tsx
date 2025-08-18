@@ -53,8 +53,8 @@ const ProductCard: FC<Partial<IProduct>> = ({ id, name, description, price, stoc
   const specialIngredients = [
     { check: tieneVerdura, className: "bg-vegetarian-700" },
     { check: tieneCarne, className: "bg-daily-menu-700" },
-    { check: tieneQueso, className: "bg-vegan-400" },
-    { check: tieneHarina, className: "bg-celiac-500" },
+    { check: tieneQueso, className: "bg-celiac-500"},
+    { check: tieneHarina, className: "bg-vegan-600" },
   ];
 
   const generateUrl = (id: string | number | undefined) => `/product-details/${id}`;
