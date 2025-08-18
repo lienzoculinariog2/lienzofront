@@ -158,22 +158,7 @@ export const productService = {
     return data;
   },
 
-  // async getPaginatedAndFiltered(params: {
-  //   page: number;
-  //   limit: number;
-  //   category: string;
-  //   term: string;
-  // }): Promise<{ products: IProduct[]; totalPages: number }> {
-  //   // Aquí tu llamada al backend. Ejemplo con fetch:
-  //   const response = await fetch(
-  //     `/api/products?page=${params.page}&limit=${params.limit}&category=${params.category}&term=${params.term}`
-  //   );
-  //   const data = await response.json(); // data ahora contiene { products: [], total: number }
-
-  //   const totalPages = Math.ceil(data.total / params.limit);
-
-  //   return { products: data.products, totalPages };
-  // },
+  
   async getPaginatedAndFiltered(params: {
   page: number;
   limit: number;

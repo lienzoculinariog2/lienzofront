@@ -6,7 +6,8 @@ import { IProduct } from "@/types/Product";
 import { productService } from "@/services/ProductService";
 import ProductCard from "@/app/(views)/(home)/components/ProductCard";
 import { categoriesServices } from "@/services/CategoryService";
-import { ICategories } from "@/types/Categories";
+import { CategoryOption, ICategories } from "@/types/Categories";
+
 
 interface RenderBarProps {
   title?: string;
@@ -19,20 +20,23 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("Todas las categorías");
-  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryOption>({
+    id: "all",
+    name: "Todas las categorías",
+  });
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
 
   const pageTitle = title || "Nuestros Menus";
 
-  // Fetch categorías al montar
+  // Fetch categorías
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const fetchedCategories = await categoriesServices.getAll();
-        const categoryNames = fetchedCategories
+        const categoryObjects = fetchedCategories
           .filter((cat: ICategories) => cat.isActive)
-          .map((cat) => cat.name);
-        setCategories(["Todas las categorías", ...categoryNames]);
+          .map((cat) => ({ id: cat.id, name: cat.name }));
+        setCategories([{ id: "all", name: "Todas las categorías" }, ...categoryObjects]);
       } catch (err) {
         console.error("Error fetching categories:", err);
       }
@@ -40,14 +44,14 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
     fetchCategories();
   }, []);
 
-  // Resetear productos al cambiar búsqueda o categoría
+  // Resetear productos al cambiar filtros
   useEffect(() => {
     setProducts([]);
     setPage(1);
     setHasMore(true);
   }, [searchTerm, selectedCategory]);
 
-  // Cargar productos cuando cambia página, búsqueda o categoría
+  // Cargar productos
   useEffect(() => {
     if (!hasMore) return;
 
@@ -59,12 +63,13 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
           page,
           limit: 20,
           term: searchTerm,
-          category: selectedCategory !== "Todas las categorías" ? selectedCategory : undefined,
+          category: selectedCategory.id !== "all" ? selectedCategory.id : undefined,
         });
 
-        // Evitar duplicados
-        setProducts(prev => {
-          const newProducts = res.data.filter(p => !prev.some(prevP => prevP.id === p.id));
+        setProducts((prev) => {
+          const newProducts = res.data.filter(
+            (p) => !prev.some((prevP) => prevP.id === p.id)
+          );
           return [...prev, ...newProducts];
         });
 
@@ -88,7 +93,7 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
         !isLoading &&
         hasMore
       ) {
-        setPage(prev => prev + 1);
+        setPage((prev) => prev + 1);
       }
     };
 
@@ -96,7 +101,7 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isLoading, hasMore]);
 
-  const handleSearch = useCallback((category: string, term: string) => {
+  const handleSearch = useCallback((category: CategoryOption, term: string) => {
     setSelectedCategory(category);
     setSearchTerm(term);
   }, []);
@@ -111,7 +116,7 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
 
       <div className="grid grid-cols-1 gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.length > 0 ? (
-          products.map(product => <ProductCard key={product.id} {...product} />)
+          products.map((product) => <ProductCard key={product.id} {...product} />)
         ) : (
           !isLoading && (
             <p className="text-lg text-center text-secondary-txt-500 col-span-full">
@@ -124,12 +129,10 @@ const RenderBar: React.FC<RenderBarProps> = ({ title }) => {
       {isLoading && (
         <p className="mt-4 text-center text-primary-txt-400">Cargando productos...</p>
       )}
-      {/* {!hasMore && products.length > 0 && (
-        <p className="mt-8 text-center text-secondary-txt-500">No hay más productos</p>
-      )} */}
       {error && <p className="mt-4 text-center text-red-500">{error}</p>}
     </main>
   );
 };
 
 export default RenderBar;
+

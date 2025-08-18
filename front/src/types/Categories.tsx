@@ -20,3 +20,8 @@ export interface ICategoryUpdate {
   description?: string;
   imgUrl?: string;
 }
+
+export interface CategoryOption {
+  id: string;
+  name: string;
+}
