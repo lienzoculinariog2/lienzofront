@@ -1,4 +1,3 @@
-// src/app/(views)/cart/page.tsx
 "use client";
 
 import React from "react";
@@ -13,14 +12,19 @@ const CartPage = () => {
     const { user } = useAuth0();
     const userId = user?.sub || null;
     
-    // CORRECCIÓN: Se desestructura isLoading, pero ahora la usaremos
-    const { cartItems, removeFromCart, resetCart, addToCart, isLoading } = useCart(userId);
+    // CORRECCIÓN: Usamos las nuevas funciones del hook
+    const { 
+        cartItems, 
+        resetCart, 
+        isLoading, 
+        handleAddQuantity, 
+        handleRemoveQuantity,
+        deleteCartItem
+    } = useCart(userId);
 
-    // CORRECCIÓN: Quitamos 'as any' y usamos String() para la conversión segura
     const totalPrice = cartItems.reduce((acc, item) => acc + (parseFloat(String(item.price)) || 0) * item.quantity, 0);
     const showCart = cartItems.length > 0;
-
-    // CORRECCIÓN: Ahora se usa isLoading para mostrar el estado de carga
+    
     if (isLoading) {
         return (
             <div className="mx-5 py-8 bg-primary-background-500">
@@ -44,7 +48,6 @@ const CartPage = () => {
     return (
         <div className=" mx-5 py-8 bg-primary-background-500">
             <h1 className="text-2xl font-bold mb-10 text-center text-primary-txt-100">Carrito de Compras</h1>
-
             <div className="bg-secondary-background-500 shadow-md rounded-lg p-6 mb-6">
                 <div className="flex items-center justify-between text-xl font-semibold mb-8 p-6">
                     <h2 className="text-primary-txt-100">Productos en el Carrito</h2>
@@ -55,8 +58,9 @@ const CartPage = () => {
                         <CartItem
                             key={product.id}
                             product={product}
-                            onRemove={removeFromCart}
-                            onAdd={addToCart}
+                            onAdd={handleAddQuantity}
+                            onRemove={handleRemoveQuantity}
+                            onDelete={deleteCartItem}
                         />
                     ))
                 ) : (
@@ -79,6 +83,7 @@ const CartPage = () => {
 };
 
 export default CartPage;
+
 
 
 

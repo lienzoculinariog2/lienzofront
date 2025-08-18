@@ -1,4 +1,3 @@
-// src/hooks/useCart.ts
 "use client";
 
 import { IProduct } from "@/types/Product";
@@ -6,9 +5,15 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 
 // Interfaz para los productos del carrito con cantidad
-export interface CartItem extends Partial<IProduct> {
+export interface CartItem {
+    id: string; // ID del CartItem (UUID)
+    name: string;
+    price: number;
     quantity: number;
-    product?: IProduct;
+    imgUrl?: string;
+    totalItemPrice: number;
+    description: string;
+    stock: number;
 }
 
 // Interfaz que devuelve tu back-end
@@ -18,9 +23,9 @@ interface FullCartSummaryDto {
     subTotal: number;
 }
 
-export const useCart = (userId: string | null) => {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
+export const useCart = (userId: string | null) => {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -53,59 +58,31 @@ export const useCart = (userId: string | null) => {
         } finally {
             setIsLoading(false);
         }
-    }, [userId, API_URL]);
+    }, [userId]);
 
     useEffect(() => {
         fetchCart();
     }, [fetchCart]);
 
-    // LÓGICA CORREGIDA PARA AÑADIR/ACTUALIZAR PRODUCTOS
     const addToCart = async (product: Partial<IProduct>) => {
-        if (!userId) {
-            toast.error("Debes iniciar sesión para añadir productos al carrito.");
-            return;
-        }
-        if (!product.id) {
-            toast.error("Error: el producto no tiene un ID válido.");
+        if (!userId || !product.id) {
+            toast.error("Error: Se requiere iniciar sesión y un ID de producto válido.");
             return;
         }
 
         try {
-            // Se busca el item usando el ID del producto, no el ID del cartItem
-            const existingItem = cartItems.find(item => item.product?.id === product.id);
-
-            if (existingItem) {
-                // Si el producto ya existe, se actualiza la cantidad con una petición PUT
-                const updatedQuantity = existingItem.quantity + 1;
-                const response = await fetch(`${API_URL}/cart/${userId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        updates: [{ itemId: existingItem.id, quantity: updatedQuantity }],
-                    }),
-                });
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Error al actualizar el carrito.');
-                }
-                const updatedCart: FullCartSummaryDto = await response.json();
-                setCartItems(updatedCart.items);
-                toast.success(`'${product.name}' actualizado en el carrito!`);
-            } else {
-                // Si el producto no existe, se añade con una petición POST
-                const response = await fetch(`${API_URL}/cart/addsingle/${userId}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ productId: product.id, quantity: 1 }),
-                });
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Error al añadir producto al carrito.');
-                }
-                const updatedCart: FullCartSummaryDto = await response.json();
-                setCartItems(updatedCart.items);
-                toast.success(`'${product.name}' agregado al carrito!`);
+            const response = await fetch(`${API_URL}/cart/addsingle/${userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId: product.id, quantity: 1 }),
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al añadir producto al carrito.');
             }
+            const updatedCart: FullCartSummaryDto = await response.json();
+            setCartItems(updatedCart.items);
+            toast.success(`'${product.name}' agregado al carrito!`);
         } catch (error: unknown) {
             console.error('Error adding to cart:', error);
             if (error instanceof Error) {
@@ -115,52 +92,67 @@ export const useCart = (userId: string | null) => {
             }
         }
     };
+    
+    // CORRECCIÓN: Envuelto en useCallback
+    const updateCartQuantity = useCallback(async (itemId: string, newQuantity: number) => {
+        if (!userId) {
+            toast.error("Debes iniciar sesión para actualizar el carrito.");
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_URL}/cart/${userId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    updates: [{ itemId: itemId, quantity: newQuantity }],
+                }),
+            });
 
-    const removeFromCart = async (itemId: string) => {
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al actualizar el carrito.');
+            }
+            const updatedCart: FullCartSummaryDto = await response.json();
+            setCartItems(updatedCart.items);
+            toast.info("Cantidad del producto actualizada.");
+        } catch (error: unknown) {
+            console.error('Error updating cart:', error);
+            if (error instanceof Error) {
+                toast.error(error.message || 'Error al actualizar el carrito.');
+            } else {
+                toast.error('Ocurrió un error inesperado.');
+            }
+        }
+    }, [userId]);
+
+    // CORRECCIÓN: Envuelto en useCallback
+    const deleteCartItem = useCallback(async (itemId: string) => {
         if (!userId) {
             toast.error("Debes iniciar sesión para eliminar productos del carrito.");
             return;
         }
         try {
-            const currentItem = cartItems.find(item => item.id === itemId);
-            if (!currentItem) return;
+            const response = await fetch(`${API_URL}/cart/${userId}/${itemId}`, {
+                method: 'DELETE',
+            });
 
-            if (currentItem.quantity > 1) {
-                const response = await fetch(`${API_URL}/cart/${userId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        updates: [{ itemId: itemId, quantity: currentItem.quantity - 1 }],
-                    }),
-                });
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Error al actualizar el carrito.');
-                }
-                const updatedCart: FullCartSummaryDto = await response.json();
-                setCartItems(updatedCart.items);
-                toast.info("Cantidad del producto actualizada.");
-            } else {
-                const response = await fetch(`${API_URL}/cart/${userId}/${itemId}`, {
-                    method: 'DELETE',
-                });
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Error al eliminar el producto.');
-                }
-                const updatedCart: FullCartSummaryDto = await response.json();
-                setCartItems(updatedCart.items);
-                toast.info("Producto eliminado del carrito.");
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Error al eliminar el producto.');
             }
+            const updatedCart: FullCartSummaryDto = await response.json();
+            setCartItems(updatedCart.items);
+            toast.info("Producto eliminado del carrito.");
         } catch (error: unknown) {
-            console.error('Error removing from cart:', error);
+            console.error('Error deleting from cart:', error);
             if (error instanceof Error) {
                 toast.error(error.message || 'Error al eliminar el producto.');
             } else {
                 toast.error('Ocurrió un error inesperado.');
             }
         }
-    };
+    }, [userId]);
 
     const resetCart = async () => {
         if (!userId) {
@@ -186,11 +178,40 @@ export const useCart = (userId: string | null) => {
             }
         }
     };
+    
+    // Función para manejar el evento de clic en el botón de añadir en CartItem
+    const handleAddQuantity = useCallback((itemId: string) => {
+        const item = cartItems.find(i => i.id === itemId);
+        if (item) {
+            updateCartQuantity(itemId, item.quantity + 1);
+        }
+    }, [cartItems, updateCartQuantity]);
+
+    // Función para manejar el evento de clic en el botón de restar en CartItem
+    const handleRemoveQuantity = useCallback((itemId: string) => {
+        const item = cartItems.find(i => i.id === itemId);
+        if (item && item.quantity > 1) {
+            updateCartQuantity(itemId, item.quantity - 1);
+        } else if (item && item.quantity === 1) {
+            deleteCartItem(itemId);
+        }
+    }, [cartItems, updateCartQuantity, deleteCartItem]);
 
     const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-    return { cartItems, addToCart, removeFromCart, resetCart, totalQuantity, isLoading };
+    return { 
+        cartItems, 
+        addToCart, 
+        updateCartQuantity, 
+        deleteCartItem, 
+        resetCart, 
+        totalQuantity, 
+        isLoading,
+        handleAddQuantity,
+        handleRemoveQuantity
+    };
 };
+
 
 
 

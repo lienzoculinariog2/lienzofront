@@ -1,4 +1,3 @@
-// src/app/(views)/cart/components/CartItem.tsx
 "use client";
 
 import React from 'react';
@@ -9,12 +8,14 @@ import { FaPlus, FaMinus } from "react-icons/fa";
 
 interface CartItemProps {
     product: Partial<IProduct> & { quantity: number };
-    onRemove: (productId: string) => void;
-    onAdd: (product: Partial<IProduct>) => void;
+    // onAdd ahora recibe el item y la cantidad para sumarla
+    onAdd: (itemId: string) => void;
+    // onRemove ahora recibe el item y la cantidad para restarla
+    onRemove: (itemId: string) => void;
+    onDelete: (itemId: string) => void;
 }
 
-const CartItem = ({ product, onRemove, onAdd }: CartItemProps) => {
-    // CORRECCIÓN: Quitamos el 'as any'. parseFloat() puede manejar el tipo de forma segura.
+const CartItem = ({ product, onAdd, onRemove, onDelete }: CartItemProps) => {
     const priceAsNumber = product.price ? parseFloat(String(product.price)) : 0;
     
     return (
@@ -35,14 +36,14 @@ const CartItem = ({ product, onRemove, onAdd }: CartItemProps) => {
                 <p className="text-primary-txt-500"><strong>Stock:</strong> {product.stock}</p>
             </div>
             <div className="flex items-center gap-4">
-                <button onClick={() => product.quantity > 1 ? onRemove(product.id as string) : null}>
+                <button onClick={() => onRemove(product.id as string)}>
                     <FaMinus className="w-5 h-5 text-primary-txt-300 hover:text-daily-menu-500 transition-colors" />
                 </button>
                 <span className="text-lg font-bold text-primary-txt-100">{product.quantity}</span>
-                <button onClick={() => onAdd(product)}>
+                <button onClick={() => onAdd(product.id as string)}>
                     <FaPlus className="w-5 h-5 text-primary-txt-300 hover:text-daily-menu-500 transition-colors" />
                 </button>
-                <button onClick={() => product.id && onRemove(product.id as string)}>
+                <button onClick={() => onDelete(product.id as string)}>
                     <BsTrash3 className="w-5 h-5 text-primary-txt-300 hover:text-daily-menu-500 transition-colors" />
                 </button>
             </div>
@@ -51,4 +52,5 @@ const CartItem = ({ product, onRemove, onAdd }: CartItemProps) => {
 };
 
 export default CartItem;
+
 
