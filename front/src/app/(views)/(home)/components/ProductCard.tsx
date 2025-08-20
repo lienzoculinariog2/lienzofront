@@ -7,7 +7,7 @@ import Button from "../../../../components/ui/Button";
 
 // Definimos las props, incluyendo la nueva función para añadir al carrito
 interface ProductCardProps extends Partial<IProduct> {
-  onAddToCart: (product: Partial<IProduct>) => void;
+  onAddToCart: () => void;
 }
 
 const ProductCard: FC<ProductCardProps> = ({
@@ -120,7 +120,7 @@ const ProductCard: FC<ProductCardProps> = ({
           <Button
             variant="category"
             categoryId={category?.id}
-            onClick={() => onAddToCart({ id, name, price })}
+            onClick={onAddToCart}
             disabled={!hasStock}
           >
             <p>{hasStock ? "Añadir al carrito" : "Sin Stock"}</p>
@@ -132,3 +132,5 @@ const ProductCard: FC<ProductCardProps> = ({
 };
 
 export default ProductCard;
+
+

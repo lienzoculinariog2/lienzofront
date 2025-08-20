@@ -3,6 +3,7 @@
 import { IProduct } from "@/types/Product";
 import { useCart } from "@/hooks/useCart";
 import { useAuth0 } from "@auth0/auth0-react";
+import Button from "@/components/ui/Button";
 
 interface Props {
   product: IProduct;
@@ -18,17 +19,17 @@ export default function AddToCartButton({ product }: Props) {
     addToCart(product); // ya maneja validación, toast y actualización
   };
 
+  const hasAccess = isAuthenticated && userId;
+
   return (
-    <button
+    <Button
       onClick={handleClick}
-      disabled={!isAuthenticated || !userId}
-      className={`px-6 py-2 text-white transition rounded ${
-        isAuthenticated && userId
-          ? "bg-daily-menu-600 hover:bg-daily-menu-700"
-          : "bg-low-calories-500 cursor-not-allowed"
-      }`}
+      variant="category"
+      categoryId={product.category.id} // aquí le pasas la categoría del producto
+      disabled={!hasAccess || (product.stock ?? 0) <= 0}
+      className="w-full"
     >
-      {isAuthenticated ? "Añadir al carrito" : "Iniciá sesión para comprar"}
-    </button>
+      {hasAccess ? "Añadir al carrito" : "Iniciá sesión para comprar"}
+    </Button>
   );
 }

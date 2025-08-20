@@ -128,7 +128,7 @@ const RenderBarWithCart: React.FC<RenderBarProps> = ({ title }) => {
               <ProductCard
                 key={product.id}
                 {...product}
-                onAddToCart={() => addToCart(product)} // ✅ integración del carrito
+               onAddToCart={() => addToCart({ id: product.id, name: product.name })}
               />
             ))
           : !isLoading && (
