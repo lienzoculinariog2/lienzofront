@@ -17,17 +17,17 @@ const CategoryProductsClient: React.FC<Props> = ({ products }) => {
   const { addToCart } = useCart(userId);
 
   return (
-    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-      {products.map((product) => (
-        <ProductCard
-          key={product.id}
-          {...product}
-          onAddToCart={() =>
-            addToCart({ id: product.id, name: product.name || "Producto" })
-          }
-        />
-      ))}
-    </div>
+    <div className="grid grid-cols-1 gap-8 mx-auto md:grid-cols-2 lg:grid-cols-3 justify-items-center max-w-7xl">
+  {products.map((product) => (
+    <ProductCard
+      key={product.id}
+      {...product}
+      onAddToCart={() =>
+        addToCart({ id: product.id, name: product.name || "Producto" })
+      }
+    />
+  ))}
+</div>
   );
 };
 
