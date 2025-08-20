@@ -69,13 +69,13 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
       }) => (
         <form
           onSubmit={handleSubmit}
-          className="bg-white shadow-md rounded-lg p-6"
+          className="p-6 bg-white rounded-lg shadow-md"
         >
           {/* Campo Nombre */}
           <div className="mb-4">
             <label
               htmlFor="name"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block mb-2 text-sm font-bold text-gray-700"
             >
               Nombre
             </label>
@@ -85,10 +85,10 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
               name="name"
               value={values.name}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
             {touched.name && errors.name && (
-              <p className="text-red-500 text-sm">{errors.name}</p>
+              <p className="text-sm text-red-500">{errors.name}</p>
             )}
           </div>
 
@@ -96,7 +96,7 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
           <div className="mb-4">
             <label
               htmlFor="email"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block mb-2 text-sm font-bold text-gray-700"
             >
               Email
             </label>
@@ -107,10 +107,10 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
               value={values.email}
               onChange={handleChange}
               readOnly
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-100"
+              className="w-full px-3 py-2 leading-tight text-gray-700 bg-gray-100 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
             {touched.email && errors.email && (
-              <p className="text-red-500 text-sm">{errors.email}</p>
+              <p className="text-sm text-red-500">{errors.email}</p>
             )}
           </div>
 
@@ -118,7 +118,7 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
           <div className="mb-4">
             <label
               htmlFor="address"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block mb-2 text-sm font-bold text-gray-700"
             >
               Dirección
             </label>
@@ -128,10 +128,10 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
               name="address"
               value={values.address}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
             {touched.address && errors.address && (
-              <p className="text-red-500 text-sm">{errors.address}</p>
+              <p className="text-sm text-red-500">{errors.address}</p>
             )}
           </div>
 
@@ -139,7 +139,7 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
           <div className="mb-4">
             <label
               htmlFor="phone"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block mb-2 text-sm font-bold text-gray-700"
             >
               Teléfono
             </label>
@@ -149,10 +149,10 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
               name="phone"
               value={values.phone}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
             {touched.phone && errors.phone && (
-              <p className="text-red-500 text-sm">{errors.phone}</p>
+              <p className="text-sm text-red-500">{errors.phone}</p>
             )}
           </div>
 
@@ -160,7 +160,7 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
           <div className="mb-4">
             <label
               htmlFor="birthday"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block mb-2 text-sm font-bold text-gray-700"
             >
               Fecha de Nacimiento
             </label>
@@ -170,10 +170,10 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
               name="birthday"
               value={values.birthday}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             />
             {touched.birthday && errors.birthday && (
-              <p className="text-red-500 text-sm">{errors.birthday}</p>
+              <p className="text-sm text-red-500">{errors.birthday}</p>
             )}
           </div>
 
@@ -181,7 +181,7 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
           <div className="mb-6">
             <label
               htmlFor="diet"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block mb-2 text-sm font-bold text-gray-700"
             >
               Tipo de Dieta
             </label>
@@ -190,15 +190,16 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
               name="diet"
               value={values.diet}
               onChange={handleChange}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className="w-full px-3 py-2 leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
             >
-              <option value="general">General</option>
+              <option value="general">Sin dieta especifica</option>
               <option value="vegetariano">Vegetariano</option>
               <option value="celiaco">Celíaco</option>
-              <option value="fitness">Fitness</option>
+              <option value="vegano">Vegano</option>
+              <option value="diabetico">Diabetico</option>
             </select>
             {touched.diet && errors.diet && (
-              <p className="text-red-500 text-sm">{errors.diet}</p>
+              <p className="text-sm text-red-500">{errors.diet}</p>
             )}
           </div>
 

@@ -102,7 +102,7 @@ export default async function ProductDetail({
 
   return (
     <div className="max-w-4xl p-8 mx-auto mt-10 mb-20 border shadow-lg bg-primary-background-900 border-primary-background-800 rounded-xl">
-      <div className="flex flex-col items-center lg:flex-row lg:items-start lg:space-x-8">
+      <div className="flex flex-col items-center lg:flex-row lg:items-start lg:space-x-8 ">
         <div className="relative w-full mb-6 overflow-hidden lg:w-1/2 h-96 rounded-xl lg:mb-0">
           <Image
             src={product.imgUrl || "/docs/images/products/placeholder.png"}
@@ -173,17 +173,13 @@ export default async function ProductDetail({
             </div>
           </div>
 
-          {/* Precio */}
-          <div className="flex flex-col items-center gap-4 pt-4 mt-6">
             {/* Línea divisoria */}
-            <div className="w-full mb-4 border-t border-secondary-background-800"></div>
+            <div className="w-full mt-4 mb-4 border-t border-secondary-background-800"></div>
 
             {/* Botón centrado */}
-            <div className="flex flex-col items-center gap-4 pt-4 mt-6">
-              <div className="w-full mb-4 border-t border-secondary-background-800"></div>
+            <div className="flex flex-col items-center gap-4 pt-4 mt-2">
               <AddToCartButton product={product} />
             </div>
-          </div>
         </div>
       </div>
     </div>

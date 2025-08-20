@@ -7,9 +7,9 @@ type Props = {
 
 export const UserInfoPanel = ({ profileData }: Props) => {
   return (
-    <div className="rounded-md border p-4 mb-6 bg-gray-50">
-      <h2 className="text-lg font-semibold mb-2">Datos actuales del usuario</h2>
-      <ul className="text-sm text-gray-700 space-y-1">
+    <div className="p-4 mb-6 border rounded-md bg-gray-50">
+      <h2 className="mb-2 text-lg font-semibold">Datos actuales del usuario</h2>
+      <ul className="space-y-1 text-sm text-gray-700">
         <li>
           <strong>Nombre:</strong> {profileData.name ?? "—"}
         </li>
@@ -31,7 +31,11 @@ export const UserInfoPanel = ({ profileData }: Props) => {
         </li>
         <li>
           <strong>Rol:</strong>{" "}
-          {profileData.isAdmin === "admin" ? "Administrador" : "Cliente"}
+          {profileData.roles === "admin"
+            ? "Administrador"
+            : profileData.roles === "user"
+            ? "Cliente"
+            : "Baneado"}
         </li>
       </ul>
     </div>

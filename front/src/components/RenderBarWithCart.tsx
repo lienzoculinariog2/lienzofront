@@ -68,7 +68,7 @@ const RenderBarWithCart: React.FC<RenderBarProps> = ({ title }) => {
       try {
         const res = await productService.getPaginatedAndFiltered({
           page,
-          limit: 20,
+          limit: 50,
           term: searchTerm,
           category:
             selectedCategory.id !== "all" ? selectedCategory.id : undefined,
@@ -122,13 +122,13 @@ const RenderBarWithCart: React.FC<RenderBarProps> = ({ title }) => {
 
       <SearchBar onSearch={handleSearch} categories={categories} />
 
-      <div className="grid grid-cols-1 gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 mt-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
         {products.length > 0
           ? products.map((product) => (
               <ProductCard
                 key={product.id}
                 {...product}
-                onAddToCart={() => addToCart(product)} // ✅ integración del carrito
+               onAddToCart={() => addToCart({ id: product.id, name: product.name })}
               />
             ))
           : !isLoading && (

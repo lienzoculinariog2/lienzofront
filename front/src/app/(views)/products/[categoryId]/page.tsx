@@ -1,10 +1,12 @@
 import React from "react";
 import { notFound } from "next/navigation";
 import { productService } from "@/services/ProductService";
-import ProductCard from "../../(home)/components/ProductCard";
 import { categoriesServices } from "@/services/CategoryService";
 import { PaginatedResponse } from "@/types/PaginatedResponse";
 import { IProduct } from "@/types/Product";
+import CategoryProductsClient from "./components/CategoryProductsClient";
+
+// Importamos el Client Component
 
 interface CategoryPageProps {
   params: {
@@ -19,14 +21,12 @@ const CategoryPage = async ({ params }: CategoryPageProps) => {
     (c) => c.isActive
   );
 
-  // Buscar la categoría activa correspondiente
   const category = categories.find((c) => c.id === categoryId);
-  if (!category) {
-    notFound();
-  }
+  if (!category) notFound();
 
   const response: PaginatedResponse<IProduct> =
     await productService.getByCategoryId(categoryId);
+
   const filteredProducts: IProduct[] = response.data;
 
   if (!filteredProducts || filteredProducts.length === 0) {
@@ -43,11 +43,11 @@ const CategoryPage = async ({ params }: CategoryPageProps) => {
         {category.name}
       </h1>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {filteredProducts.map((product) => (
-          <ProductCard key={product.id} {...product} />
-        ))}
-      </div>
+      {/* Client Component que maneja carrito y Auth0 */}
+      <CategoryProductsClient
+        key={category.id} // 🔑 fuerza a React a desmontar y montar de nuevo
+        products={filteredProducts}
+      />
     </div>
   );
 };
