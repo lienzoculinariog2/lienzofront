@@ -68,7 +68,7 @@ const RenderBarWithCart: React.FC<RenderBarProps> = ({ title }) => {
       try {
         const res = await productService.getPaginatedAndFiltered({
           page,
-          limit: 50,
+          limit: 12,
           term: searchTerm,
           category:
             selectedCategory.id !== "all" ? selectedCategory.id : undefined,

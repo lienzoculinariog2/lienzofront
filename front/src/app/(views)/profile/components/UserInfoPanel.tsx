@@ -23,7 +23,18 @@ export const UserInfoPanel = ({ profileData }: Props) => {
           <strong>Dirección:</strong> {profileData.address ?? "—"}
         </li>
         <li>
-          <strong>Dieta:</strong> {profileData.diet ?? "—"}
+          <strong>Dieta:</strong>{" "}
+          {profileData.diet === "general"
+            ? "Sin dieta especifica"
+            : profileData.diet === "celiaco"
+            ? "Celiaco"
+            : profileData.diet === "vegano"
+            ? "Vegano"
+            : profileData.diet === "diabetico"
+            ? "Diabetico"
+            : profileData.diet === "vegetariano"
+            ? "Vegetariano"
+            : ""}
         </li>
         <li>
           <strong>Fecha de nacimiento:</strong>{" "}
