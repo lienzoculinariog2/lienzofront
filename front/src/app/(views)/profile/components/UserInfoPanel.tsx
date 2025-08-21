@@ -1,8 +1,18 @@
 // components/UserInfoPanel.tsx
+
 import { IUser } from "@/types/User";
 
 type Props = {
   profileData: IUser;
+};
+
+const formatDate = (date?: Date) => {
+  if (!date) return "—";
+  return new Date(date).toLocaleDateString("es-UY", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 };
 
 export const UserInfoPanel = ({ profileData }: Props) => {
@@ -37,7 +47,8 @@ export const UserInfoPanel = ({ profileData }: Props) => {
             : ""}
         </li>
         <li>
-          <strong>Fecha de nacimiento:</strong>{" "}
+          {/* LÍNEA CORREGIDA: Ahora dice "Fecha de registro" */}
+          <strong>Fecha de registro:</strong>{" "}
           {formatDate(profileData.birthday)}
         </li>
         <li>
@@ -51,13 +62,4 @@ export const UserInfoPanel = ({ profileData }: Props) => {
       </ul>
     </div>
   );
-};
-
-const formatDate = (date?: Date) => {
-  if (!date) return "—";
-  return new Date(date).toLocaleDateString("es-UY", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 };
