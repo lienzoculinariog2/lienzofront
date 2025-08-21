@@ -2,11 +2,11 @@ import React from "react";
 import cs from "classnames";
 
 const categoryColorMap: Record<string, ButtonVariant> = {
-  "e1cc7b13-709b-4904-866e-6fbcd8ab8962": "vegetarian",
-  "ac549dd4-e652-47f7-9ede-490bdda26fc4": "vegan",
-  "0d93094f-58a2-4fda-8b09-59ff302d3f91": "celiac",
-  "d17c38c5-abf9-4acd-a9e9-7a24f70665d4": "lowCalories",
-  "7912932c-31f5-488b-b466-d64df78c7ee2": "dailyMenu",
+  "ad15f12e-122b-4c9d-a2d4-c2c9d7effbb7": "vegetarian",
+  "c0551ab5-700f-49c0-b1df-ab443edfc7d0": "vegan",
+  "f9aa5d9c-09ed-4f8e-b044-03d85eb47220": "celiac",
+  "69aabdb4-566b-4d04-b760-2e9e2b5f662d": "lowCalories",
+  "bc993a1c-cdc3-4390-8b4c-1bc8a6aa5c8e": "dailyMenu",
 };
 
 type ButtonVariant =
