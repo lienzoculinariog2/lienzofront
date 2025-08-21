@@ -1,14 +1,16 @@
-export type Diet = "general" | "vegetariano" | "celiaco" | "fitness";
-export type IsAdmin = "customer" | "admin";
+// types/User.ts
+
+export type Diet = "general" | "vegetariano" | "celiaco" | "vegano" | "diabetico";
+export type Roles = "user" | "admin" | "banned";
 
 export interface IUser {
   id: string;
-  name: string;
   email: string;
-  password: string;
-  address: string;
-  phone: number;
-  diet: Diet;
-  birthday: Date;
-  isAdmin: IsAdmin;
+  name?: string;
+  password?: string; 
+  address?: string;
+  phone?: number;
+  diet?: Diet;
+  birthday?: Date;
+  roles?: Roles;
 }

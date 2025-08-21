@@ -1,4 +1,5 @@
 import { ICategories } from "./Categories";
+import { IIngredients } from "./ingredients";
 
 export interface IProduct {
   id: string;
@@ -10,5 +11,9 @@ export interface IProduct {
   isActive: boolean;
   category: ICategories;
   caloricLevel: number | null;
-  ingredients: string[];
+  ingredients: IIngredients[];
 }
+
+export type CartItem = IProduct & {
+    quantity: number;
+};

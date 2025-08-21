@@ -1,43 +1,93 @@
 // src/components/Navbar/Navbar.tsx
-import Link from "next/link";
+"use client";
 import NavbarItem from "./NavbarItem";
 import { navbarLinks } from "@/constants/Navbar";
-
-const isUserLogged = false;
+import { useAuth0 } from "@auth0/auth0-react";
+import Button from "@/components/ui/Button";
+import Image from "next/image";
 
 export default function Navbar() {
-return (
-    <div className="bg-primary-background-500">
+  const { user, isAuthenticated, loginWithRedirect, logout, isLoading } =
+    useAuth0();
 
-      {/* Tu navbar sin el borde de abajo */}
-    <nav className="shadow-md text-secondary-txt-400">
-        <div className="container flex items-center justify-center px-4 py-3 mx-auto">
-        
-          {/* Todos los links están juntos y centrados */}
-        <ul className="flex items-center space-x-6">
-            
-            {navbarLinks.map((item) => (
-            <NavbarItem
-                key={item.label}
-                label={item.label}
-                href={item.href}
-            />
-            ))}
-            
-            {!isUserLogged && (
-            <li>
-                <Link
-                href="/iniciar-sesion"
-                className="text-sm font-semibold uppercase transition-colors hover:text-primary-txt-100"
-                >
-                Iniciar sesión
-                </Link>
-            </li>
+  return (
+    // Usa tus clases de fondo y texto originales, y el contenedor central
+    <div className="bg-primary-background-500 text-secondary-txt-400">
+      <nav className="shadow-md">
+        <div className="container mx-auto px-4 py-3">
+          {/* Este div usa `justify-between` para empujar los elementos a los extremos */}
+          <div className="flex justify-between items-center">
+            {/* Contenedor de los links principales, a la izquierda */}
+            {isLoading ? (
+              <p>Cargando...</p>
+            ) : (
+              <ul className="flex items-center space-x-6">
+                {navbarLinks.map((item) => {
+                  // Oculta el link de Perfil si el usuario no está autenticado
+                  if (item.href === "/profile" && !isAuthenticated) {
+                    return null;
+                  }
+                  if (item.href === "/adminDashboard" && !isAuthenticated) {
+                    return null;
+                  }
+                  if (item.href === "/cart" && !isAuthenticated) {
+                    return null;
+                  }
+                  return (
+                    <NavbarItem
+                      key={item.label}
+                      label={item.label}
+                      href={item.href}
+                    />
+                  );
+                })}
+              </ul>
             )}
-        </ul>
+
+            {/* Renderiza el botón de login o el de usuario/logout, a la derecha */}
+            {!isLoading && (
+              <div>
+                {!isAuthenticated ? (
+                  <Button
+                    onClick={() => loginWithRedirect()}
+                    variant="dark"
+                    className="border border-secondary-txt-600 rounded-lg px-3 py-1.5 text-sm"
+                  >
+                    Iniciar sesión
+                  </Button>
+                ) : (
+                  <div className="flex items-center space-x-4">
+                    <span className="text-sm font-semibold">{user?.name}</span>
+                    {user?.picture && (
+                      <Image
+                        src={user.picture}
+                        alt="User profile"
+                        className="w-8 h-8 rounded-full"
+                        width={32}
+                        height={32}
+                      />
+                    )}
+                    <Button
+                      onClick={() =>
+                        logout({
+                          logoutParams: { returnTo: window.location.origin },
+                        })
+                      }
+                      variant="dark"
+                      // Mantenemos el estilo de botón para cerrar sesión
+                      className="border border-secondary-txt-600 rounded-lg px-4 py-2"
+                    >
+                      Cerrar sesión
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-    </nav>
-    <div className="w-full h-[2px] bg-secondary-txt-600 "></div>
+      </nav>
+      {/* La línea fina en la parte inferior */}
+      <div className="w-full h-[2px] bg-secondary-txt-600 "></div>
     </div>
-);
+  );
 }
