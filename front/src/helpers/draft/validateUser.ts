@@ -41,7 +41,7 @@ export function validateUser(data: Partial<IUser>) {
 
   // Rol
   const validRoles = ["customer", "admin"];
-  if (!data.isAdmin || !validRoles.includes(data.isAdmin)) {
+  if (!data.roles || !validRoles.includes(data.roles)) {
     errors.isAdmin = "Rol inválido";
   }
 

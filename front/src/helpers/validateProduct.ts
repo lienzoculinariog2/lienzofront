@@ -60,7 +60,7 @@ export function validateProduct(data: Partial<IProduct>) {
   if (!Array.isArray(data.ingredients) || data.ingredients.length === 0) {
     errors.ingredients = "Debe incluir al menos un ingrediente";
   } else if (
-    data.ingredients.some((i) => typeof i !== "string" || i.trim() === "")
+    data.ingredients.some((i) => typeof i !== "string" || (i as string).trim() === "")
   ) {
     errors.ingredients = "Todos los ingredientes deben ser textos válidos";
   }

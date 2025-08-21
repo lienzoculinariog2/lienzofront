@@ -10,13 +10,13 @@ import Image from "next/image";
 // Importamos el Client Component
 
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     categoryId: string;
-  };
+  }>;
 }
 
 const CategoryPage = async ({ params }: CategoryPageProps) => {
-  const categoryId = params.categoryId;
+  const { categoryId } = await params;
 
   const categories = (await categoriesServices.getAll()).filter(
     (c) => c.isActive

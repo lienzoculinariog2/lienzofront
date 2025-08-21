@@ -1,7 +1,7 @@
-import { IUser, Diet, IsAdmin } from "@/types/User";
+import { IUser, Diet, Roles } from "@/types/User";
 
-const validDiets: Diet[] = ["general", "vegetariano", "celiaco", "fitness"];
-const validRoles: IsAdmin[] = ["customer", "admin"];
+const validDiets: Diet[] = ["general", "vegetariano", "celiaco", "vegano","diabetico"];
+const validRoles: Roles[] = ["user", "admin","banned"];
 
 export function validateUser(data: Partial<IUser>) {
   const errors: Record<string, string> = {};
@@ -46,7 +46,7 @@ export function validateUser(data: Partial<IUser>) {
   }
 
   // Rol
-  if (!data.isAdmin || !validRoles.includes(data.isAdmin)) {
+  if (!data.roles || !validRoles.includes(data.roles)) {
     errors.isAdmin = "El rol debe ser 'customer' o 'admin'";
   }
 
