@@ -1,10 +1,11 @@
+// src/hooks/useCart.ts
 "use client";
 
 import { IProduct } from "@/types/Product";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 
-// Interfaz para los productos del carrito con cantidad
+// ... (interfaces se mantienen igual)
 export interface CartItem {
     id: string; // ID del CartItem (UUID)
     name: string;
@@ -15,15 +16,13 @@ export interface CartItem {
     description: string;
     stock: number;
 }
-
-// Interfaz que devuelve tu back-end
 interface FullCartSummaryDto {
     items: CartItem[];
     totalItems: number;
     subTotal: number;
 }
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
 
 export const useCart = (userId: string | null) => {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -44,7 +43,8 @@ export const useCart = (userId: string | null) => {
                     setCartItems([]);
                     return;
                 }
-                throw new Error('No se pudo cargar el carrito.');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'No se pudo cargar el carrito.');
             }
             const data: FullCartSummaryDto = await response.json();
             setCartItems(data.items);
@@ -66,7 +66,7 @@ export const useCart = (userId: string | null) => {
 
     const addToCart = async (product: Partial<IProduct>) => {
         if (!userId || !product.id) {
-            toast.error("Error: Se requiere iniciar sesión y un ID de producto válido.");
+            toast.error("Debes iniciar sesión para añadir un producto al carrito.");
             return;
         }
 
@@ -78,6 +78,16 @@ export const useCart = (userId: string | null) => {
             });
             if (!response.ok) {
                 const errorData = await response.json();
+                
+                if (response.status === 400 && errorData.message && errorData.message.includes("stock")) {
+                    toast.error("Has llegado al límite de stock disponible para este producto.");
+                    return;
+                }
+                if (errorData.message && errorData.message.includes("iniciar sesión")) {
+                    toast.error("Debes iniciar sesión para agregar productos al carrito.");
+                    return;
+                }
+                
                 throw new Error(errorData.message || 'Error al añadir producto al carrito.');
             }
             const updatedCart: FullCartSummaryDto = await response.json();
@@ -93,7 +103,6 @@ export const useCart = (userId: string | null) => {
         }
     };
     
-    // CORRECCIÓN: Envuelto en useCallback
     const updateCartQuantity = useCallback(async (itemId: string, newQuantity: number) => {
         if (!userId) {
             toast.error("Debes iniciar sesión para actualizar el carrito.");
@@ -111,6 +120,19 @@ export const useCart = (userId: string | null) => {
 
             if (!response.ok) {
                 const errorData = await response.json();
+                
+                // --- LÓGICA DE MANEJO DE ERRORES MEJORADA ---
+                // Si el error es 400 (Bad Request), asumimos que es de validación (como el stock)
+                if (response.status === 400) {
+                    toast.error("No puedes superar el límite de stock disponible.");
+                    return;
+                }
+                // Si el mensaje es el de "Could not update cart...", mostramos el error genérico
+                if (errorData.message && errorData.message.includes("Could not update cart")) {
+                    toast.error("Ocurrió un error al actualizar el carrito. Por favor, intenta de nuevo.");
+                    return;
+                }
+                
                 throw new Error(errorData.message || 'Error al actualizar el carrito.');
             }
             const updatedCart: FullCartSummaryDto = await response.json();
@@ -126,7 +148,6 @@ export const useCart = (userId: string | null) => {
         }
     }, [userId]);
 
-    // CORRECCIÓN: Envuelto en useCallback
     const deleteCartItem = useCallback(async (itemId: string) => {
         if (!userId) {
             toast.error("Debes iniciar sesión para eliminar productos del carrito.");
@@ -139,6 +160,12 @@ export const useCart = (userId: string | null) => {
 
             if (!response.ok) {
                 const errorData = await response.json();
+                
+                if (response.status === 404) {
+                    toast.error("El producto ya no existe en el carrito.");
+                    return;
+                }
+                
                 throw new Error(errorData.message || 'Error al eliminar el producto.');
             }
             const updatedCart: FullCartSummaryDto = await response.json();
@@ -179,7 +206,6 @@ export const useCart = (userId: string | null) => {
         }
     };
     
-    // Función para manejar el evento de clic en el botón de añadir en CartItem
     const handleAddQuantity = useCallback((itemId: string) => {
         const item = cartItems.find(i => i.id === itemId);
         if (item) {
@@ -187,7 +213,6 @@ export const useCart = (userId: string | null) => {
         }
     }, [cartItems, updateCartQuantity]);
 
-    // Función para manejar el evento de clic en el botón de restar en CartItem
     const handleRemoveQuantity = useCallback((itemId: string) => {
         const item = cartItems.find(i => i.id === itemId);
         if (item && item.quantity > 1) {
