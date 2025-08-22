@@ -184,6 +184,16 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
               {isSubmitting ? "Guardando..." : "Guardar Perfil"}
             </Button>
           </div>
+          {typeof user.isSuscribed === "boolean" && (
+            <Button
+              type="button"
+              onClick={() => onSave({ isSuscribed: !user.isSuscribed })}
+            >
+              {user.isSuscribed
+                ? "Cancelar suscripción"
+                : "Suscribirse a la newsletter"}
+            </Button>
+          )}
         </form>
       )}
     </Formik>

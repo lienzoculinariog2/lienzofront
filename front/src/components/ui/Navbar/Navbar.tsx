@@ -12,7 +12,7 @@ export default function Navbar() {
 
   return (
     // Usa tus clases de fondo y texto originales, y el contenedor central
-    <div className="bg-primary-background-500 text-secondary-txt-400">
+    <div className="bg-gradient-to-t from-primary-background-400 via-primary-background-500 to-primary-background-400 text-secondary-txt-400">
       <nav className="shadow-md">
         <div className="container mx-auto px-4 py-3">
           {/* Este div usa `justify-between` para empujar los elementos a los extremos */}
@@ -51,9 +51,9 @@ export default function Navbar() {
                   <Button
                     onClick={() => loginWithRedirect()}
                     variant="dark"
-                    className="border border-secondary-txt-600 rounded-lg px-3 py-1.5 text-sm"
+                    className="border border-secondary-txt-600 rounded-lg px-3 py-1.5 text-sm hover:animate-pulse"
                   >
-                    Iniciar sesión
+                    🔑 Iniciar sesión
                   </Button>
                 ) : (
                   <div className="flex items-center space-x-4">
@@ -75,9 +75,9 @@ export default function Navbar() {
                       }
                       variant="dark"
                       // Mantenemos el estilo de botón para cerrar sesión
-                      className="border border-secondary-txt-600 rounded-lg px-4 py-2"
+                      className="border border-secondary-txt-600 rounded-lg px-3 py-1.5 text-sm hover:animate-pulse"
                     >
-                      Cerrar sesión
+                      Cerrar sesión 🔒
                     </Button>
                   </div>
                 )}
@@ -87,7 +87,7 @@ export default function Navbar() {
         </div>
       </nav>
       {/* La línea fina en la parte inferior */}
-      <div className="w-full h-[2px] bg-secondary-txt-600 "></div>
+      <div className="w-full h-[2px] bg-primary-background-200 animate-pulse"></div>
     </div>
   );
 }
