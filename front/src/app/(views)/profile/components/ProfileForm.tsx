@@ -5,16 +5,11 @@ import { IUser } from "@/types/User";
 import * as Yup from "yup";
 import { Formik } from "formik";
 // Eliminamos la importación de useAuth0 porque ya no se usa
-// import { useAuth0 } from '@auth0/auth0-react'; 
+// import { useAuth0 } from '@auth0/auth0-react';
 
 interface ProfileFormProps {
   user: IUser;
   onSave: (formData: Partial<IUser>) => void;
-}
-
-function parseLocalDate(dateStr: string): Date {
-  const [year, month, day] = dateStr.split("-").map(Number);
-  return new Date(year, month - 1, day);
 }
 
 const profileValidationSchema = Yup.object({
@@ -26,12 +21,14 @@ const profileValidationSchema = Yup.object({
   phone: Yup.string()
     .matches(/^\d+$/, "Solo números")
     .required("El teléfono es obligatorio"),
-  
-  birthday: Yup.date()
-    .max(new Date("2007-01-01"), "Debe ser mayor de 18")
-    .required("La fecha de nacimiento es obligatoria"),
 
-  diet: Yup.string().oneOf(["general", "vegetariano", "celiaco", "vegano", "diabetico"]),
+  diet: Yup.string().oneOf([
+    "general",
+    "vegetariano",
+    "celiaco",
+    "vegano",
+    "diabetico",
+  ]),
 });
 
 const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
@@ -46,9 +43,6 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
         address: user?.address || "",
         phone: user?.phone?.toString() || "",
         diet: user?.diet || "general",
-        birthday: user.birthday
-            ? new Date(user.birthday).toLocaleDateString("en-CA")
-            : "",
       }}
       validationSchema={profileValidationSchema}
       onSubmit={async (values, { setSubmitting }) => {
@@ -56,9 +50,6 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
           ...values,
           phone: values.phone?.replace(/\D/g, "")
             ? parseInt(values.phone.replace(/\D/g, ""), 10)
-            : undefined,
-          birthday: values.birthday
-            ? parseLocalDate(values.birthday)
             : undefined,
         };
         await onSave(dataToSave);
@@ -161,7 +152,7 @@ const ProfileForm = ({ user, onSave }: ProfileFormProps) => {
               <p className="text-sm text-red-500">{errors.phone}</p>
             )}
           </div>
-          
+
           {/* Campo Tipo de Dieta */}
           <div className="mb-6">
             <label
