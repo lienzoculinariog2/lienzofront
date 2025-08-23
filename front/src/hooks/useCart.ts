@@ -179,26 +179,26 @@ export const useCart = (userId: string | null) => {
           method: "DELETE",
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          if (response.status === 404) {
-            toast.error("El producto ya no existe en el carrito.");
-            return;
-          }
-          throw new Error(
-            errorData.message || "Error al eliminar el producto."
-          );
-        }
-        const updatedCart: FullCartSummaryDto = await response.json();
-        setCartItems(updatedCart.items);
-        setCartId(updatedCart.id);
-        toast.info("Producto eliminado del carrito.");
-      } catch (error: unknown) {
-        console.error("Error deleting from cart:", error);
-        if (error instanceof Error) {
-          toast.error(error.message || "Error al eliminar el producto.");
-        } else {
-          toast.error("Ocurrió un error inesperado.");
+            if (!response.ok) {
+                const errorData = await response.json();
+                
+                if (response.status === 404) {
+                    toast.error("El producto ya no existe en el carrito.");
+                    return;
+                }
+                
+                throw new Error(errorData.message || 'Error al eliminar el producto.');
+            }
+            const updatedCart: FullCartSummaryDto = await response.json();
+            setCartItems(updatedCart.items);
+            toast.error("Producto eliminado del carrito.");
+        } catch (error: unknown) {
+            console.error('Error deleting from cart:', error);
+            if (error instanceof Error) {
+                toast.error(error.message || 'Error al eliminar el producto.');
+            } else {
+                toast.error('Ocurrió un error inesperado.');
+            }
         }
       }
     },
