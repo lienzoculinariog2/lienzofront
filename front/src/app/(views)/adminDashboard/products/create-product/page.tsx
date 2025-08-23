@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { productService } from "@/services/ProductService";
 import ProductForm from "../../components/ProductForm";
+import { toast } from 'react-toastify'; // <-- Importación de toastify
 
 const CreateNewProduct = () => {
   const router = useRouter();
@@ -10,11 +11,11 @@ const CreateNewProduct = () => {
   const handleCreateProduct = async (formData: FormData) => {
     try {
       await productService.create(formData);
-      alert("Producto creado con éxito!");
+      toast.success("¡Producto creado con éxito!"); // <-- Reemplazado alert() con toast.success()
       router.push("/adminDashboard/edit-products");
     } catch (error) {
       console.error("Error al crear el producto:", error);
-      alert("Hubo un error al crear el producto.");
+      toast.error("Hubo un error al crear el producto."); // <-- Reemplazado alert() con toast.error()
     }
   };
 

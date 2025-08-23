@@ -48,8 +48,7 @@ export const UserInfoPanel = ({ profileData }: Props) => {
         </li>
         <li>
           {/* LÍNEA CORREGIDA: Ahora dice "Fecha de registro" */}
-          <strong>Fecha de registro:</strong>{" "}
-          {formatDate(profileData.birthday)}
+          <strong>Fecha de registro:</strong> {formatDate(profileData.birthday)}
         </li>
         <li>
           <strong>Rol:</strong>{" "}
@@ -58,6 +57,10 @@ export const UserInfoPanel = ({ profileData }: Props) => {
             : profileData.roles === "user"
             ? "Cliente"
             : "Baneado"}
+        </li>
+        <li>
+          <strong>Suscrito:</strong>{" "}
+          {profileData.isSuscribed === true ? "Si" : "No"}
         </li>
       </ul>
     </div>
