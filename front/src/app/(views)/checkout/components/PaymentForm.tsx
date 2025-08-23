@@ -1,50 +1,59 @@
-"use client";
+'use client';
 
-// import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
-// import { FormEvent, useState } from "react";
+import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
+import { FormEvent, useState } from "react";
 
-// export function PaymentForm() {
-//   const stripe = useStripe();
-//   const elements = useElements();
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState<string | null>(null);
+// Define las props que el componente recibirá, incluyendo el clientSecret
+interface PaymentFormProps {
+  clientSecret: string;
+}
 
-//   const handleSubmit = async (e: FormEvent) => {
-//     e.preventDefault();
-//     setLoading(true);
-//     setError(null);
+export function PaymentForm({ clientSecret }: PaymentFormProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-//     if (!stripe || !elements) {
-//       setError("Stripe no está listo.");
-//       setLoading(false);
-//       return;
-//     }
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-//     const result = await stripe.confirmPayment({
-//       elements,
-//       confirmParams: {
-//         return_url: `${window.location.origin}/checkout/success`,
-//       },
-//     });
+    if (!stripe || !elements) {
+      setError("Stripe no está listo.");
+      setLoading(false);
+      return;
+    }
 
-//     if (result.error) {
-//       setError(result.error.message || "Error desconocido.");
-//     }
+    // La lógica de confirmación se mantiene igual, pero ahora usando el clientSecret de las props
+    const result = await stripe.confirmPayment({
+      elements,
+      clientSecret, // Aquí se usa el clientSecret real
+      confirmParams: {
+        return_url: `${window.location.origin}/checkout/success`,
+      },
+    });
 
-//     setLoading(false);
-//   };
+    if (result.error) {
+      setError(result.error.message || "Error desconocido.");
+    }
 
-//   return (
-//     <form onSubmit={handleSubmit} className="space-y-6">
-//       <PaymentElement />
-//       <button
-//         type="submit"
-//         disabled={!stripe || loading}
-//         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-//       >
-//         {loading ? "Procesando..." : "Pagar"}
-//       </button>
-//       {error && <p className="text-red-500 text-sm">{error}</p>}
-//     </form>
-//   );
-// }
+    setLoading(false);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <PaymentElement />
+      <button
+        type="submit"
+        disabled={!stripe || loading}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+      >
+        {loading ? "Procesando..." : "Pagar"}
+      </button>
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+    </form>
+  );
+}
+
+

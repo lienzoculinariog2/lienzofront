@@ -1,28 +1,32 @@
-"use client";
+'use client';
 
-// import { Elements } from "@stripe/react-stripe-js";
-// import { loadStripe } from "@stripe/stripe-js";
-// import { ReactNode } from "react";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe, StripeElementsOptions } from "@stripe/stripe-js";
+import { ReactNode } from "react";
 
-// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
-// interface StripeWrapperProps {
-//   clientSecret: string;
-//   children: ReactNode;
-// }
+interface StripeWrapperProps {
+  clientSecret: string;
+  children: ReactNode;
+}
 
-// export function StripeWrapper({ clientSecret, children }: StripeWrapperProps) {
-//   const options = {
-//     clientSecret,
-//     appearance: {
-//       theme: "flat",
-//       labels: "floating",
-//     },
-//   };
+export function StripeWrapper({ clientSecret, children }: StripeWrapperProps) {
+  // Solución: Definimos explícitamente el tipo de 'options' para que TypeScript no se queje.
+  const options: StripeElementsOptions = {
+    clientSecret,
+    appearance: {
+      theme: 'flat',
+      labels: 'floating',
+    },
+  };
 
-//   return (
-//     <Elements stripe={stripePromise} options={options}>
-//       {children}
-//     </Elements>
-//   );
-// }
+  return (
+    <Elements stripe={stripePromise} options={options}>
+      {children}
+    </Elements>
+  );
+}
+
+
+
