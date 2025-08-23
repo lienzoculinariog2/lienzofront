@@ -17,7 +17,7 @@ const ProductCard: FC<ProductCardProps> = ({
   price,
   stock,
   imgUrl,
-  caloricLevel,
+  // caloricLevel,
   ingredients = [],
   category,
   onAddToCart,
@@ -65,23 +65,45 @@ const ProductCard: FC<ProductCardProps> = ({
     `/product-details/${id}`;
   const hasStock = (stock && stock > 0) || false;
 
-  const caloricColors: { [key: number]: string } = {
-    1: "bg-vegetarian-500",
-    2: "bg-vegetarian-700",
-    3: "bg-yellow-500",
-    4: "bg-daily-menu-500",
-    5: "bg-daily-menu-700",
-  };
+  // const caloricColors: { [key: number]: string } = {
+  //   1: "bg-vegetarian-500",
+  //   2: "bg-vegetarian-700",
+  //   3: "bg-yellow-500",
+  //   4: "bg-daily-menu-500",
+  //   5: "bg-daily-menu-700",
+  // };
 
   return (
     <div className="flex flex-col justify-between w-full max-w-sm h-[540px] transition-transform duration-200 border rounded-lg shadow-lg bg-primary-background-900 border-primary-background-800 hover:scale-105">
       {/* 🔷 ZONA 1: Barras + Imagen */}
       <div>
         <div className="flex flex-col w-full h-4 gap-[2px]">
+  <div className="flex w-full h-2 rounded-full overflow-hidden gap-[2px]">
+    {specialIngredients.filter(i => i.check).length > 0 ? (
+      specialIngredients.map(
+        (item, index) =>
+          item.check && (
+            <div
+              key={index}
+              className={`${item.className} h-full rounded-full`}
+              style={{
+                width: `${
+                  100 / specialIngredients.filter((i) => i.check).length
+                }%`,
+              }}
+            />
+          )
+      )
+    ) : (
+      <div className="w-full h-full bg-transparent rounded-full" />
+    )}
+  </div>
+</div>
+        {/* <div className="flex flex-col w-full h-4 gap-[2px]">
           {typeof caloricLevel === "number" &&
           caloricLevel >= 1 &&
           caloricLevel <= 5 ? (
-            <div className="w-full h-2 rounded-full overflow-hidden">
+            <div className="w-full h-2 overflow-hidden rounded-full">
               <div
                 className={`h-full ${caloricColors[caloricLevel]}`}
                 style={{ width: "100%" }}
@@ -107,7 +129,7 @@ const ProductCard: FC<ProductCardProps> = ({
                 )
             )}
           </div>
-        </div>
+        </div> */}
 
         <Link href={generateUrl(id)}>
           <div className="relative w-full h-52">
@@ -141,7 +163,7 @@ const ProductCard: FC<ProductCardProps> = ({
       </Link>
 
       {/* 🔷 ZONA 3: Precio + Botón */}
-      <div className="px-5 pb-5 flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center px-5 pb-5">
         <div className="mb-2 text-center">
           <span className="text-3xl font-bold text-primary-txt-100">
             {price !== undefined ? `$${price}` : "Sin precio"}

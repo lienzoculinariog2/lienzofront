@@ -170,7 +170,7 @@ export const useCart = (userId: string | null) => {
             }
             const updatedCart: FullCartSummaryDto = await response.json();
             setCartItems(updatedCart.items);
-            toast.info("Producto eliminado del carrito.");
+            toast.error("Producto eliminado del carrito.");
         } catch (error: unknown) {
             console.error('Error deleting from cart:', error);
             if (error instanceof Error) {
