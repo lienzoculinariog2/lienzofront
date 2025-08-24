@@ -1,11 +1,9 @@
-// src/hooks/useCart.ts
-"use client";
+'use client';
 
 import { IProduct } from "@/types/Product";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 
-// ... (interfaces se mantienen igual)
 export interface CartItem {
   id: string; // ID del CartItem (UUID)
   name: string;
@@ -17,6 +15,7 @@ export interface CartItem {
   stock: number;
 }
 interface FullCartSummaryDto {
+  id: string; // <-- AHORA SÍ INCLUIMOS EL ID DEL CARRITO
   items: CartItem[];
   totalItems: number;
   subTotal: number;
@@ -25,12 +24,14 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export const useCart = (userId: string | null) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartId, setCartId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchCart = useCallback(async () => {
     if (!userId) {
       setIsLoading(false);
       setCartItems([]);
+      setCartId(null);
       return;
     }
 
@@ -40,6 +41,7 @@ export const useCart = (userId: string | null) => {
       if (!response.ok) {
         if (response.status === 404) {
           setCartItems([]);
+          setCartId(null);
           return;
         }
         const errorData = await response.json();
@@ -47,6 +49,7 @@ export const useCart = (userId: string | null) => {
       }
       const data: FullCartSummaryDto = await response.json();
       setCartItems(data.items);
+      setCartId(data.id);
     } catch (error: unknown) {
       console.error("Error fetching cart:", error);
       if (error instanceof Error) {
@@ -68,7 +71,6 @@ export const useCart = (userId: string | null) => {
       toast.error("Debes iniciar sesión para añadir un producto al carrito.");
       return;
     }
-
     try {
       const response = await fetch(`${API_URL}/cart/addsingle/${userId}`, {
         method: "POST",
@@ -77,7 +79,6 @@ export const useCart = (userId: string | null) => {
       });
       if (!response.ok) {
         const errorData = await response.json();
-
         if (
           response.status === 400 &&
           errorData.message &&
@@ -94,7 +95,6 @@ export const useCart = (userId: string | null) => {
           );
           return;
         }
-
         throw new Error(
           errorData.message || "Error al añadir producto al carrito."
         );
@@ -102,6 +102,7 @@ export const useCart = (userId: string | null) => {
       const updatedCart: FullCartSummaryDto = await response.json();
       setCartItems(updatedCart.items);
       toast.success(`'${product.name}' agregado al carrito!`);
+      setCartId(updatedCart.id);
     } catch (error: unknown) {
       console.error("Error adding to cart:", error);
       if (error instanceof Error) {
@@ -118,7 +119,6 @@ export const useCart = (userId: string | null) => {
         toast.error("Debes iniciar sesión para actualizar el carrito.");
         return;
       }
-
       try {
         const response = await fetch(`${API_URL}/cart/${userId}`, {
           method: "PUT",
@@ -127,17 +127,12 @@ export const useCart = (userId: string | null) => {
             updates: [{ itemId: itemId, quantity: newQuantity }],
           }),
         });
-
         if (!response.ok) {
           const errorData = await response.json();
-
-          // --- LÓGICA DE MANEJO DE ERRORES MEJORADA ---
-          // Si el error es 400 (Bad Request), asumimos que es de validación (como el stock)
           if (response.status === 400) {
             toast.error("No puedes superar el límite de stock disponible.");
             return;
           }
-          // Si el mensaje es el de "Could not update cart...", mostramos el error genérico
           if (
             errorData.message &&
             errorData.message.includes("Could not update cart")
@@ -147,7 +142,6 @@ export const useCart = (userId: string | null) => {
             );
             return;
           }
-
           throw new Error(
             errorData.message || "Error al actualizar el carrito."
           );
@@ -155,6 +149,7 @@ export const useCart = (userId: string | null) => {
         const updatedCart: FullCartSummaryDto = await response.json();
         setCartItems(updatedCart.items);
         toast.info("Cantidad del producto actualizada.");
+        setCartId(updatedCart.id);
       } catch (error: unknown) {
         console.error("Error updating cart:", error);
         if (error instanceof Error) {
@@ -179,15 +174,12 @@ export const useCart = (userId: string | null) => {
         const response = await fetch(`${API_URL}/cart/${userId}/${itemId}`, {
           method: "DELETE",
         });
-
         if (!response.ok) {
           const errorData = await response.json();
-
           if (response.status === 404) {
             toast.error("El producto ya no existe en el carrito.");
             return;
           }
-
           throw new Error(
             errorData.message || "Error al eliminar el producto."
           );
@@ -195,6 +187,7 @@ export const useCart = (userId: string | null) => {
         const updatedCart: FullCartSummaryDto = await response.json();
         setCartItems(updatedCart.items);
         toast.error("Producto eliminado del carrito.");
+        setCartId(updatedCart.id);
       } catch (error: unknown) {
         console.error("Error deleting from cart:", error);
         if (error instanceof Error) {
@@ -222,6 +215,7 @@ export const useCart = (userId: string | null) => {
       }
       setCartItems([]);
       toast.info("El carrito ha sido vaciado.");
+      setCartId(null);
     } catch (error: unknown) {
       console.error("Error resetting cart:", error);
       if (error instanceof Error) {
@@ -266,5 +260,6 @@ export const useCart = (userId: string | null) => {
     isLoading,
     handleAddQuantity,
     handleRemoveQuantity,
+    cartId,
   };
 };

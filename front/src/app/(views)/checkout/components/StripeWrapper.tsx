@@ -12,7 +12,6 @@ interface StripeWrapperProps {
 }
 
 export function StripeWrapper({ clientSecret, children }: StripeWrapperProps) {
-  // Solución: Definimos explícitamente el tipo de 'options' para que TypeScript no se queje.
   const options: StripeElementsOptions = {
     clientSecret,
     appearance: {
@@ -27,6 +26,5 @@ export function StripeWrapper({ clientSecret, children }: StripeWrapperProps) {
     </Elements>
   );
 }
-
 
 

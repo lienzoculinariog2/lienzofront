@@ -3,7 +3,6 @@
 import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
 import { FormEvent, useState } from "react";
 
-// Define las props que el componente recibirá, incluyendo el clientSecret
 interface PaymentFormProps {
   clientSecret: string;
 }
@@ -25,10 +24,9 @@ export function PaymentForm({ clientSecret }: PaymentFormProps) {
       return;
     }
 
-    // La lógica de confirmación se mantiene igual, pero ahora usando el clientSecret de las props
     const result = await stripe.confirmPayment({
       elements,
-      clientSecret, // Aquí se usa el clientSecret real
+      clientSecret,
       confirmParams: {
         return_url: `${window.location.origin}/checkout/success`,
       },
