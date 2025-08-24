@@ -24,6 +24,14 @@ export function PaymentForm({ clientSecret }: PaymentFormProps) {
       return;
     }
 
+    const { error: submitError } = await elements.submit();
+    if (submitError) {
+      // 🎯 CORRECCIÓN: Usamos el operador ?? para manejar el caso de 'undefined'
+      setError(submitError.message ?? "Error desconocido en el formulario.");
+      setLoading(false);
+      return;
+    }
+
     const result = await stripe.confirmPayment({
       elements,
       clientSecret,
@@ -53,5 +61,4 @@ export function PaymentForm({ clientSecret }: PaymentFormProps) {
     </form>
   );
 }
-
 
