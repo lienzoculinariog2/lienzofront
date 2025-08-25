@@ -1,6 +1,10 @@
-'use client';
+"use client";
 
-import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
+import {
+  useStripe,
+  useElements,
+  PaymentElement,
+} from "@stripe/react-stripe-js";
 import { FormEvent, useState } from "react";
 
 interface PaymentFormProps {
@@ -24,14 +28,16 @@ export function PaymentForm({ clientSecret }: PaymentFormProps) {
       return;
     }
 
+    // Paso 1: Llamar a elements.submit() para validar los datos.
+    // Esta llamada es síncrona, pero la documentación de Stripe indica que debe ir primero.
     const { error: submitError } = await elements.submit();
     if (submitError) {
-      // 🎯 CORRECCIÓN: Usamos el operador ?? para manejar el caso de 'undefined'
-      setError(submitError.message ?? "Error desconocido en el formulario.");
+      setError(submitError.message || "Error desconocido en el formulario.");
       setLoading(false);
       return;
     }
 
+    // Paso 2: Si el formulario es válido, proceder a confirmar el pago.
     const result = await stripe.confirmPayment({
       elements,
       clientSecret,
@@ -40,8 +46,14 @@ export function PaymentForm({ clientSecret }: PaymentFormProps) {
       },
     });
 
+    // Paso 3: Manejar el resultado de la confirmación.
     if (result.error) {
-      setError(result.error.message || "Error desconocido.");
+      setError(
+        result.error.message || "Error desconocido durante la confirmación."
+      );
+    } else {
+      // La redirección a `return_url` ocurrirá automáticamente aquí.
+      console.log("Pago enviado. Redireccionando...");
     }
 
     setLoading(false);
@@ -49,16 +61,15 @@ export function PaymentForm({ clientSecret }: PaymentFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <PaymentElement />
+      <PaymentElement />{" "}
       <button
         type="submit"
-        disabled={!stripe || loading}
+        disabled={!stripe || !elements || loading}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
       >
-        {loading ? "Procesando..." : "Pagar"}
+        {loading ? "Procesando..." : "Pagar"}{" "}
       </button>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-red-500 text-sm">{error}</p>}{" "}
     </form>
   );
 }
-
