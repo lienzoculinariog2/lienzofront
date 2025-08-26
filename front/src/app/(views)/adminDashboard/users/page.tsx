@@ -7,7 +7,11 @@ import { IUser } from "@/types/User";
 import Button from "@/components/ui/Button";
 
 const UserManagementList = () => {
-  const { getAccessTokenSilently, isAuthenticated, user: auth0User } = useAuth0();
+  const {
+    getAccessTokenSilently,
+    isAuthenticated,
+    user: auth0User,
+  } = useAuth0();
   const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +40,10 @@ const UserManagementList = () => {
     }
   };
 
-  const handleRoleChange = async (userId: string, newRole: "admin" | "user" | "banned") => {
+  const handleRoleChange = async (
+    userId: string,
+    newRole: "admin" | "user" | "banned"
+  ) => {
     setUpdating(userId);
     try {
       const accessToken = await getAccessTokenSilently();
@@ -89,7 +96,9 @@ const UserManagementList = () => {
               </p>
               <p className="mt-1">
                 <span className="font-semibold text-green-400">Dirección:</span>
-                <span className="ml-1 break-all">{user.address || "No especificada"}</span>
+                <span className="ml-1 break-all">
+                  {user.address || "No especificada"}
+                </span>
               </p>
             </div>
           </div>
@@ -102,9 +111,13 @@ const UserManagementList = () => {
                 <span className="ml-1">{user.phone || "No especificado"}</span>
               </p>
               <p className="mt-1">
-                <span className="font-semibold text-green-400">Cumpleaños:</span>
+                <span className="font-semibold text-green-400">
+                  Cumpleaños:
+                </span>
                 <span className="ml-1">
-                  {user.birthday ? new Date(user.birthday).toLocaleDateString() : "No especificado"}
+                  {user.birthday
+                    ? new Date(user.birthday).toLocaleDateString()
+                    : "No especificado"}
                 </span>
               </p>
             </div>
@@ -119,7 +132,9 @@ const UserManagementList = () => {
               </p>
               <p className="mt-1">
                 <span className="font-semibold text-green-400">Dieta:</span>
-                <span className="ml-1 capitalize">{user.diet || "No especificada"}</span>
+                <span className="ml-1 capitalize">
+                  {user.diet || "No especificada"}
+                </span>
               </p>
             </div>
           </div>
@@ -174,12 +189,14 @@ const UserManagementList = () => {
       {/* Resto de usuarios */}
       <div className="p-6 mt-8 shadow-lg rounded-2xl bg-black/50 backdrop-blur-md">
         <h2 className="mb-8 text-2xl font-bold text-primary-txt-500">
-           Lista de usuarios
+          Lista de usuarios
         </h2>
         {otherUsers.length === 0 ? (
           <p className="text-gray-400">No hay otros usuarios para mostrar.</p>
         ) : (
-          <ul className="flex flex-col gap-8">{otherUsers.map(renderUserCard)}</ul>
+          <ul className="flex flex-col gap-8">
+            {otherUsers.map(renderUserCard)}
+          </ul>
         )}
       </div>
     </div>

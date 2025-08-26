@@ -179,116 +179,112 @@ const SearchBar = ({ onSearch, categories }: SearchBarProps) => {
   };
 
   return (
-    <form className="mx-auto my-4" onSubmit={handleFormSubmit}>
-      <div className="relative flex w-full rounded-lg shadow-md">
-        {/* Dropdown de Categorías */}
-        <div className="relative w-1/4 min-w-max">
-          <Button
-            id="dropdown-button"
-            type="button"
-            variant="dark"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center justify-between w-full h-full px-4 py-2.5 text-sm font-medium text-center rounded-l-lg"
+<form className="mx-auto my-4" onSubmit={handleFormSubmit}>
+  <div className="relative flex w-full gap-2 rounded-lg shadow-md">
+    {/* Dropdown de Categorías */}
+    <div className="relative w-1/4 min-w-max">
+      <Button
+        id="dropdown-button"
+        type="button"
+        variant="dark"
+        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        className="flex items-center justify-between w-full h-full px-4 py-2.5 text-sm font-medium text-center rounded-l-lg"
+      >
+        {selectedCategory.name}
+        <ChevronDown className="w-4 h-4 ms-2.5" />
+      </Button>
+      {isDropdownOpen && (
+        <div
+          id="dropdown"
+          className="absolute left-0 z-10 w-full mt-1 divide-y rounded-lg shadow-xl top-full bg-primary-background-900 divide-primary-background-800"
+        >
+          <ul
+            className="py-2 text-sm text-secondary-txt-500"
+            aria-labelledby="dropdown-button"
           >
-            {selectedCategory.name}
-            <ChevronDown className="w-4 h-4 ms-2.5" />
-          </Button>
-          {isDropdownOpen && (
-            <div
-              id="dropdown"
-              className="absolute left-0 z-10 w-full mt-1 divide-y rounded-lg shadow-xl top-full bg-primary-background-900 divide-primary-background-800"
-            >
-              <ul className="py-2 text-sm text-secondary-txt-500" aria-labelledby="dropdown-button">
-                {categories.map((category) => (
-                  <li key={category.id}>
-                    <button
-                      type="button"
-                      onClick={() => handleCategorySelect(category)}
-                      className="inline-flex w-full px-4 py-2 transition-colors hover:bg-primary-background-700 hover:text-primary-txt-100"
-                    >
-                      {category.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        {/* Input de Búsqueda */}
-        <div className="relative flex items-stretch flex-1">
-          <input
-            type="search"
-            id="search-dropdown"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="block w-full p-2.5 text-sm rounded-lg text-primary-txt-100 bg-primary-background-700 border-l-2 border border-secondary-background-700 focus:ring-daily-menu-500 focus:border-daily-menu-500 placeholder-secondary-txt-500 outline-none"
-            placeholder="Buscar..."
-          />
-        </div>
-
-        {/* ✅ Botón Desplegable de Precio */}
-        <div className="relative w-max">
-          <Button
-            type="button"
-            variant="dark"
-            className="flex items-center justify-center w-full h-full px-4 py-2.5 text-sm font-medium text-center"
-            onClick={() => setIsPriceDropdownOpen(!isPriceDropdownOpen)}
-          >
-            <DollarSign className="w-5 h-5" />
-          </Button>
-          {isPriceDropdownOpen && (
-            <div className="absolute right-0 z-10 w-64 p-4 mt-1 rounded-lg shadow-xl top-full bg-primary-background-900">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-primary-txt-100">Rango de Precio</span>
-                <button type="button" onClick={() => setIsPriceDropdownOpen(false)}>
-                  <X className="w-4 h-4 text-secondary-txt-500 hover:text-primary-txt-100" />
+            {categories.map((category) => (
+              <li key={category.id}>
+                <button
+                  type="button"
+                  onClick={() => handleCategorySelect(category)}
+                  className="inline-flex w-full px-4 py-2 transition-colors hover:bg-primary-background-700 hover:text-primary-txt-100"
+                >
+                  {category.name}
                 </button>
-              </div>
-              <div className="flex gap-2">
-                <input
-                  type="number"
-                  placeholder="Mín."
-                  className="flex-1 px-3 py-2 text-sm rounded-md bg-primary-background-700 text-primary-txt-100 placeholder-secondary-txt-500 focus:outline-none focus:ring-2 focus:ring-daily-menu-500"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
-                />
-                <input
-                  type="number"
-                  placeholder="Máx."
-                  className="flex-1 px-3 py-2 text-sm rounded-md bg-primary-background-700 text-primary-txt-100 placeholder-secondary-txt-500 focus:outline-none focus:ring-2 focus:ring-daily-menu-500"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                />
-              </div>
-              <div className="flex gap-2 mt-4">
-                <Button
-                  type="button"
-                  variant="dailyMenu"
-                  onClick={handlePriceClear}
-                  className="flex-1"
-                >
-                  Limpiar
-                </Button>
-                <Button
-                  type="button"
-                  variant="dailyMenu"
-                  className="flex-1"
-                  onClick={handlePriceApply}
-                >
-                  Aplicar
-                </Button>
-              </div>
-            </div>
-          )}
+              </li>
+            ))}
+          </ul>
         </div>
+      )}
+    </div>
 
-        {/* Botón de búsqueda principal */}
-        <Button type="submit" variant="dailyMenu">
-          <Search className="w-5 h-5" />
-        </Button>
-      </div>
-    </form>
+    {/* ✅ Botón de Precio */}
+    <div className="relative w-max">
+      <Button
+        type="button"
+        variant="dark"
+        className="flex items-center justify-center w-full h-full px-4 py-2.5 text-sm font-medium text-center"
+        onClick={() => setIsPriceDropdownOpen(!isPriceDropdownOpen)}
+      >
+        <DollarSign className="w-5 h-5" />
+      </Button>
+    </div>
+
+    {/* Input de Búsqueda */}
+    <div className="relative flex items-stretch flex-1">
+      <input
+        type="search"
+        id="search-dropdown"
+        value={searchTerm}
+        onChange={handleSearchChange}
+        className="block w-full p-2.5 text-sm rounded-lg text-primary-txt-100 bg-primary-background-700 border-l-2 border border-secondary-background-700 focus:ring-daily-menu-500 focus:border-daily-menu-500 placeholder-secondary-txt-500 outline-none"
+        placeholder="Buscar..."
+      />
+    </div>
+
+    {/* Botón de búsqueda principal */}
+    <Button type="submit" variant="dailyMenu">
+      <Search className="w-5 h-5" />
+    </Button>
+  </div>
+
+  {/* ✅ Bloque que aparece debajo al abrir precios */}
+  {isPriceDropdownOpen && (
+    <div className="flex gap-2 mt-3">
+      <input
+        type="number"
+        placeholder="Mín."
+        className="flex-1 px-3 py-2 text-sm rounded-md bg-primary-background-700 text-primary-txt-100 placeholder-secondary-txt-500 focus:outline-none focus:ring-2 focus:ring-daily-menu-500"
+        value={minPrice}
+        onChange={(e) => setMinPrice(e.target.value)}
+      />
+      <input
+        type="number"
+        placeholder="Máx."
+        className="flex-1 px-3 py-2 text-sm rounded-md bg-primary-background-700 text-primary-txt-100 placeholder-secondary-txt-500 focus:outline-none focus:ring-2 focus:ring-daily-menu-500"
+        value={maxPrice}
+        onChange={(e) => setMaxPrice(e.target.value)}
+      />
+      <Button
+        type="button"
+        variant="dailyMenu"
+        onClick={handlePriceClear}
+        className="px-4"
+      >
+        Limpiar
+      </Button>
+      <Button
+        type="button"
+        variant="dailyMenu"
+        onClick={handlePriceApply}
+        className="px-4"
+      >
+        Aplicar
+      </Button>
+    </div>
+  )}
+</form>
+
   );
 };
 

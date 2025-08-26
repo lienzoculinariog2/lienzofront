@@ -1,5 +1,3 @@
-// app/profile/page.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,20 +7,19 @@ import Spinner from "@/components/ui/Spinner";
 import { userService } from "@/services/draft/userService";
 import { IUser } from "@/types/User";
 import { UserInfoPanel } from "./components/UserInfoPanel";
+import { UserOrders } from "./components/UserOrders";
 
 export default function ProfilePage() {
-  const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
-    useAuth0();
+  const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const [profileData, setProfileData] = useState<IUser | null>(null);
   const [isFetchingProfile, setIsFetchingProfile] = useState(true);
+  const [showForm, setShowForm] = useState(false); // 👈 nuevo estado
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      // Ahora solo buscamos, ya que UserSync se encarga de la creación
       if (isAuthenticated && user?.sub) {
         try {
           const accessToken = await getAccessTokenSilently();
-          // Usamos 'getOrCreateUser' por seguridad, aunque ya debería existir
           const profile = await userService.getOrCreateUser(
             user.sub,
             user.email || "",
@@ -43,14 +40,10 @@ export default function ProfilePage() {
     if (!isAuthenticated || !user?.sub) return;
     try {
       const accessToken = await getAccessTokenSilently();
-      // La lógica de guardado ahora solo actualiza
-      const updatedProfile = await userService.update(
-        user.sub,
-        formData,
-        accessToken
-      );
+      const updatedProfile = await userService.update(user.sub, formData, accessToken);
       setProfileData(updatedProfile);
       alert("¡Perfil actualizado con éxito!");
+      setShowForm(false); // 👈 cerrar el formulario al guardar
     } catch (error) {
       console.error("Error saving user profile:", error);
       alert("Error al guardar el perfil.");
@@ -66,14 +59,18 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-8">
+    <div className="container p-4 mx-auto md:p-8">
       {/* Panel informativo del usuario */}
-      <UserInfoPanel profileData={profileData} />
+      <UserInfoPanel profileData={profileData} onEditClick={() => setShowForm(!showForm)} />
 
-      {/* Formulario de edición */}
-      <div className="mt-8">
-        <ProfileForm user={profileData} onSave={handleSaveProfile} />
-      </div>
+      {/* Formulario de edición, solo visible si showForm es true */}
+      {showForm && (
+        <div className="mt-8">
+          <ProfileForm user={profileData} onSave={handleSaveProfile} />
+        </div>
+      )}
+      <UserOrders userId={profileData.id} />
     </div>
   );
 }
+
