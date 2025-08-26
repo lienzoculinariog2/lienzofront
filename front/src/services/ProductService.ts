@@ -158,35 +158,37 @@ export const productService = {
     return data;
   },
 
-  
   async getPaginatedAndFiltered(params: {
-  page: number;
-  limit: number;
-  category?: string;
-  term?: string;
-}): Promise<PaginatedResponse<IProduct>> {
-  try {
-    const response = await api.get<PaginatedResponse<IProduct>>("/products", {
-      params: {
+    page: number;
+    limit: number;
+    category?: string;
+    term?: string;
+    price_min?: number; // ✅ Nuevo
+    price_max?: number; // ✅ Nuevo
+  }): Promise<PaginatedResponse<IProduct>> {
+    try {
+      const response = await api.get<PaginatedResponse<IProduct>>("/products", {
+        params: {
+          page: params.page,
+          limit: params.limit,
+          categoryId: params.category,
+          name: params.term,
+          price_min: params.price_min, // ✅ Nuevo
+          price_max: params.price_max, // ✅ Nuevo
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener productos paginados y filtrados:", error);
+      return {
+        data: [],
+        totalItems: 0,
         page: params.page,
         limit: params.limit,
-        categoryId: params.category,
-        name: params.term,
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error("Error al obtener productos paginados y filtrados:", error);
-    return {
-      data: [],
-      totalItems: 0,
-      page: params.page,
-      limit: params.limit,
-      totalPages: 0,
-      hasNextPage: false,
-    };
-  }
-}
-
+        totalPages: 0,
+        hasNextPage: false,
+      };
+    }
+  },
 };
