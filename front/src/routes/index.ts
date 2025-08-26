@@ -4,4 +4,6 @@ export const Routes = {
   profile: "/profile",
   products: "/products",
   adminDashboard: "/adminDashboard",
+  reviews: "/reviews",
+  addReview: "/reviews/add-review",
 };
