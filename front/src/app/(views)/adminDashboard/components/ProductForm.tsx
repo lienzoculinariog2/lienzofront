@@ -8,15 +8,17 @@ import Image from "next/image";
 import { categoriesServices } from "@/services/CategoryService";
 import { useRouter } from "next/navigation";
 
-
 interface ProductFormProps {
   product: IProduct | null;
   onSave: (formData: FormData) => void;
   onCancel: () => void;
 }
 
-
-const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) => {
+const ProductForm: React.FC<ProductFormProps> = ({
+  product,
+  onSave,
+  onCancel,
+}) => {
   const router = useRouter();
   const [formData, setFormData] = useState<Partial<IProduct>>(
     product || {
@@ -50,14 +52,12 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
     fetchCategories();
   }, []);
 
-  
   useEffect(() => {
     if (product) {
       setFormData(product);
     }
   }, [product]);
 
-  
   const handleRemoveImage = () => {
     setSelectedImage(null);
     setFormData((prev) => ({ ...prev, imgUrl: "" }));
@@ -109,56 +109,56 @@ const ProductForm: React.FC<ProductFormProps> = ({ product, onSave, onCancel }) 
     }
   };
 
- const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setSuccess(false);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSuccess(false);
 
-  if (!product && !selectedImage) {
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      imgUrl: "Por favor, sube una imagen.",
-    }));
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    const multipartData = new FormData();
-    multipartData.append("name", formData.name || "");
-    multipartData.append("description", formData.description || "");
-    multipartData.append("price", String(formData.price || 0));
-    multipartData.append("stock", String(formData.stock || 0));
-    multipartData.append("caloricLevel", String(formData.caloricLevel || 1));
-    multipartData.append("isActive", String(formData.isActive ?? true));
-    multipartData.append("categoryId", formData.category?.id || "");
-
-   if (formData.ingredients && formData.ingredients.length > 0) {
-  formData.ingredients.forEach((ingredient) =>
-    multipartData.append("ingredients", ingredient.name) // 👈 usar name
-  );
-}
-
-    if (selectedImage) {
-      multipartData.append("image", selectedImage); // 👈 clave correcta
+    if (!product && !selectedImage) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        imgUrl: "Por favor, sube una imagen.",
+      }));
+      return;
     }
-for (const pair of multipartData.entries()) {
-  console.log(pair[0], pair[1]);
-}
-    await onSave(multipartData); // 👈 ahora concuerda con tu ProductService
-    router.replace("/adminDashboard");
-  } catch (err) {
-    console.error("Error al enviar:", err);
-  } finally {
-    setLoading(false);
-  }
-};
+
+    try {
+      setLoading(true);
+
+      const multipartData = new FormData();
+      multipartData.append("name", formData.name || "");
+      multipartData.append("description", formData.description || "");
+      multipartData.append("price", String(formData.price || 0));
+      multipartData.append("stock", String(formData.stock || 0));
+      multipartData.append("caloricLevel", String(formData.caloricLevel || 1));
+      multipartData.append("isActive", String(formData.isActive ?? true));
+      multipartData.append("categoryId", formData.category?.id || "");
+
+      if (formData.ingredients && formData.ingredients.length > 0) {
+        formData.ingredients.forEach(
+          (ingredient) => multipartData.append("ingredients", ingredient.name) // 👈 usar name
+        );
+      }
+
+      if (selectedImage) {
+        multipartData.append("image", selectedImage); // 👈 clave correcta
+      }
+      for (const pair of multipartData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
+      await onSave(multipartData); // 👈 ahora concuerda con tu ProductService
+      router.replace("/adminDashboard");
+    } catch (err) {
+      console.error("Error al enviar:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="flex items-center justify-center min-h-screen bg-primary-background-500">
       <div className="w-full max-w-2xl p-8 rounded-lg shadow-xl bg-secondary-background-700">
         <h1 className="mb-6 text-2xl font-bold text-center underline text-primary-txt-500">
-           {product ? 'Editar Producto' : 'Crear Producto'}
+          {product ? "Editar Producto" : "Crear Producto"}
         </h1>
 
         <form
@@ -273,13 +273,13 @@ for (const pair of multipartData.entries()) {
                     width={350}
                     height={160}
                   />
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  className="absolute flex items-center justify-center w-6 h-6 font-bold text-m text-primary-txt-400 top-1 right-1 hover:opacity-100"
-                >
-                  X
-                </button>
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="absolute flex items-center justify-center w-6 h-6 font-bold text-m text-primary-txt-400 top-1 right-1 hover:opacity-100"
+                  >
+                    X
+                  </button>
                 </div>
               </div>
             )}
@@ -355,7 +355,7 @@ for (const pair of multipartData.entries()) {
             )}
           </div>
 
-          <div className="flex items-center gap-2 mt-2">
+          {/* <div className="flex items-center gap-2 mt-2">
             <input
               id="isActive"
               name="isActive"
@@ -375,24 +375,31 @@ for (const pair of multipartData.entries()) {
                 {errors.isActive}
               </p>
             )}
-          </div>
+          </div> */}
 
           <Button type="submit" disabled={loading} variant="dailyMenu">
-             {loading ? "Enviando..." : product ? "Actualizar producto" : "Crear producto"}
+            {loading
+              ? "Enviando..."
+              : product
+              ? "Actualizar producto"
+              : "Crear producto"}
           </Button>
 
           {success && (
             <p className="flex items-center justify-center gap-2 mt-2 text-center text-green-500">
-              <span className="text-xl">✅</span> {product ? 'Producto actualizado con éxito' : 'Producto creado con éxito'}
+              <span className="text-xl">✅</span>{" "}
+              {product
+                ? "Producto actualizado con éxito"
+                : "Producto creado con éxito"}
             </p>
           )}
           <Button type="button" onClick={onCancel} variant="dark">
             Cancelar
           </Button>
-          </form>
+        </form>
       </div>
     </section>
   );
-}
+};
 
 export default ProductForm;

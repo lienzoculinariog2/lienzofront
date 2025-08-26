@@ -125,7 +125,7 @@ export const AdminOrdersPage = () => {
 
               {/* Total */}
               <div className="mt-4 font-bold text-right text-green-400">
-                Total: ${order.total.toFixed(2)}
+                Total: ${order.totalAmount.toFixed(2)}
               </div>
             </div>
           ))}

@@ -5,7 +5,7 @@ export interface IProduct {
   id: string;
   name: string;
   description: string;
-  price: string;
+  price: number;
   stock: number;
   imgUrl?: string | null;
   isActive: boolean;
