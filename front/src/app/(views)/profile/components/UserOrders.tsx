@@ -14,22 +14,24 @@ export function UserOrders({ userId }: Props) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+ useEffect(() => {
     const fetchOrders = async () => {
-      try {
-        const data = await orderService.getUserOrders(userId);
-        setOrders(data);
-      } catch (error) {
-        console.error("Error fetching user orders:", error);
-      } finally {
-        setLoading(false);
-      }
+        try {
+            const data = await orderService.getUserOrders(userId);
+            // Ordena las órdenes por fecha de la más reciente a la más antigua
+            const sortedOrders = data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            setOrders(sortedOrders);
+        } catch (error) {
+            console.error("Error fetching user orders:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (userId) {
-      fetchOrders();
+        fetchOrders();
     }
-  }, [userId]);
+}, [userId]);
 
   if (loading) return <Spinner />;
 
@@ -48,11 +50,11 @@ export function UserOrders({ userId }: Props) {
   //   }
   // };
   const statusTranslations: Record<string, string> = {
-    pending: "Pendiente",
-    paid: "Pagado",
-    shipped: "Enviado",
-    delivered: "Entregado",
-    canceled: "Cancelado",
+    pending: "Pago Pendiente",
+    processing: "Pago en proceso",
+    completed: "Pago Exitoso",
+    cancelled: "Pago Cancelado",
+    failed: "Error en el pago",
   };
 
   return (
@@ -74,16 +76,16 @@ export function UserOrders({ userId }: Props) {
               <span
                 className={`px-3 py-1 text-sm font-medium rounded-lg capitalize
                   ${
-                    order.statusOrder === "pending"
+                    order.status === "pending"
                       ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                      : order.statusOrder === "shipped"
+                      : order.status === "processing"
                       ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                      : order.statusOrder === "delivered"
+                      : order.status === "completed"
                       ? "bg-green-500/20 text-green-400 border border-green-500/30"
                       : "bg-red-500/20 text-red-400 border border-red-500/30"
                   }`}
               >
-                {statusTranslations[order.statusOrder] || order.statusOrder}
+                {statusTranslations[order.status] || order.status}
               </span>
             </div>
 
@@ -93,7 +95,6 @@ export function UserOrders({ userId }: Props) {
               {new Date(order.date).toLocaleDateString("es-UY")}
             </p>
 
-            {/* Productos */}
             {/* Productos */}
             <div className="mt-6">
               <h3 className="mb-2 text-sm font-semibold text-primary-txt-300">
@@ -120,7 +121,7 @@ export function UserOrders({ userId }: Props) {
                     Total
                   </span>
                   <span className="text-lg font-bold text-primary-txt-100">
-                    ${Number(order.total).toFixed(2)}
+                    ${Number(order.totalAmount).toFixed(2)}
                   </span>
                 </li>
               </ul>
