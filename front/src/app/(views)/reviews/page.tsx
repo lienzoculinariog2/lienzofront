@@ -24,7 +24,8 @@ export default async function ReviewsPage() {
 
       {filteredReviews.length === 0 ? (
         <p className="text-center text-lg text-gray-500">
-          No hay reseñas de nuestro sitio aún, ¡sé el primero!
+          No hay reseñas de nuestro sitio aún, ¡sé el primero en compartir tu
+          opinión!
         </p>
       ) : (
         <div className="reviews-list">
