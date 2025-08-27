@@ -1,8 +1,9 @@
 export type IStatusOrder =
   | "pending"
-  | "confirmed"
-  | "delivered"
+  | "processing"
+  | "completed"
   | "cancelled"
+  | "failed";
 
 export interface OrderDetail {
   id: string;
