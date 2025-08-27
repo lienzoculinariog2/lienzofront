@@ -1,33 +1,51 @@
-'use client';
+// src/hooks/useStripeCheckout.ts (Option 1)
+"use client";
 
-import { useCallback } from "react";
-import axios from "axios";
+import { useState, useCallback } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { toast } from "react-toastify";
+// Add axios back for consistency with old code if needed
+import axios from "axios"; 
 
-export function useStripeCheckout() {
-  const createPaymentIntent = useCallback(async (userId: string) => {
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (!apiUrl) {
-        throw new Error('API URL is not defined in environment variables.');
-      }
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
-      const response = await axios.post(`${apiUrl}/checkout/${userId}/complete`, {
-        shippingAddress: "123 Calle Falsa, Springfield",
-      });
-      
-      return response.data.paymentIntent.clientSecret as string;
+export const useStripeCheckout = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { user, isAuthenticated } = useAuth0();
 
-    } catch (error) {
-      console.error("Error al crear PaymentIntent:", error);
-      toast.error("Error al iniciar el pago. Intenta de nuevo.");
+  const createPaymentIntent = useCallback(async () => {
+    const userId = user?.sub;
+
+    if (!isAuthenticated || !userId) {
+      toast.error("Debes iniciar sesión para completar la compra.");
       return null;
     }
-  }, []);
+
+    setIsLoading(true);
+    try {
+      // ✅ Change the endpoint to the one your backend uses
+      const response = await axios.post(
+        `${API_URL}/checkout/${userId}/complete`,
+        {
+          shippingAddress: "123 Calle Falsa, Springfield",
+        }
+      );
+
+      return response.data.paymentIntent.clientSecret as string;
+      
+    } catch (error) {
+      console.error("Error creating PaymentIntent:", error);
+      toast.error("Error al iniciar el pago. Intenta de nuevo.");
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, user?.sub]);
 
   return {
     createPaymentIntent,
+    isLoading,
   };
-}
+};
 
 

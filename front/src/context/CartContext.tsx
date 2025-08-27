@@ -1,11 +1,18 @@
-'use client';
+// src/context/CartContext.tsx
+"use client";
 
-import { IProduct } from "@/types/Product";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from "react";
 import { toast } from "react-toastify";
+import { useAuth0 } from "@auth0/auth0-react";
+import { IProduct } from "@/types/Product";
+// ✅ Importa el nuevo hook de sincronización
 
+// Define la URL de la API
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
+// Define las interfaces necesarias
 export interface CartItem {
-  id: string;
+  id: string; 
   name: string;
   price: number;
   quantity: number;
@@ -14,24 +21,48 @@ export interface CartItem {
   description: string;
   stock: number;
 }
+
 interface FullCartSummaryDto {
-  id: string;
+  id: string; 
   items: CartItem[];
   totalItems: number;
   subTotal: number;
 }
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
-export const useCart = (userId: string | null) => {
+// Define la interfaz del contexto para el tipado
+interface CartContextType {
+  cartItems: CartItem[];
+  addToCart: (product: Partial<IProduct>) => Promise<void>;
+  updateCartQuantity: (itemId: string, newQuantity: number) => Promise<void>;
+  deleteCartItem: (itemId: string) => Promise<void>;
+  resetCart: () => Promise<void>;
+  totalQuantity: number;
+  isLoading: boolean;
+  handleAddQuantity: (itemId: string) => void;
+  handleRemoveQuantity: (itemId: string) => void;
+  cartId: string | null;
+  refreshCart: () => void;
+}
+
+// 1. Crea el contexto
+const CartContext = createContext<CartContextType | null>(null);
+
+// 2. Crea el proveedor que contiene toda la lógica
+export function CartProvider({ children }: { children: ReactNode }) {
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const userId = user?.sub || null;
+  
+
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartId, setCartId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // ✅ CAMBIO CLAVE: Usar useRef para almacenar una referencia estable
+  // ✅ Incluimos el useRef para las notificaciones
   const toastRef = useRef(toast);
 
   const fetchCart = useCallback(async () => {
-    if (!userId) {
+    // ✅ Condición mejorada: espera a que el usuario esté autenticado Y sincronizado
+    if (!isAuthenticated || !userId ) {
       setIsLoading(false);
       setCartItems([]);
       setCartId(null);
@@ -40,7 +71,14 @@ export const useCart = (userId: string | null) => {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_URL}/cart/${userId}`);
+      const accessToken = await getAccessTokenSilently();
+      const response = await fetch(`${API_URL}/cart/${userId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
       if (!response.ok) {
         if (response.status === 404) {
           setCartItems([]);
@@ -63,48 +101,44 @@ export const useCart = (userId: string | null) => {
     } finally {
       setIsLoading(false);
     }
-  }, [userId]);
+  }, [isAuthenticated, userId, getAccessTokenSilently]); // ✅ Agrega isUserSynced a las dependencias
 
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
 
-   const refreshCart = useCallback(() => {
+  // ✅ Incluimos la función refreshCart
+  const refreshCart = useCallback(() => {
     fetchCart();
   }, [fetchCart]);
 
   const addToCart = async (product: Partial<IProduct>) => {
-    if (!userId || !product.id) {
-      toastRef.current.error("Debes iniciar sesión para añadir un producto al carrito.");
+    // ✅ Condición mejorada: espera a que el usuario esté autenticado Y sincronizado
+    if (!isAuthenticated || !userId || !product.id) {
+      toastRef.current.error("El usuario no está listo. Por favor, intenta de nuevo.");
       return;
     }
     try {
+      const accessToken = await getAccessTokenSilently();
       const response = await fetch(`${API_URL}/cart/addsingle/${userId}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
         body: JSON.stringify({ productId: product.id, quantity: 1 }),
       });
       if (!response.ok) {
         const errorData = await response.json();
-        if (
-          response.status === 400 &&
-          errorData.message &&
-          errorData.message.includes("stock")
-        ) {
-          toastRef.current.error(
-            "Has llegado al límite de stock disponible para este producto."
-          );
+        if (response.status === 400 && errorData.message && errorData.message.includes("stock")) {
+          toastRef.current.error("Has llegado al límite de stock disponible para este producto.");
           return;
         }
         if (errorData.message && errorData.message.includes("iniciar sesión")) {
-          toastRef.current.error(
-            "Debes iniciar sesión para agregar productos al carrito."
-          );
+          toastRef.current.error("Debes iniciar sesión para agregar productos al carrito.");
           return;
         }
-        throw new Error(
-          errorData.message || "Error al añadir producto al carrito."
-        );
+        throw new Error(errorData.message || "Error al añadir producto al carrito.");
       }
       const updatedCart: FullCartSummaryDto = await response.json();
       setCartItems(updatedCart.items);
@@ -122,14 +156,19 @@ export const useCart = (userId: string | null) => {
 
   const updateCartQuantity = useCallback(
     async (itemId: string, newQuantity: number) => {
-      if (!userId) {
-        toastRef.current.error("Debes iniciar sesión para actualizar el carrito.");
+      // ✅ Condición mejorada: espera a que el usuario esté autenticado Y sincronizado
+      if (!isAuthenticated || !userId ) {
+        toastRef.current.error("El usuario no está listo. Por favor, intenta de nuevo.");
         return;
       }
       try {
+        const accessToken = await getAccessTokenSilently();
         const response = await fetch(`${API_URL}/cart/${userId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
           body: JSON.stringify({
             updates: [{ itemId: itemId, quantity: newQuantity }],
           }),
@@ -140,18 +179,11 @@ export const useCart = (userId: string | null) => {
             toastRef.current.error("No puedes superar el límite de stock disponible.");
             return;
           }
-          if (
-            errorData.message &&
-            errorData.message.includes("Could not update cart")
-          ) {
-            toastRef.current.error(
-              "Ocurrió un error al actualizar el carrito. Por favor, intenta de nuevo."
-            );
+          if (errorData.message && errorData.message.includes("Could not update cart")) {
+            toastRef.current.error("Ocurrió un error al actualizar el carrito. Por favor, intenta de nuevo.");
             return;
           }
-          throw new Error(
-            errorData.message || "Error al actualizar el carrito."
-          );
+          throw new Error(errorData.message || "Error al actualizar el carrito.");
         }
         const updatedCart: FullCartSummaryDto = await response.json();
         setCartItems(updatedCart.items);
@@ -166,20 +198,23 @@ export const useCart = (userId: string | null) => {
         }
       }
     },
-    [userId]
+    [isAuthenticated, userId, getAccessTokenSilently]
   );
 
   const deleteCartItem = useCallback(
     async (itemId: string) => {
-      if (!userId) {
-        toastRef.current.error(
-          "Debes iniciar sesión para eliminar productos del carrito."
-        );
+      // ✅ Condición mejorada: espera a que el usuario esté autenticado Y sincronizado
+      if (!isAuthenticated || !userId ) {
+        toastRef.current.error("El usuario no está listo. Por favor, intenta de nuevo.");
         return;
       }
       try {
+        const accessToken = await getAccessTokenSilently();
         const response = await fetch(`${API_URL}/cart/${userId}/${itemId}`, {
           method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         });
         if (!response.ok) {
           const errorData = await response.json();
@@ -187,9 +222,7 @@ export const useCart = (userId: string | null) => {
             toastRef.current.error("El producto ya no existe en el carrito.");
             return;
           }
-          throw new Error(
-            errorData.message || "Error al eliminar el producto."
-          );
+          throw new Error(errorData.message || "Error al eliminar el producto.");
         }
         const updatedCart: FullCartSummaryDto = await response.json();
         setCartItems(updatedCart.items);
@@ -204,17 +237,22 @@ export const useCart = (userId: string | null) => {
         }
       }
     },
-    [userId]
+    [isAuthenticated, userId, getAccessTokenSilently]
   );
 
   const resetCart = async () => {
-    if (!userId) {
-      toastRef.current.error("Debes iniciar sesión para vaciar el carrito.");
+    // ✅ Condición mejorada: espera a que el usuario esté autenticado Y sincronizado
+    if (!isAuthenticated || !userId ) {
+      toastRef.current.error("El usuario no está listo. Por favor, intenta de nuevo.");
       return;
     }
     try {
+      const accessToken = await getAccessTokenSilently();
       const response = await fetch(`${API_URL}/cart/${userId}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
       if (!response.ok) {
         const errorData = await response.json();
@@ -254,10 +292,10 @@ export const useCart = (userId: string | null) => {
     },
     [cartItems, updateCartQuantity, deleteCartItem]
   );
-
+  
   const totalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-  return {
+  const value: CartContextType = {
     cartItems,
     addToCart,
     updateCartQuantity,
@@ -270,4 +308,14 @@ export const useCart = (userId: string | null) => {
     cartId,
     refreshCart,
   };
+
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+}
+
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (context === null) {
+    throw new Error("useCart debe ser usado dentro de un CartProvider");
+  }
+  return context;
 };

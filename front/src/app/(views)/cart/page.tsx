@@ -6,20 +6,23 @@ import CartItem from "./components/CartItem";
 import CreateOrderBtn from "./components/CreateOrderBtn";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useCart } from "@/hooks/useCart";
+
+// ✅ Importa el nuevo hook useCart desde el contexto
+import { useCart } from "@/context/CartContext";
 
 const CartPage = () => {
   const { user } = useAuth0();
   const userId = user?.sub || null;
 
+  // ✅ Obtén las funciones y el estado directamente del contexto, sin pasarle el userId
   const {
     cartItems,
-    resetCart,
+    resetCart, // ✅ Mantén resetCart aquí para usarlo en el futuro (p. ej., si el botón de "crear orden" vuelve a vaciar el carrito)
     isLoading,
     handleAddQuantity,
     handleRemoveQuantity,
     deleteCartItem,
-  } = useCart(userId);
+  } = useCart(); // No se le pasa el userId
 
   const totalPrice = cartItems.reduce(
     (acc, item) => acc + (parseFloat(String(item.price)) || 0) * item.quantity,
@@ -86,13 +89,12 @@ const CartPage = () => {
       {showCart && (
         <div className="flex justify-end mt-4">
           <CreateOrderBtn 
-            resetCart={resetCart} 
-            cartItems={cartItems} // <-- ESTA ES LA LÍNEA CLAVE
+            cartItems={cartItems}
           />
         </div>
       )}
 
-      <ToastContainer position="bottom-right" />
+      {/* <ToastContainer position="bottom-right" /> */}
     </div>
   );
 };
