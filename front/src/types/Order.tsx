@@ -1,3 +1,5 @@
+import { IUser } from "./User";
+
 export type IStatusOrder =
   | "pending"
   | "processing"
@@ -7,24 +9,29 @@ export type IStatusOrder =
 
 export interface OrderDetail {
   id: string;
+  orderId: string;
+  productId: string;
   quantity: number;
-  unitPrice: number; // ✅ number, no string
-  product: {
-    id: string;
-    name: string;
-  };
+  unitPrice: string; // DECIMAL → string en JSON
+  // Si en un futuro hacés populate en el back:
+  // product?: { id: string; name: string };
 }
 
 export interface Order {
   id: string;
-  date: string; // o Date si ya lo parseas
+  date: string; // o Date si querés parsearlo
+  userId: string;
+  totalAmount: string; // DECIMAL → string
+  status: IStatusOrder;
+  shippingAddress: string | null;
   isPaid: boolean;
-  status: IStatusOrder
-  user?: {
-    id: string;
-    name: string;
-  };
+  stripePaymentIntentId?: string | null;
+  stripeChargeId?: string | null;
+  paymentStatus?: string | null;
+
+  // Relaciones
+  user?:IUser,
   orderDetails: OrderDetail[];
-  totalAmount: number; // ✅ así se llama en tu servicio
 }
+
 
