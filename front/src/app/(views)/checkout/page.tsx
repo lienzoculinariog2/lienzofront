@@ -24,10 +24,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   // ✅ Calcular los totales aquí
-  const subTotal = cartItems.reduce(
-    (acc, item) => acc + item.totalItemPrice,
-    0
-  );
+  const subTotal = cartItems.reduce((acc, item) => acc + item.totalItemPrice, 0);
   const discountAmount = discount?.percentage || 0; // Usar 0 si no hay descuento
   const finalTotal = subTotal - discountAmount;
 
