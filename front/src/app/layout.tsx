@@ -13,7 +13,7 @@ export const metadata = {
   title: "Lienzo Culinario",
   description: "Aplicación protegida con autenticación",
   icons: {
-    icon: '/Logo-Lienzo3.png', 
+    icon: "/Logo-Lienzo.png",
   },
 };
 
@@ -23,13 +23,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-  <html lang="es">
+    <html lang="es">
       <body className={inter.className}>
         {/* ✅ Envuelve toda la lógica de proveedores en un solo componente */}
         <AuthAndCartProvider>
           {children}
           <UserSync /> {/* ✅ Coloca UserSync dentro de los proveedores */}
-        <ToastContainer position="bottom-right" /> {/* ✅ El ToastContainer va por fuera, al final del body */}
+          <ToastContainer position="bottom-right" />{" "}
+          {/* ✅ El ToastContainer va por fuera, al final del body */}
         </AuthAndCartProvider>
       </body>
     </html>
