@@ -32,7 +32,6 @@ export default function AddReviewPage() {
       const createdReview = await createReview(newReviewData);
 
       if (createdReview) {
-        console.log("Reseña creada con éxito:", createdReview);
         router.push(Routes.reviews); // Redirige a la página de reseñas
       } else {
         alert(
