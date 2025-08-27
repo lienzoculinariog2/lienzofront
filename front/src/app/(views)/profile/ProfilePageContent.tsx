@@ -8,6 +8,7 @@ import { userService } from "@/services/draft/userService";
 import { IUser } from "@/types/User";
 import { UserInfoPanel } from "./components/UserInfoPanel";
 import { UserOrders } from "./components/UserOrders";
+import { toast } from "react-toastify";
 
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
@@ -37,18 +38,34 @@ export default function ProfilePage() {
   }, [isAuthenticated, user, getAccessTokenSilently]);
 
   const handleSaveProfile = async (formData: Partial<IUser>) => {
-    if (!isAuthenticated || !user?.sub) return;
-    try {
-      const accessToken = await getAccessTokenSilently();
-      const updatedProfile = await userService.update(user.sub, formData, accessToken);
-      setProfileData(updatedProfile);
-      alert("¡Perfil actualizado con éxito!");
-      setShowForm(false); // 👈 cerrar el formulario al guardar
-    } catch (error) {
-      console.error("Error saving user profile:", error);
-      alert("Error al guardar el perfil.");
+  if (!isAuthenticated || !user?.sub) return;
+  try {
+    const accessToken = await getAccessTokenSilently();
+    const updatedProfile = await userService.update(user.sub, formData, accessToken);
+
+    setProfileData(updatedProfile);
+
+    // 👇 lógica para mostrar mensajes distintos según lo que se actualiza
+    if (formData.hasOwnProperty("isSuscribed")) {
+      toast.success(
+        updatedProfile.isSuscribed
+          ? "Te has suscrito a la newsletter 🎉"
+          : "Has cancelado tu suscripción a la newsletter"
+      );
+    } else {
+      toast.success("¡Perfil actualizado con éxito! 🎉");
+      setShowForm(false); // cerrar el formulario solo si era edición de perfil
     }
-  };
+  } catch (error) {
+    console.error("Error saving user profile:", error);
+
+    if (formData.hasOwnProperty("isSuscribed")) {
+      toast.error("No se pudo actualizar la suscripción 😢");
+    } else {
+      toast.error("Error al guardar el perfil 😢");
+    }
+  }
+};
 
   if (isLoading || isFetchingProfile) {
     return <Spinner />;
