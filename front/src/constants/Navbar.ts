@@ -23,4 +23,8 @@ export const navbarLinks: NavbarItemProps[] = [
     label: "Panel de Admin",
     href: Routes.adminDashboard,
   },
+  {
+    label: "Reseñas",
+    href: Routes.reviews,
+  },
 ];
