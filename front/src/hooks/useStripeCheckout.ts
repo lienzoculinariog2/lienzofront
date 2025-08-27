@@ -1,22 +1,48 @@
-// import { useCallback } from "react";
-// import axios from "axios";
+// src/hooks/useStripeCheckout.ts (Option 1)
+"use client";
 
-export function useStripeCheckout() {
-  // const createPaymentIntent = useCallback(async (cartId: string, userId: string) => {
-  //   try {
-  //     const response = await axios.post("/api/checkout/create-payment-intent", {
-  //       cartId,
-  //       userId,
-  //     });
+import { useState, useCallback } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { toast } from "react-toastify";
+// Add axios back for consistency with old code if needed
+import axios from "axios";
 
-  //     return response.data.clientSecret as string;
-  //   } catch (error) {
-  //     console.error("Error al crear PaymentIntent:", error);
-  //     return null;
-  //   }
-  // }, []);
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+export const useStripeCheckout = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { user, isAuthenticated } = useAuth0();
+
+  const createPaymentIntent = useCallback(async () => {
+    const userId = user?.sub;
+
+    if (!isAuthenticated || !userId) {
+      toast.error("Debes iniciar sesión para completar la compra.");
+      return null;
+    }
+
+    setIsLoading(true);
+    try {
+      // ✅ Change the endpoint to the one your backend uses
+      const response = await axios.post(
+        `${API_URL}/checkout/${userId}/complete`,
+        {
+          shippingAddress: "123 Calle Falsa, Springfield",
+        }
+      );
+
+      return response.data.paymentIntent.clientSecret as string;
+    } catch (error) {
+      console.error("Error creating PaymentIntent:", error);
+      toast.error("Error al iniciar el pago. Intenta de nuevo.");
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, user?.sub]);
 
   return {
-    // createPaymentIntent,
+    createPaymentIntent,
+    isLoading,
   };
-}
+};

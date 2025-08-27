@@ -1,7 +1,12 @@
 export interface IOrdersDetail {
   id: string;
-  products_id: string;
-  quantity: number;
-  unitPrice: number;
   orderId: string;
+  productId: string;
+  quantity: number;
+  unitPrice: number;   // 👈 normalmente está así
+  product?: {
+    id: string;
+    name: string;
+    imgUrl?: string;
+  };
 }
