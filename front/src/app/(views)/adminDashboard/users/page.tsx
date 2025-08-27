@@ -5,13 +5,19 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { userService } from "@/services/draft/userService";
 import { IUser } from "@/types/User";
 import Button from "@/components/ui/Button";
+import { toast } from "react-toastify";
 
 const UserManagementList = () => {
-  const { getAccessTokenSilently, isAuthenticated, user: auth0User } = useAuth0();
+  const {
+    getAccessTokenSilently,
+    isAuthenticated,
+    user: auth0User,
+  } = useAuth0();
   const [users, setUsers] = useState<IUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState(""); // 🔍 estado para la búsqueda
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -36,14 +42,18 @@ const UserManagementList = () => {
     }
   };
 
-  const handleRoleChange = async (userId: string, newRole: "admin" | "user" | "banned") => {
+  const handleRoleChange = async (
+    userId: string,
+    newRole: "admin" | "user" | "banned"
+  ) => {
     setUpdating(userId);
     try {
       const accessToken = await getAccessTokenSilently();
       await userService.updateRole(userId, newRole, accessToken);
       await fetchUsers();
+      toast.success(`Rol actualizado a "${newRole}" con éxito`)
     } catch (err) {
-      setError("No se pudo actualizar el rol del usuario.");
+      toast.error("No se pudo actualizar el rol del usuario.")
       console.error(err);
     } finally {
       setUpdating(null);
@@ -70,6 +80,13 @@ const UserManagementList = () => {
   const loggedUser = users.find((u) => u.email === auth0User?.email);
   const otherUsers = users.filter((u) => u.email !== auth0User?.email);
 
+  // 📌 aplicar filtro de búsqueda
+  const filteredUsers = otherUsers.filter((u) =>
+    (u.name || u.email)
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
+
   const renderUserCard = (user: IUser) => (
     <li key={user.id} className="relative mt-6">
       {/* Nombre del usuario */}
@@ -89,7 +106,9 @@ const UserManagementList = () => {
               </p>
               <p className="mt-1">
                 <span className="font-semibold text-green-400">Dirección:</span>
-                <span className="ml-1 break-all">{user.address || "No especificada"}</span>
+                <span className="ml-1 break-all">
+                  {user.address || "No especificada"}
+                </span>
               </p>
             </div>
           </div>
@@ -102,9 +121,13 @@ const UserManagementList = () => {
                 <span className="ml-1">{user.phone || "No especificado"}</span>
               </p>
               <p className="mt-1">
-                <span className="font-semibold text-green-400">Cumpleaños:</span>
+                <span className="font-semibold text-green-400">
+                  Cumpleaños:
+                </span>
                 <span className="ml-1">
-                  {user.birthday ? new Date(user.birthday).toLocaleDateString() : "No especificado"}
+                  {user.birthday
+                    ? new Date(user.birthday).toLocaleDateString()
+                    : "No especificado"}
                 </span>
               </p>
             </div>
@@ -119,7 +142,9 @@ const UserManagementList = () => {
               </p>
               <p className="mt-1">
                 <span className="font-semibold text-green-400">Dieta:</span>
-                <span className="ml-1 capitalize">{user.diet || "No especificada"}</span>
+                <span className="ml-1 capitalize">
+                  {user.diet || "No especificada"}
+                </span>
               </p>
             </div>
           </div>
@@ -173,13 +198,27 @@ const UserManagementList = () => {
 
       {/* Resto de usuarios */}
       <div className="p-6 mt-8 shadow-lg rounded-2xl bg-black/50 backdrop-blur-md">
-        <h2 className="mb-8 text-2xl font-bold text-primary-txt-500">
-           Lista de usuarios
-        </h2>
-        {otherUsers.length === 0 ? (
-          <p className="text-gray-400">No hay otros usuarios para mostrar.</p>
+        <div className="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
+          <h2 className="text-2xl font-bold text-primary-txt-500">
+            Lista de usuarios
+          </h2>
+
+          {/* 🔍 Barra de búsqueda */}
+          <input
+            type="text"
+            placeholder="Buscar por nombre o email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-4 py-2 text-gray-200 bg-gray-800 border border-gray-700 rounded-lg md:w-1/3 focus:outline-none focus:ring-2 focus:ring-daily-menu-500"
+          />
+        </div>
+
+        {filteredUsers.length === 0 ? (
+          <p className="text-gray-400">No hay usuarios que coincidan con la búsqueda.</p>
         ) : (
-          <ul className="flex flex-col gap-8">{otherUsers.map(renderUserCard)}</ul>
+          <ul className="flex flex-col gap-8">
+            {filteredUsers.map(renderUserCard)}
+          </ul>
         )}
       </div>
     </div>
@@ -187,3 +226,4 @@ const UserManagementList = () => {
 };
 
 export default UserManagementList;
+
