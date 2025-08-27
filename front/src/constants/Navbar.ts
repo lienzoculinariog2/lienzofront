@@ -20,11 +20,11 @@ export const navbarLinks: NavbarItemProps[] = [
     href: Routes.profile,
   },
   {
-    label: "Panel de Admin",
-    href: Routes.adminDashboard,
-  },
-  {
     label: "Reseñas",
     href: Routes.reviews,
+  },
+  {
+    label: "Panel de Admin",
+    href: Routes.adminDashboard,
   },
 ];
