@@ -5,7 +5,7 @@ import { useState, useCallback } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { toast } from "react-toastify";
 // Add axios back for consistency with old code if needed
-import axios from "axios"; 
+import axios from "axios";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -32,7 +32,6 @@ export const useStripeCheckout = () => {
       );
 
       return response.data.paymentIntent.clientSecret as string;
-      
     } catch (error) {
       console.error("Error creating PaymentIntent:", error);
       toast.error("Error al iniciar el pago. Intenta de nuevo.");
@@ -47,5 +46,3 @@ export const useStripeCheckout = () => {
     isLoading,
   };
 };
-
-
