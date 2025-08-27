@@ -9,7 +9,7 @@ export interface OrderDetail {
   id: string;
   quantity: number;
   unitPrice: number; // ✅ number, no string
-  product?: {
+  product: {
     id: string;
     name: string;
   };
@@ -19,7 +19,7 @@ export interface Order {
   id: string;
   date: string; // o Date si ya lo parseas
   isPaid: boolean;
-  statusOrder: IStatusOrder
+  status: IStatusOrder
   user?: {
     id: string;
     name: string;

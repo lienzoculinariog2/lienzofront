@@ -19,7 +19,7 @@ export function UserOrders({ userId }: Props) {
         try {
             const data = await orderService.getUserOrders(userId);
             // Ordena las órdenes por fecha de la más reciente a la más antigua
-            const sortedOrders = data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            const sortedOrders = [...data].reverse(); 
             setOrders(sortedOrders);
         } catch (error) {
             console.error("Error fetching user orders:", error);
