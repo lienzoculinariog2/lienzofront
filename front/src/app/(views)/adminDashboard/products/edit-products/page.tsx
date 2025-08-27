@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 import ProductForm from "../../components/ProductForm";
 import Image from "next/image";
 import SearchBar from "@/components/ui/SerchBar";
-
+import { toast } from "react-toastify";
 
 export default function ProductListPage() {
   const [products, setProducts] = useState<IProduct[]>([]);
@@ -24,8 +24,11 @@ export default function ProductListPage() {
   });
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
+  const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
 
   const observer = useRef<IntersectionObserver | null>(null);
+
   const lastProductRef = useCallback(
     (node: HTMLLIElement | null) => {
       if (loading) return;
@@ -47,8 +50,11 @@ export default function ProductListPage() {
       const res = await productService.getPaginatedAndFiltered({
         page: pageToLoad,
         limit: 20,
-        category: selectedCategory.id !== "all" ? selectedCategory.id : undefined,
+        category:
+          selectedCategory.id !== "all" ? selectedCategory.id : undefined,
         term: searchTerm || undefined,
+        price_min: minPrice,
+        price_max: maxPrice,
       });
 
       setProducts((prev) =>
@@ -60,6 +66,7 @@ export default function ProductListPage() {
     } catch (err) {
       setError("Error al cargar los productos.");
       console.error(err);
+      toast.error("Error al cargar los productos 😢");
     } finally {
       setLoading(false);
     }
@@ -72,9 +79,13 @@ export default function ProductListPage() {
         .filter((cat: ICategories) => cat.isActive)
         .map((cat) => ({ id: cat.id, name: cat.name }));
 
-      setCategories([{ id: "all", name: "Todas las categorías" }, ...activeCategories]);
+      setCategories([
+        { id: "all", name: "Todas las categorías" },
+        ...activeCategories,
+      ]);
     } catch (err) {
       console.error("Error fetching categories:", err);
+      toast.error("Error al cargar categorías 😢");
     }
   };
 
@@ -83,15 +94,19 @@ export default function ProductListPage() {
     loadProducts(1);
   }, []);
 
- const handleSearch = useCallback((category: CategoryOption, term: string) => {
-  setSelectedCategory(category);
-  setSearchTerm(term);
-}, []);
+  const handleSearch = useCallback(
+    (category: CategoryOption, term: string, min?: number, max?: number) => {
+      setSelectedCategory(category);
+      setSearchTerm(term);
+      setMinPrice(min);
+      setMaxPrice(max);
+    },
+    []
+  );
 
   useEffect(() => {
-  loadProducts(1);
-}, [selectedCategory, searchTerm]);
-
+    loadProducts(1);
+  }, [selectedCategory, searchTerm, minPrice, maxPrice]);
 
   const handleSaveProduct = async (formData: FormData) => {
     try {
@@ -109,6 +124,7 @@ export default function ProductListPage() {
 
       if (editingProduct && editingProduct.id) {
         await productService.update(editingProduct.id, payload);
+        toast.success("Producto actualizado con éxito 🎉");
       }
 
       setEditingProduct(null);
@@ -116,6 +132,7 @@ export default function ProductListPage() {
     } catch (err) {
       setError("Error al guardar el producto.");
       console.error(err);
+      toast.error("Error al guardar el producto 😢");
     } finally {
       setLoading(false);
     }
@@ -129,6 +146,7 @@ export default function ProductListPage() {
     } catch (err) {
       setError("Error al cargar el producto para edición.");
       console.error(err);
+      toast.error("Error al cargar el producto para edición 😢");
     } finally {
       setLoading(false);
     }
@@ -182,7 +200,9 @@ export default function ProductListPage() {
                 )}
 
                 <div className="flex-1 mr-4">
-                  <h3 className="mb-1 font-bold text-gray-100 underline">{product.name}</h3>
+                  <h3 className="mb-1 font-bold text-gray-100 underline">
+                    {product.name}
+                  </h3>
                   <div className="mt-2 text-sm">
                     <span className="font-semibold text-vegetarian-500">
                       Precio: ${Number(product.price).toFixed(2)}
@@ -208,7 +228,9 @@ export default function ProductListPage() {
             ))}
           </ul>
 
-          {loading && <p className="mt-4 text-gray-300">Cargando más productos...</p>}
+          {loading && (
+            <p className="mt-4 text-gray-300">Cargando más productos...</p>
+          )}
         </div>
       )}
     </div>

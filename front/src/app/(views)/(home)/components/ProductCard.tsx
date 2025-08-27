@@ -3,25 +3,27 @@ import { IProduct } from "@/types/Product";
 import React, { FC } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import Button from "../../../../components/ui/Button";
+import Button from "@/components/ui/Button";
 
-// Definimos las props, incluyendo la nueva función para añadir al carrito
-interface ProductCardProps extends Partial<IProduct> {
-  onAddToCart: () => void;
-}
+// ✅ Importa el nuevo hook useCart desde tu contexto
+import { useCart } from "@/context/CartContext";
 
-const ProductCard: FC<ProductCardProps> = ({
+// Ya no necesitas la prop onAddToCart en la interfaz
+// interface ProductCardProps extends Partial<IProduct> {}
+
+const ProductCard: FC<Partial<IProduct>> = ({
   id,
   name,
   description,
   price,
   stock,
   imgUrl,
-  // caloricLevel,
   ingredients = [],
   category,
-  onAddToCart,
 }) => {
+  // ✅ Obtén la función addToCart directamente del contexto
+  const { addToCart } = useCart();
+
   const ingredientNames = ingredients.map((i) => i.name.toLowerCase());
 
   const tieneHarina = ingredientNames.some((i) =>
@@ -65,71 +67,32 @@ const ProductCard: FC<ProductCardProps> = ({
     `/product-details/${id}`;
   const hasStock = (stock && stock > 0) || false;
 
-  // const caloricColors: { [key: number]: string } = {
-  //   1: "bg-vegetarian-500",
-  //   2: "bg-vegetarian-700",
-  //   3: "bg-yellow-500",
-  //   4: "bg-daily-menu-500",
-  //   5: "bg-daily-menu-700",
-  // };
-
   return (
     <div className="flex flex-col justify-between w-full max-w-sm h-[540px] transition-transform duration-200 border rounded-lg shadow-lg bg-primary-background-900 border-primary-background-800 hover:scale-105">
       {/* 🔷 ZONA 1: Barras + Imagen */}
       <div>
         <div className="flex flex-col w-full h-4 gap-[2px]">
-  <div className="flex w-full h-2 rounded-full overflow-hidden gap-[2px]">
-    {specialIngredients.filter(i => i.check).length > 0 ? (
-      specialIngredients.map(
-        (item, index) =>
-          item.check && (
-            <div
-              key={index}
-              className={`${item.className} h-full rounded-full`}
-              style={{
-                width: `${
-                  100 / specialIngredients.filter((i) => i.check).length
-                }%`,
-              }}
-            />
-          )
-      )
-    ) : (
-      <div className="w-full h-full bg-transparent rounded-full" />
-    )}
-  </div>
-</div>
-        {/* <div className="flex flex-col w-full h-4 gap-[2px]">
-          {typeof caloricLevel === "number" &&
-          caloricLevel >= 1 &&
-          caloricLevel <= 5 ? (
-            <div className="w-full h-2 overflow-hidden rounded-full">
-              <div
-                className={`h-full ${caloricColors[caloricLevel]}`}
-                style={{ width: "100%" }}
-              />
-            </div>
-          ) : (
-            <div className="w-full h-2 bg-transparent" />
-          )}
-
           <div className="flex w-full h-2 rounded-full overflow-hidden gap-[2px]">
-            {specialIngredients.map(
-              (item, index) =>
-                item.check && (
-                  <div
-                    key={index}
-                    className={`${item.className} h-full rounded-full`}
-                    style={{
-                      width: `${
-                        100 / specialIngredients.filter((i) => i.check).length
-                      }%`,
-                    }}
-                  />
-                )
+            {specialIngredients.filter(i => i.check).length > 0 ? (
+              specialIngredients.map(
+                (item, index) =>
+                  item.check && (
+                    <div
+                      key={index}
+                      className={`${item.className} h-full rounded-full`}
+                      style={{
+                        width: `${
+                          100 / specialIngredients.filter((i) => i.check).length
+                        }%`,
+                      }}
+                    />
+                  )
+              )
+            ) : (
+              <div className="w-full h-full bg-transparent rounded-full" />
             )}
           </div>
-        </div> */}
+        </div>
 
         <Link href={generateUrl(id)}>
           <div className="relative w-full h-52">
@@ -175,7 +138,12 @@ const ProductCard: FC<ProductCardProps> = ({
         <Button
           variant="category"
           categoryId={category?.id}
-          onClick={onAddToCart}
+          // ✅ Llama a la función del contexto y le pasas el producto
+          onClick={() => {
+            if (id && name) {
+              addToCart({ id, name });
+            }
+          }}
           disabled={!hasStock}
         >
           <p>{hasStock ? "Añadir al carrito" : "Sin Stock"}</p>

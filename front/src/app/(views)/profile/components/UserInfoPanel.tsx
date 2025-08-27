@@ -1,9 +1,8 @@
-// components/UserInfoPanel.tsx
-
 import { IUser } from "@/types/User";
 
 type Props = {
   profileData: IUser;
+  onEditClick?: () => void;
 };
 
 const formatDate = (date?: Date) => {
@@ -15,54 +14,69 @@ const formatDate = (date?: Date) => {
   });
 };
 
-export const UserInfoPanel = ({ profileData }: Props) => {
+export const UserInfoPanel = ({ profileData, onEditClick }: Props) => {
   return (
-    <div className="p-4 mb-6 border rounded-md bg-gray-50">
-      <h2 className="mb-2 text-lg font-semibold">Datos actuales del usuario</h2>
-      <ul className="space-y-1 text-sm text-gray-700">
-        <li>
-          <strong>Nombre:</strong> {profileData.name ?? "—"}
-        </li>
-        <li>
-          <strong>Email:</strong> {profileData.email}
-        </li>
-        <li>
-          <strong>Teléfono:</strong> {profileData.phone ?? "—"}
-        </li>
-        <li>
-          <strong>Dirección:</strong> {profileData.address ?? "—"}
-        </li>
-        <li>
-          <strong>Dieta:</strong>{" "}
+    <div className="flex flex-col w-full gap-4 p-6 mb-8 transition-shadow border rounded-lg shadow-md bg-black/40 border-primary-txt-800 hover:shadow-lg">
+      {/* Encabezado */}
+      <h2 className="text-xl font-semibold text-primary-txt-100">
+        Información del usuario
+      </h2>
+
+      {/* Datos */}
+      <div className="grid gap-3 text-sm text-primary-txt-500 md:grid-cols-2">
+        <p>
+          <strong className="text-primary-txt-300">Nombre:</strong>{" "}
+          {profileData.name ?? "—"}
+        </p>
+        <p>
+          <strong className="text-primary-txt-300">Email:</strong>{" "}
+          {profileData.email}
+        </p>
+        <p>
+          <strong className="text-primary-txt-300">Teléfono:</strong>{" "}
+          {profileData.phone ?? "—"}
+        </p>
+        <p>
+          <strong className="text-primary-txt-300">Dirección:</strong>{" "}
+          {profileData.address ?? "—"}
+        </p>
+        <p>
+          <strong className="text-primary-txt-300">Dieta:</strong>{" "}
           {profileData.diet === "general"
-            ? "Sin dieta especifica"
-            : profileData.diet === "celiaco"
-            ? "Celiaco"
-            : profileData.diet === "vegano"
-            ? "Vegano"
-            : profileData.diet === "diabetico"
-            ? "Diabetico"
-            : profileData.diet === "vegetariano"
-            ? "Vegetariano"
-            : ""}
-        </li>
-        <li>
-          {/* LÍNEA CORREGIDA: Ahora dice "Fecha de registro" */}
-          <strong>Fecha de registro:</strong> {formatDate(profileData.birthday)}
-        </li>
-        <li>
-          <strong>Rol:</strong>{" "}
+            ? "Sin dieta específica"
+            : profileData.diet ?? "—"}
+        </p>
+        <p>
+          <strong className="text-primary-txt-300">Fecha de registro:</strong>{" "}
+          {formatDate(profileData.birthday)}
+        </p>
+        <p>
+          <strong className="text-primary-txt-300">Rol:</strong>{" "}
           {profileData.roles === "admin"
             ? "Administrador"
             : profileData.roles === "user"
             ? "Cliente"
             : "Baneado"}
-        </li>
-        <li>
-          <strong>Suscrito:</strong>{" "}
-          {profileData.isSuscribed === true ? "Si" : "No"}
-        </li>
-      </ul>
+        </p>
+        <p>
+          <strong className="text-primary-txt-300">Suscrito:</strong>{" "}
+          {profileData.isSuscribed ? "Sí" : "No"}
+        </p>
+      </div>
+
+      {/* Botón editar */}
+      {onEditClick && (
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={onEditClick}
+            className="px-4 py-2 text-sm font-semibold text-white rounded-md shadow bg-daily-menu-600 hover:bg-daily-menu-700"
+          >
+            Editar perfil
+          </button>
+        </div>
+      )}
+      
     </div>
   );
 };
+
