@@ -69,6 +69,9 @@ const ProductCard: FC<ProductCardProps> = ({
     ].some((kw) => i.includes(kw))
   );
 
+  const numericCaloricLevel =
+    typeof caloricLevel === "string" ? Number(caloricLevel) : caloricLevel;
+
   const specialIngredients = [
     { check: tieneVerdura, className: "bg-vegetarian-700" },
     { check: tieneCarne, className: "bg-daily-menu-700" },
@@ -76,8 +79,9 @@ const ProductCard: FC<ProductCardProps> = ({
     { check: tieneHarina, className: "bg-vegan-600" },
     {
       check:
-        caloricLevel !== undefined && caloricColors[caloricLevel] !== undefined,
-      className: caloricColors[caloricLevel as number],
+        numericCaloricLevel !== undefined &&
+        caloricColors[numericCaloricLevel] !== undefined,
+      className: numericCaloricLevel ? caloricColors[numericCaloricLevel] : "", // Usa el valor convertido y proporciona un fallback
     },
   ];
 
