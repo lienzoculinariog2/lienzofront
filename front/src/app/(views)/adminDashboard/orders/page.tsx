@@ -24,7 +24,7 @@ const statusConfig: Record<IStatusOrder, { label: string; color: string }> = {
   failed: { label: "Error en la orden", color: "bg-red-600 text-white" },
 };
 
-const PAGE_SIZE = 20; 
+const PAGE_SIZE = 20;
 
 const OrdersPage = () => {
   const [allOrders, setAllOrders] = useState<Order[]>([]);
@@ -50,7 +50,8 @@ const OrdersPage = () => {
     try {
       setLoading(true);
       const data = await orderService.getAll(); // 🔹 trae TODO
-      setAllOrders(data);
+      const onlyPaid = data.filter((order: Order) => order.isPaid);
+      setAllOrders(onlyPaid);
     } catch (error) {
       console.error("Error fetching orders", error);
       toast.error("Error cargando órdenes");
@@ -201,7 +202,9 @@ const OrdersPage = () => {
       {visibleOrders.length === 0 && !loading ? (
         <p className="text-center text-gray-400">No hay órdenes registradas.</p>
       ) : (
-        <ul className="flex flex-col gap-8">{visibleOrders.map(renderOrderCard)}</ul>
+        <ul className="flex flex-col gap-8">
+          {visibleOrders.map(renderOrderCard)}
+        </ul>
       )}
 
       {/* Loader para disparar scroll infinito */}
@@ -218,4 +221,3 @@ const OrdersPage = () => {
 };
 
 export default OrdersPage;
-

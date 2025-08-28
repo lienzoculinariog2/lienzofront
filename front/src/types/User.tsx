@@ -19,4 +19,5 @@ export interface IUser {
   birthday?: Date;
   roles?: Roles;
   isSuscribed?: boolean;
+  picture?: string;
 }

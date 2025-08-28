@@ -13,8 +13,10 @@ export interface OrderDetail {
   productId: string;
   quantity: number;
   unitPrice: string; // DECIMAL → string en JSON
-  // Si en un futuro hacés populate en el back:
-  // product?: { id: string; name: string };
+  product: {
+    id: string;
+    name: string;
+  };
 }
 
 export interface Order {
@@ -30,8 +32,6 @@ export interface Order {
   paymentStatus?: string | null;
 
   // Relaciones
-  user?:IUser,
+  user?: IUser;
   orderDetails: OrderDetail[];
 }
-
-
