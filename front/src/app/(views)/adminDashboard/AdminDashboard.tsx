@@ -13,6 +13,10 @@ import { userService } from "@/services/draft/userService"; // Importa el servic
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth0 } from "@auth0/auth0-react"; // Importa useAuth0 para el token
+import { Order } from "@/types/Order";
+import { orderService } from "@/services/draft/OrderService";
+import { discountCodeService } from "@/services/draft/discountCodeService";
+import { IDiscountCode } from "@/types/DiscountCode";
 
 export const AdminDashboardPage = () => {
   const router = useRouter();
@@ -20,19 +24,24 @@ export const AdminDashboardPage = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [categories, setCategories] = useState<ICategories[]>([]);
   const [users, setUsers] = useState<IUser[]>([]); // Estado para los usuarios
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [discountCodes, setDiscountCodes] = useState<IDiscountCode[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProducts = async () => {
       const allProducts = await productService.getAll();
       setProducts(allProducts.slice(0, 4));
+    };
 
+    const fetchCategories = async () => {
       const allCategories = await categoriesServices.getAll();
       setCategories(allCategories.slice(0, 4));
+    };
 
+    const fetchUsers = async () => {
       if (isAuthenticated) {
         try {
           const accessToken = await getAccessTokenSilently();
-          // Obtiene los primeros 4 usuarios para la vista previa
           const allUsers = await userService.findAll(accessToken);
           setUsers(allUsers.slice(0, 4));
         } catch (error) {
@@ -41,7 +50,35 @@ export const AdminDashboardPage = () => {
       }
     };
 
-    fetchData();
+    const fetchOrders = async () => {
+      if (isAuthenticated) {
+        try {
+          const accessToken = await getAccessTokenSilently();
+          const allOrders = await orderService.getAll(undefined, accessToken);
+          const sortedOrders = allOrders.sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
+          setOrders(sortedOrders.slice(0, 4));
+        } catch (error) {
+          console.error("Error al obtener las órdenes:", error);
+        }
+      }
+    };
+
+    const fetchDiscountCodes = async () => {
+      try {
+        const allDiscountCodes = await discountCodeService.getAll();
+        setDiscountCodes(allDiscountCodes.slice(0, 4));
+      } catch (error) {
+        console.error("Error al obtener los códigos de descuento:", error);
+      }
+    };
+
+    fetchProducts();
+    fetchCategories();
+    fetchUsers();
+    fetchOrders();
+    fetchDiscountCodes();
   }, [isAuthenticated, getAccessTokenSilently]);
 
   const handleEditProduct = (id: string) => {
@@ -52,6 +89,10 @@ export const AdminDashboardPage = () => {
     router.push(`/adminDashboard/categories/edit-category?id=${id}`);
   };
 
+   const handleEditDiscountCode = (id: string) => {
+    router.push(`/adminDashboard/discountCodes/edit-discount?id=${id}`);
+  };
+
   return (
     <div className="container min-h-screen p-8 mx-auto text-primary-txt-500">
       {/* Encabezado */}
@@ -60,7 +101,7 @@ export const AdminDashboardPage = () => {
           Panel de Administración
         </h1>
         <p className="mt-2 text-gray-400">
-          Gestiona tus productos y categorías de forma sencilla.
+          Gestiona tu aplicacion de forma sencilla.
         </p>
       </header>
 
@@ -125,7 +166,8 @@ export const AdminDashboardPage = () => {
               <Button variant="dailyMenu">Ver Todas</Button>
             </Link>
             <Link href="/adminDashboard/categories/create-category">
-              <Button variant="dailyMenu">Crear Nueva</Button></Link>
+              <Button variant="dailyMenu">Crear Nueva</Button>
+            </Link>
           </div>
         </div>
 
@@ -191,12 +233,109 @@ export const AdminDashboardPage = () => {
               >
                 <div className="p-4">
                   <h3 className="font-bold">Nombre de Usuario</h3>
-                  <p className="mt-1 text-sm text-gray-300 break-all">{user.name}</p>
+                  <p className="mt-1 text-sm text-gray-300 break-all">
+                    {user.name}
+                  </p>
                   <h3 className="mt-2 font-bold">Email</h3>
                   <p className="mt-1 text-sm text-gray-300">{user.email}</p>
                   <h3 className="mt-2 font-bold">Rol</h3>
-                  <p className="mt-1 text-sm text-gray-300 capitalize">{user.roles}</p>
+                  <p className="mt-1 text-sm text-gray-300 capitalize">
+                    {user.roles}
+                  </p>
                 </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Separador de secciones */}
+      <hr className="my-10 border-gray-700" />
+
+      {/* Sección de Órdenes */}
+      <section className="mb-12">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-semibold">Órdenes</h2>
+          <Link href="/adminDashboard/orders">
+            <Button variant="dailyMenu">Ver Todas</Button>
+          </Link>
+        </div>
+
+        {orders.length === 0 ? (
+          <p className="text-gray-400">No hay órdenes para mostrar.</p>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {orders.map((order) => (
+              <div
+                key={order.id}
+                className="p-4 overflow-hidden shadow-lg bg-black/40 rounded-xl"
+              >
+                <h3 className="font-bold">Orden #{order.id}</h3>
+                <p className="mt-1 text-sm text-gray-300">
+                  Usuario: {order.user?.name ?? "N/A"}
+                </p>
+                <p className="mt-1 text-sm text-gray-300">
+                  Estado:{" "}
+                  <span
+                    className={`capitalize ${
+                      order.status === "cancelled"
+                        ? "text-red-400"
+                        : order.status === "completed"
+                        ? "text-green-400"
+                        : "text-yellow-400"
+                    }`}
+                  >
+                    {order.status}
+                  </span>
+                </p>
+                <p className="mt-1 text-sm text-gray-300">
+                  Fecha: {new Date(order.date).toLocaleDateString("es-ES")}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+       {/* Separador de secciones */}
+      <hr className="my-10 border-gray-700" />
+
+      {/* Sección de Códigos de Descuento */}
+      <section className="mb-12">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-semibold">Códigos de Descuento</h2>
+          <div className="flex gap-3">
+            <Link href="/adminDashboard/discountCode">
+              <Button variant="dailyMenu">Ver Todos</Button>
+            </Link>
+          </div>
+        </div>
+
+        {discountCodes.length === 0 ? (
+          <p className="text-gray-400">No hay códigos de descuento para mostrar.</p>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {discountCodes.map((discount) => (
+              <div
+                key={discount.id}
+                onClick={() => handleEditDiscountCode(discount.id)}
+                className="p-4 overflow-hidden transition-shadow shadow-lg cursor-pointer bg-black/40 rounded-xl hover:shadow-xl"
+              >
+                <h3 className="font-bold">{discount.code}</h3>
+                <p className="mt-1 text-sm text-gray-300">
+                  {discount.percentage}% de descuento
+                </p>
+                <p className="mt-1 text-sm text-gray-300">
+                  Válido hasta:{" "}
+                  {new Date(discount.validUntil).toLocaleDateString("es-ES")}
+                </p>
+                <p
+                  className={`mt-2 font-semibold ${
+                    discount.isActive ? "text-green-400" : "text-red-400"
+                  }`}
+                >
+                  {discount.isActive ? "Activo" : "Inactivo"}
+                </p>
               </div>
             ))}
           </div>
