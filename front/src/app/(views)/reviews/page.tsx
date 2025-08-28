@@ -14,7 +14,7 @@ export default async function ReviewsPage() {
   const filteredReviews = reviewsArray.filter((review) => {
     const user = review.user;
     if (!user) return false; // descartar reviews sin usuario
-    if (user.id === "banned") return false; // caso con status
+    if (user.roles === "banned") return false; // caso con status
     if (Array.isArray(user.roles) && user.roles.includes("banned"))
       return false; // caso con roles
     return true;
