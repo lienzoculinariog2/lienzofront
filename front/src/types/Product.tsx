@@ -10,10 +10,10 @@ export interface IProduct {
   imgUrl?: string | null;
   isActive: boolean;
   category: ICategories;
-  caloricLevel: number | null;
+  caloricLevel: number | string | null;
   ingredients: IIngredients[];
 }
 
 export type CartItem = IProduct & {
-    quantity: number;
+  quantity: number;
 };
