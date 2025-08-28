@@ -59,7 +59,9 @@ export const UserInfoPanel = ({ profileData, onEditClick }: Props) => {
             : "Baneado"}
         </p>
         <p>
-          <strong className="text-primary-txt-300">Suscrito:</strong>{" "}
+          <strong className="text-primary-txt-300">
+            Suscrito a nuestra newsletter:
+          </strong>{" "}
           {profileData.isSuscribed ? "Sí" : "No"}
         </p>
       </div>
@@ -75,8 +77,6 @@ export const UserInfoPanel = ({ profileData, onEditClick }: Props) => {
           </button>
         </div>
       )}
-      
     </div>
   );
 };
-

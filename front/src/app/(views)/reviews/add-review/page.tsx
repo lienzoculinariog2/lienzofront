@@ -37,6 +37,7 @@ export default function AddReviewPage() {
       comment,
       rating,
       userId: user.sub,
+      userId: user.sub,
     };
 
     try {
@@ -55,7 +56,9 @@ export default function AddReviewPage() {
   };
 
   if (isLoading) {
-    return <p className="mt-20 text-center text-primary-txt-300">Cargando...</p>;
+    return (
+      <p className="mt-20 text-center text-primary-txt-300">Cargando...</p>
+    );
   }
 
   if (!isAuthenticated) {
@@ -163,4 +166,3 @@ export default function AddReviewPage() {
     </div>
   );
 }
-

@@ -1,4 +1,3 @@
-// app/reviews/page.tsx
 import { getAllReviews } from "@/services/reviewsService";
 import { IReview } from "@/types/Review";
 import AddReviewButton from "./components/AddReviewButton";
