@@ -20,7 +20,7 @@ export default function AddReviewPage() {
   // 👇 aquí asumimos que tu backend devuelve user.status
   const isBanned = user?.status === "banned";
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!isAuthenticated || !user || !user.sub) {
@@ -155,7 +155,7 @@ export default function AddReviewPage() {
 
         {/* Botón enviar */}
         <div className="flex justify-end">
-          <Button type="submit" variant="vegetarian">
+          <Button type="submit" variant="vegetarian" className="w-full">
             Enviar Reseña
           </Button>
         </div>
@@ -163,4 +163,3 @@ export default function AddReviewPage() {
     </div>
   );
 }
-
