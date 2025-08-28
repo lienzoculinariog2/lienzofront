@@ -8,10 +8,22 @@ import Button from "@/components/ui/Button";
 // ✅ Importa el nuevo hook useCart desde tu contexto
 import { useCart } from "@/context/CartContext";
 
+interface ProductCardProps extends Partial<IProduct> {
+  caloricLevel?: number;
+}
+
+const caloricColors: { [key: number]: string } = {
+  1: "bg-vegetarian-500", // Verde
+  2: "bg-vegetarian-700",
+  3: "bg-yellow-500", // Amarillo
+  4: "bg-daily-menu-500", // Naranja
+  5: "bg-daily-menu-700", // Rojo
+};
+
 // Ya no necesitas la prop onAddToCart en la interfaz
 // interface ProductCardProps extends Partial<IProduct> {}
 
-const ProductCard: FC<Partial<IProduct>> = ({
+const ProductCard: FC<ProductCardProps> = ({
   id,
   name,
   description,
@@ -20,6 +32,7 @@ const ProductCard: FC<Partial<IProduct>> = ({
   imgUrl,
   ingredients = [],
   category,
+  caloricLevel,
 }) => {
   // ✅ Obtén la función addToCart directamente del contexto
   const { addToCart } = useCart();
@@ -61,11 +74,19 @@ const ProductCard: FC<Partial<IProduct>> = ({
     { check: tieneCarne, className: "bg-daily-menu-700" },
     { check: tieneQueso, className: "bg-celiac-500" },
     { check: tieneHarina, className: "bg-vegan-600" },
+    {
+      check:
+        caloricLevel !== undefined && caloricColors[caloricLevel] !== undefined,
+      className: caloricColors[caloricLevel as number],
+    },
   ];
 
   const generateUrl = (id: string | number | undefined) =>
     `/product-details/${id}`;
   const hasStock = (stock && stock > 0) || false;
+
+  const activeIngredients = specialIngredients.filter((i) => i.check);
+  const barCount = activeIngredients.length;
 
   return (
     <div className="flex flex-col justify-between w-full max-w-sm h-[540px] transition-transform duration-200 border rounded-lg shadow-lg bg-primary-background-900 border-primary-background-800 hover:scale-105">
@@ -73,21 +94,16 @@ const ProductCard: FC<Partial<IProduct>> = ({
       <div>
         <div className="flex flex-col w-full h-4 gap-[2px]">
           <div className="flex w-full h-2 rounded-full overflow-hidden gap-[2px]">
-            {specialIngredients.filter(i => i.check).length > 0 ? (
-              specialIngredients.map(
-                (item, index) =>
-                  item.check && (
-                    <div
-                      key={index}
-                      className={`${item.className} h-full rounded-full`}
-                      style={{
-                        width: `${
-                          100 / specialIngredients.filter((i) => i.check).length
-                        }%`,
-                      }}
-                    />
-                  )
-              )
+            {barCount > 0 ? (
+              activeIngredients.map((item, index) => (
+                <div
+                  key={index}
+                  className={`${item.className} h-full rounded-full`}
+                  style={{
+                    width: `${100 / barCount}%`,
+                  }}
+                />
+              ))
             ) : (
               <div className="w-full h-full bg-transparent rounded-full" />
             )}
