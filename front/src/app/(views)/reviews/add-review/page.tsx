@@ -20,7 +20,7 @@ export default function AddReviewPage() {
   // 👇 aquí asumimos que tu backend devuelve user.status
   const isBanned = user?.status === "banned";
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!isAuthenticated || !user || !user.sub) {
@@ -36,7 +36,6 @@ export default function AddReviewPage() {
     const newReviewData = {
       comment,
       rating,
-      userId: user.sub,
       userId: user.sub,
     };
 
