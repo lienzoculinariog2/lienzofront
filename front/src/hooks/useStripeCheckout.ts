@@ -15,6 +15,7 @@ export const useStripeCheckout = () => {
 
   const createPaymentIntent = useCallback(async () => {
     const userId = user?.sub;
+    console.log("🟢 userId en useStripeCheckout:", userId);
 
     if (!isAuthenticated || !userId) {
       toast.error("Debes iniciar sesión para completar la compra.");
@@ -24,10 +25,16 @@ export const useStripeCheckout = () => {
     setIsLoading(true);
     try {
       // ✅ Change the endpoint to the one your backend uses
+      console.log(
+        "🟢 URL que estoy llamando:",
+        `${API_URL}/checkout/${encodeURIComponent(userId)}/complete`
+      );
+
       const response = await axios.post(
-        `${API_URL}/checkout/${userId}/complete`,
+        `${API_URL}/checkout/${encodeURIComponent(userId)}/complete`,
         {
           shippingAddress: "123 Calle Falsa, Springfield",
+          // discountCode: "",
         }
       );
 

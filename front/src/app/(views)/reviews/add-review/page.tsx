@@ -4,112 +4,158 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createReview } from "@/services/reviewsService";
 import { Routes } from "../../../../routes/index";
-import { useAuth0 } from "@auth0/auth0-react"; // Importa el hook de Auth0
-import Button from "@/components/ui/Button"; // Usa tu componente Button
+import { useAuth0 } from "@auth0/auth0-react";
+import Button from "@/components/ui/Button";
+import Image from "next/image";
+import { X, Star } from "lucide-react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AddReviewPage() {
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(5);
   const router = useRouter();
-  const { user, isLoading, isAuthenticated } = useAuth0(); // Obtén el usuario y el estado de Auth0
+  const { user, isLoading, isAuthenticated } = useAuth0();
+
+  // 👇 aquí asumimos que tu backend devuelve user.status
+  const isBanned = user?.status === "banned";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Si el usuario no está autenticado, no se puede enviar la reseña
     if (!isAuthenticated || !user || !user.sub) {
-      alert("Debes iniciar sesión para dejar una reseña.");
+      toast.error("Debes iniciar sesión para dejar una reseña.");
+      return;
+    }
+
+    if (isBanned) {
+      toast.error("Tu cuenta está bloqueada. No puedes dejar reseñas.");
       return;
     }
 
     const newReviewData = {
       comment,
       rating,
-      userId: user.sub, // Usa el 'sub' de Auth0 como el ID de usuario
+      userId: user.sub,
     };
 
     try {
       const createdReview = await createReview(newReviewData);
 
       if (createdReview) {
-        console.log("Reseña creada con éxito:", createdReview);
-        router.push(Routes.reviews); // Redirige a la página de reseñas
+        toast.success(" Reseña creada con éxito!");
+        router.push(Routes.reviews);
       } else {
-        alert(
-          "Hubo un error al crear la reseña. Por favor, inténtalo de nuevo."
-        );
+        toast.error("Hubo un error al crear la reseña.");
       }
     } catch (error) {
       console.error("Error al enviar la reseña:", error);
-      alert("Hubo un error al conectar con el servidor.");
+      toast.error("❌ Error al conectar con el servidor.");
     }
   };
 
-  // Muestra un mensaje de carga si Auth0 aún no ha cargado el estado del usuario
   if (isLoading) {
-    return <p className="text-center mt-20">Cargando...</p>;
+    return <p className="mt-20 text-center text-primary-txt-300">Cargando...</p>;
   }
 
-  // Si no está autenticado, puedes redirigir o mostrar un mensaje
   if (!isAuthenticated) {
     return (
-      <p className="text-center mt-20">
+      <p className="mt-20 text-center text-primary-txt-300">
         Por favor, inicia sesión para dejar una reseña.
       </p>
     );
   }
 
+  if (isBanned) {
+    return (
+      <p className="mt-20 text-center text-red-500">
+        Tu cuenta está bloqueada. No puedes dejar reseñas.
+      </p>
+    );
+  }
+
   return (
-    <div className="container mx-auto p-4 max-w-lg">
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        Agregar una Reseña
-      </h1>
+    <div className="flex items-center justify-center min-h-screen p-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-lg"
+        className="relative w-full max-w-lg p-8 border shadow-xl rounded-2xl bg-black/50 backdrop-blur-md border-primary-txt-800"
       >
-        <div className="mb-4">
+        {/* Botón cruz */}
+        <button
+          type="button"
+          onClick={() => router.push(Routes.reviews)}
+          className="absolute transition-colors top-4 right-4 text-primary-txt-400 hover:text-primary-txt-100"
+          aria-label="Cerrar"
+        >
+          <X size={22} />
+        </button>
+
+        <h1 className="mb-6 text-2xl font-bold text-center text-primary-txt-100">
+          💬 Agregar una Reseña
+        </h1>
+
+        {/* Usuario */}
+        <div className="flex items-center gap-4 mb-6">
+          <Image
+            src={user?.picture || "/default-avatar.png"}
+            alt={user?.name || "Usuario"}
+            width={48}
+            height={48}
+            className="object-cover border rounded-full border-primary-txt-800"
+          />
+          <span className="font-semibold text-primary-txt-200">
+            {user?.name}
+          </span>
+        </div>
+
+        {/* Comentario */}
+        <div className="mb-6">
           <label
             htmlFor="comment"
-            className="block text-gray-700 font-bold mb-2"
+            className="block mb-2 font-medium text-primary-txt-300"
           >
-            Comentario
+            Tu comentario
           </label>
           <textarea
             id="comment"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 border border-gray-700 resize-none text-primary-txt-100 bg-black/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-txt-500"
             rows={4}
-            required
-          ></textarea>
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="rating"
-            className="block text-gray-700 font-bold mb-2"
-          >
-            Calificación
-          </label>
-          <input
-            id="rating"
-            type="number"
-            value={rating}
-            onChange={(e) => setRating(Number(e.target.value))}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            min="1"
-            max="5"
+            placeholder="Escribe tu opinión aquí..."
             required
           />
         </div>
 
+        {/* Rating con estrellas */}
+        <div className="mb-6">
+          <label className="block mb-2 font-medium text-primary-txt-300">
+            Calificación
+          </label>
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                type="button"
+                key={star}
+                onClick={() => setRating(star)}
+                className="focus:outline-none"
+              >
+                <Star
+                  size={28}
+                  className={`${
+                    rating >= star
+                      ? "fill-vegan-400 text-vegan-400"
+                      : "text-gray-600"
+                  } hover:scale-110 transition-transform`}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Botón enviar */}
         <div className="flex justify-end">
-          <Button
-            type="submit"
-            onClick={() => {}} // onClick is required by the Button component but handled by form submit
-            className="bg-green-500 text-white py-2 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors"
-          >
+          <Button type="submit" variant="vegetarian">
             Enviar Reseña
           </Button>
         </div>
@@ -117,3 +163,4 @@ export default function AddReviewPage() {
     </div>
   );
 }
+

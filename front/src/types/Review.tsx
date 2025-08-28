@@ -7,4 +7,5 @@ export interface IReview {
   productId: string;
   userId: string;
   user?: IUser;
+  createdAt?: string;
 }

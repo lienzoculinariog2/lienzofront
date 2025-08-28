@@ -1,14 +1,17 @@
-// services/reviewsService.ts
 import axios from "axios";
 import { IReview } from "@/types/Review";
 
 const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/reviews`;
 
-// Define un tipo para los datos que se enviarán al crear una reseña
-// Usamos Omit para excluir el 'id' y otras propiedades que el backend genera
-type CreateReviewDto = Omit<IReview, "id" | "productId">;
+// DTO para crear reseñas (lo que espera tu back)
+export interface CreateReviewDto {
+  userId: string;
+  comment: string;
+  rating: number;
+  productId?: string;
+}
 
-// Función para obtener todas las reseñas
+// Obtener todas las reseñas
 export const getAllReviews = async (): Promise<IReview[]> => {
   try {
     const response = await axios.get<IReview[]>(API_BASE_URL);
@@ -19,12 +22,22 @@ export const getAllReviews = async (): Promise<IReview[]> => {
   }
 };
 
-// Función para crear una nueva reseña
+// Obtener reseñas de un usuario específico
+export const getReviewsByUser = async (userId: string): Promise<IReview[]> => {
+  try {
+    const response = await axios.get<IReview[]>(`${API_BASE_URL}/user/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener reseñas del usuario ${userId}:`, error);
+    return [];
+  }
+};
+
+// Crear una nueva reseña
 export const createReview = async (
   newReviewData: CreateReviewDto
 ): Promise<IReview | null> => {
   try {
-    // Axios maneja automáticamente la serialización del cuerpo a JSON
     const response = await axios.post<IReview>(API_BASE_URL, newReviewData);
     return response.data;
   } catch (error) {
@@ -32,3 +45,15 @@ export const createReview = async (
     return null;
   }
 };
+
+// Eliminar una reseña
+export const deleteReview = async (id: string): Promise<string | null> => {
+  try {
+    const response = await axios.delete<{ message: string }>(`${API_BASE_URL}/${id}`);
+    return response.data.message;
+  } catch (error) {
+    console.error(`Error al eliminar la reseña ${id}:`, error);
+    return null;
+  }
+};
+
