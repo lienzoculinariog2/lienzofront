@@ -25,7 +25,7 @@ const NavbarItem: FC<NavbarItemProps> = ({
       <Link
         href={href}
         className={cs(
-          "text-sm font-medium hover:text-secondary-txt-600 transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-secondary-txt-600 hover:after:w-full after:transition-all",
+          "text-sm font-medium hover:text-secondary-txt-600 transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-secondary-txt-600 hover:after:w-full after:transition-all whitespace-normal xl:whitespace-nowrap",
           isActive || isCurrentPage
             ? "text-primary-txt-100"
             : "text-secondary-txt-400 hover:text-primary-txt-100"
