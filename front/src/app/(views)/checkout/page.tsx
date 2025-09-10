@@ -33,7 +33,10 @@ export default function CheckoutPage() {
       return;
     }
 
-    const secret = await createPaymentIntent();
+    const secret = await createPaymentIntent(
+      "123 Calle Falsa, Springfield", // 💡 Primer argumento: shippingAddress
+      discount?.code || null // 💡 Segundo argumento: discountCode
+    );
     if (secret) {
       setClientSecret(secret);
     }
