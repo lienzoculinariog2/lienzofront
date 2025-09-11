@@ -160,7 +160,7 @@ const OrdersPage = () => {
             <ul className="pl-4 mt-1 list-disc">
               {order.orderDetails.map((detail) => (
                 <li key={detail.id}>
-                  {detail.quantity} × {detail.productId} —{" "}
+                  {detail.quantity} × {detail.product.name} —{" "}
                   {formatCurrency(detail.unitPrice)}
                 </li>
               ))}
