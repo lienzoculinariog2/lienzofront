@@ -11,6 +11,27 @@ import { useCart } from "@/context/CartContext";
 // Ya no necesitas la prop onAddToCart en la interfaz
 // interface ProductCardProps extends Partial<IProduct> {}
 
+const getCaloricLevelColor = (
+  caloricLevel: number | null | undefined
+): string => {
+  if (caloricLevel === null || caloricLevel === undefined) return "bg-gray-400"; // Color por defecto si no hay dato
+
+  switch (caloricLevel) {
+    case 1:
+      return "bg-green-500"; // Nivel 1: Verde (bajo)
+    case 2:
+      return "bg-amber-800"; // Nivel 2: Marrón
+    case 3:
+      return "bg-yellow-500"; // Nivel 3: Amarillo
+    case 4:
+      return "bg-orange-500"; // Nivel 4: Anaranjado
+    case 5:
+      return "bg-red-500"; // Nivel 5: Rojo (alto)
+    default:
+      return "bg-gray-400"; // Color por defecto para cualquier otro valor
+  }
+};
+
 const ProductCard: FC<Partial<IProduct>> = ({
   id,
   name,
@@ -20,6 +41,7 @@ const ProductCard: FC<Partial<IProduct>> = ({
   imgUrl,
   ingredients = [],
   category,
+  caloricLevel,
 }) => {
   // ✅ Obtén la función addToCart directamente del contexto
   const { addToCart } = useCart();
@@ -72,8 +94,13 @@ const ProductCard: FC<Partial<IProduct>> = ({
       {/* 🔷 ZONA 1: Barras + Imagen */}
       <div>
         <div className="flex flex-col w-full h-4 gap-[2px]">
+          <div
+            className={`w-full h-2 rounded-full ${getCaloricLevelColor(
+              caloricLevel
+            )}`}
+          />
           <div className="flex w-full h-2 rounded-full overflow-hidden gap-[2px]">
-            {specialIngredients.filter(i => i.check).length > 0 ? (
+            {specialIngredients.filter((i) => i.check).length > 0 ? (
               specialIngredients.map(
                 (item, index) =>
                   item.check && (

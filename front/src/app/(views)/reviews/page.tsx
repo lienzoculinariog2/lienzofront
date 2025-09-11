@@ -46,7 +46,7 @@ export default async function ReviewsPage() {
           {filteredReviews.map((review) => (
             <div
               key={review.id}
-              className="flex flex-col justify-between w-full max-w-sm p-6 transition-transform border shadow-lg rounded-2xl bg-black/50 backdrop-blur-md border-primary-txt-800 hover:scale-[1.03]"
+              className="flex flex-col justify-between w-full max-w-sm p-6 transition-transform border shadow-lg rounded-2xl bg-black/50 backdrop-blur-md border-primary-txt-800 hover:scale-[1.03] h-full"
             >
               {/* Usuario */}
               <div className="flex flex-col items-center gap-2 mb-4">
