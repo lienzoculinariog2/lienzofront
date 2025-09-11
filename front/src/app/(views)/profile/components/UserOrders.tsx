@@ -18,13 +18,13 @@ export function UserOrders({ userId }: Props) {
       try {
         const data = await orderService.getUserOrders(userId);
 
-        // 🔹 Filtrar solo órdenes que estén pagadas
+        /* // 🔹 Filtrar solo órdenes que estén pagadas
         const paidOrders = data.filter(
           (order: Order) => order.isPaid || order.paymentStatus === "succeeded"
-        );
+        ); */
 
         // 🔹 Ordenar de más reciente a más antigua
-        const sortedOrders = [...paidOrders].sort(
+        const sortedOrders = [...data].sort(
           (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         );
 

@@ -1,3 +1,4 @@
+// src/app/checkout/page.tsx
 "use client";
 
 import { StripeWrapper } from "./components/StripeWrapper";
@@ -12,7 +13,9 @@ import { useDiscount } from "@/hooks/useDiscount";
 
 export default function CheckoutPage() {
   const { cartItems, isLoading: isCartLoading } = useCart();
-  const { createPaymentIntent } = useStripeCheckout();
+  // El hook ya tiene el estado isLoading. Usemos el de él.
+  const { createPaymentIntent, isLoading: isStripeLoading } =
+    useStripeCheckout();
   const {
     discount,
     discountError,
@@ -21,38 +24,44 @@ export default function CheckoutPage() {
   } = useDiscount();
 
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
-  // ✅ Calcular los totales aquí
-  const subTotal = cartItems.reduce((acc, item) => acc + item.totalItemPrice, 0);
-  const discountAmount = discount?.percentage || 0; // Usar 0 si no hay descuento
-  const finalTotal = subTotal - discountAmount;
-
-  useEffect(() => {
-    if (!isCartLoading && cartItems.length > 0 && !clientSecret) {
-      setIsProcessing(true);
-      createPaymentIntent()
-        .then((secret) => {
-          if (secret) {
-            setClientSecret(secret);
-          }
-        })
-        .finally(() => setIsProcessing(false));
+  // 💡 Lógica de pago movida a una función de evento
+  const handleCreatePaymentIntent = async () => {
+    // 💡 Protección contra llamadas duplicadas
+    if (isStripeLoading || clientSecret) {
+      console.log("Ya se está procesando el pago o ya fue creado.");
+      return;
     }
-  }, [isCartLoading, cartItems, clientSecret, createPaymentIntent]);
+
+    const secret = await createPaymentIntent(
+      "123 Calle Falsa, Springfield", // 💡 Primer argumento: shippingAddress
+      discount?.code || null // 💡 Segundo argumento: discountCode
+    );
+    if (secret) {
+      setClientSecret(secret);
+    }
+  };
+
+  const subTotal = cartItems.reduce(
+    (acc, item) => acc + item.totalItemPrice,
+    0
+  );
+  const discountAmount = discount?.percentage || 0;
+  const finalTotal = subTotal - discountAmount;
 
   return (
     <div className="container p-4 mx-auto md:p-8">
       <h1 className="mb-6 text-xl font-semibold text-white">Checkout</h1>
 
-      {isCartLoading || isProcessing ? (
-        <p>Cargando información del pago...</p>
+      {isCartLoading ? (
+        <p>Cargando información del carrito...</p>
+      ) : cartItems.length === 0 ? (
+        <p>El carrito está vacío. Por favor, agrega productos.</p>
       ) : (
         <>
-          {/* ✅ Pasar las variables calculadas como props */}
           <CheckoutSummary
             cartItems={cartItems}
-            discount={discountAmount} // El descuento ya es un número
+            discount={discountAmount}
             total={finalTotal}
           />
 
@@ -69,7 +78,16 @@ export default function CheckoutPage() {
             )}
           </div>
 
-          <PaymentStatus />
+          {/* El botón ahora inicia la creación del Payment Intent */}
+          {!clientSecret && (
+            <button
+              onClick={handleCreatePaymentIntent}
+              disabled={isStripeLoading}
+              className="w-full px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+            >
+              {isStripeLoading ? "Procesando..." : "Proceder al Pago"}
+            </button>
+          )}
 
           {clientSecret && (
             <StripeWrapper clientSecret={clientSecret}>
