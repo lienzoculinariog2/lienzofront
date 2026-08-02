@@ -7,18 +7,18 @@ import Spinner from "@/components/ui/Spinner";
 
 export default function AdminRoute({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth0();
   const { isAdmin, loading } = useUserRoles();
 
   useEffect(() => {
-    if (!loading) {
+    if (!isLoading && !loading) {
       if (!isAuthenticated || !isAdmin) {
         router.replace("/"); // 👈 redirige si no es admin
       }
     }
-  }, [loading, isAuthenticated, isAdmin, router]);
+  }, [isLoading, loading, isAuthenticated, isAdmin, router]);
 
-  if (loading) {
+  if (isLoading || loading || !isAuthenticated || !isAdmin) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Spinner />

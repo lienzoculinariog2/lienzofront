@@ -40,18 +40,18 @@ import Spinner from "@/components/ui/Spinner";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth0();
   const { isBanned, loading } = useUserRoles();
 
   useEffect(() => {
-    if (!loading) {
+    if (!isLoading && !loading) {
       if (!isAuthenticated || isBanned) {
         router.replace("/"); // 👈 bloquea a no logueados o baneados
       }
     }
-  }, [loading, isAuthenticated, isBanned, router]);
+  }, [isLoading, loading, isAuthenticated, isBanned, router]);
 
-  if (loading) {
+  if (isLoading || loading || !isAuthenticated || isBanned) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Spinner />
