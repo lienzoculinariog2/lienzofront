@@ -54,7 +54,7 @@ export const AdminDashboardPage = () => {
       if (isAuthenticated) {
         try {
           const accessToken = await getAccessTokenSilently();
-          const allOrders = await orderService.getAll(undefined, accessToken);
+          const allOrders = await orderService.getAll(accessToken);
           const sortedOrders = allOrders.sort(
             (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
           );

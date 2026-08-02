@@ -6,6 +6,7 @@ import { orderService } from "@/services/draft/OrderService";
 import Button from "@/components/ui/Button";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const formatCurrency = (value: string | number) => {
   const num = typeof value === "string" ? parseFloat(value) : value;
@@ -27,6 +28,7 @@ const statusConfig: Record<IStatusOrder, { label: string; color: string }> = {
 const PAGE_SIZE = 20;
 
 const OrdersPage = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [visibleOrders, setVisibleOrders] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
@@ -49,7 +51,8 @@ const OrdersPage = () => {
   async function fetchOrders() {
     try {
       setLoading(true);
-      const data = await orderService.getAll(); // 🔹 trae TODO
+      const token = await getAccessTokenSilently();
+      const data = await orderService.getAll(token); // 🔹 trae TODO
       const onlyPaid = data.filter((order: Order) => order.isPaid);
       setAllOrders(onlyPaid);
     } catch (error) {
@@ -63,7 +66,8 @@ const OrdersPage = () => {
   async function handleChangeStatus(orderId: string, newStatus: IStatusOrder) {
     try {
       setUpdating(orderId);
-      await orderService.updateStatus(orderId, newStatus);
+      const token = await getAccessTokenSilently();
+      await orderService.updateStatus(orderId, newStatus, token);
       toast.success(`Orden actualizada`);
       await fetchOrders(); // refrescamos todas
     } catch (error) {
@@ -77,7 +81,8 @@ const OrdersPage = () => {
   async function handleCancel(orderId: string) {
     try {
       setUpdating(orderId);
-      await orderService.cancelOrder(orderId);
+      const token = await getAccessTokenSilently();
+      await orderService.cancelOrder(orderId, token);
       toast.success("Orden cancelada");
       await fetchOrders();
     } catch (error) {
@@ -99,7 +104,7 @@ const OrdersPage = () => {
           setPage((prev) => prev + 1);
         }
       },
-      { threshold: 1 }
+      { threshold: 1 },
     );
 
     observer.observe(currentLoader);
