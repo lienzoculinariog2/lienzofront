@@ -4,19 +4,22 @@ import { useEffect, useState } from "react";
 import { Order } from "@/types/Order";
 import Spinner from "@/components/ui/Spinner";
 import { orderService } from "@/services/draft/OrderService";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface Props {
   userId: string;
 }
 
 export function UserOrders({ userId }: Props) {
+  const { getAccessTokenSilently } = useAuth0();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const data = await orderService.getUserOrders(userId);
+        const token = await getAccessTokenSilently();
+        const data = await orderService.getUserOrders(userId, token);
 
         /* // 🔹 Filtrar solo órdenes que estén pagadas
         const paidOrders = data.filter(
@@ -25,7 +28,7 @@ export function UserOrders({ userId }: Props) {
 
         // 🔹 Ordenar de más reciente a más antigua
         const sortedOrders = [...data].sort(
-          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
         );
 
         setOrders(sortedOrders);
@@ -39,7 +42,7 @@ export function UserOrders({ userId }: Props) {
     if (userId) {
       fetchOrders();
     }
-  }, [userId]);
+  }, [userId, getAccessTokenSilently]);
 
   if (loading) return <Spinner />;
 
@@ -82,10 +85,10 @@ export function UserOrders({ userId }: Props) {
                     order.status === "pending"
                       ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
                       : order.status === "processing"
-                      ? "bg-orange-500/20 text-orange-400 border border-orange-500/30"
-                      : order.status === "completed"
-                      ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                      : "bg-red-500/20 text-red-400 border border-red-500/30"
+                        ? "bg-orange-500/20 text-orange-400 border border-orange-500/30"
+                        : order.status === "completed"
+                          ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                          : "bg-red-500/20 text-red-400 border border-red-500/30"
                   }`}
               >
                 {statusTranslations[order.status] || order.status}

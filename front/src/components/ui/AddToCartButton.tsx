@@ -1,7 +1,7 @@
 "use client";
 
 import { IProduct } from "@/types/Product";
-import { useCart } from "@/hooks/useCart";
+import { useCart } from "@/context/CartContext";
 import { useAuth0 } from "@auth0/auth0-react";
 import Button from "@/components/ui/Button";
 
@@ -13,7 +13,7 @@ export default function AddToCartButton({ product }: Props) {
   const { user, isAuthenticated } = useAuth0();
   const userId = isAuthenticated ? user?.sub || null : null;
 
-  const { addToCart } = useCart(userId);
+  const { addToCart } = useCart();
 
   const handleClick = () => {
     addToCart(product); // ya maneja validación, toast y actualización
