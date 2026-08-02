@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { IDiscountCode, ICreateDiscountCodeDto } from "@/types/DiscountCode";
 import Button from "@/components/ui/Button";
 import { toast } from "react-toastify";
@@ -8,7 +8,8 @@ import { discountCodeService } from "@/services/draft/discountCodeService";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const DiscountCodeManagement = () => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, isLoading: isAuthLoading } =
+    useAuth0();
   const [codes, setCodes] = useState<IDiscountCode[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,11 +23,9 @@ const DiscountCodeManagement = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    fetchCodes();
-  }, []);
+  const fetchCodes = useCallback(async () => {
+    if (isAuthLoading || !isAuthenticated) return;
 
-  const fetchCodes = async () => {
     setLoading(true);
     setError(null);
     try {
@@ -39,7 +38,11 @@ const DiscountCodeManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [getAccessTokenSilently, isAuthenticated, isAuthLoading]);
+
+  useEffect(() => {
+    void fetchCodes();
+  }, [fetchCodes]);
 
   const handleCreate = async () => {
     try {
@@ -68,7 +71,7 @@ const DiscountCodeManagement = () => {
         await discountCodeService.activate(id, token);
         toast.success("Código activado");
       }
-      fetchCodes();
+      await fetchCodes();
     } catch (err) {
       console.error(err);
       toast.error("No se pudo actualizar el estado");
@@ -79,18 +82,10 @@ const DiscountCodeManagement = () => {
     c.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (loading) {
+  if (isAuthLoading || loading) {
     return (
       <div className="container min-h-screen p-8 mx-auto text-center">
         Cargando códigos de descuento...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container min-h-screen p-8 mx-auto text-center text-red-500">
-        {error}
       </div>
     );
   }
@@ -100,6 +95,12 @@ const DiscountCodeManagement = () => {
       <h1 className="my-6 text-4xl font-bold text-center border-b border-secondary-background-400 text-primary-txt-400">
         Gestión de Códigos de Descuento
       </h1>
+
+      {error && (
+        <p className="mb-6 text-center text-red-500" role="alert">
+          {error}
+        </p>
+      )}
 
       {/* Formulario */}
       <div className="p-6 mb-12 shadow-lg rounded-2xl bg-black/50 backdrop-blur-md">

@@ -24,12 +24,19 @@ interface BackendUser {
 }
 
 export const useUserRoles = () => {
-  const { user: auth0User, getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const {
+    user: auth0User,
+    getAccessTokenSilently,
+    isAuthenticated,
+    isLoading: isAuthLoading,
+  } = useAuth0();
   const [user, setUser] = useState<BackendUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (isAuthLoading) return;
+
       if (!isAuthenticated || !auth0User?.sub) {
         setUser(null);
         setLoading(false);
@@ -60,7 +67,7 @@ export const useUserRoles = () => {
     };
 
     fetchUser();
-  }, [isAuthenticated, auth0User, getAccessTokenSilently]);
+  }, [isAuthLoading, isAuthenticated, auth0User, getAccessTokenSilently]);
 
   return {
     user,
@@ -71,4 +78,3 @@ export const useUserRoles = () => {
     loading,
   };
 };
-
