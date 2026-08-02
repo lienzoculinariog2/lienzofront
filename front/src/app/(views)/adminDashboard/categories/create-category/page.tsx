@@ -6,9 +6,11 @@ import CategoryForm from "../../components/CategoryForm";
 import { ICategories } from "@/types/Categories";
 import { categoriesServices } from "@/services/CategoryService";
 import { toast } from 'react-toastify';
+import { useAuth0 } from "@auth0/auth0-react";
 
 const CreateCategoryPage = () => {
   const router = useRouter();
+  const { getAccessTokenSilently } = useAuth0();
   const [loading, setLoading] = useState(false);
   // El estado 'error' ya no es necesario, Toastify lo maneja
   // const [error, setError] = useState<string | null>(null);
@@ -22,12 +24,13 @@ const CreateCategoryPage = () => {
     setLoading(true);
 
     try {
+      const token = await getAccessTokenSilently();
       await categoriesServices.create({
         name: formData.name,
         description: formData.description,
         isActive: formData.isActive ?? true,
         imgUrl: formData.imgUrl || "",
-      });
+      }, token);
       
       toast.success("¡Categoría creada con éxito!"); 
       router.push("/admin/categories");

@@ -5,8 +5,10 @@ import { IDiscountCode, ICreateDiscountCodeDto } from "@/types/DiscountCode";
 import Button from "@/components/ui/Button";
 import { toast } from "react-toastify";
 import { discountCodeService } from "@/services/draft/discountCodeService";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const DiscountCodeManagement = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const [codes, setCodes] = useState<IDiscountCode[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +30,8 @@ const DiscountCodeManagement = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await discountCodeService.getAll();
+      const token = await getAccessTokenSilently();
+      const data = await discountCodeService.getAll(token);
       setCodes(data);
     } catch (err) {
       console.error(err);
@@ -40,11 +43,12 @@ const DiscountCodeManagement = () => {
 
   const handleCreate = async () => {
     try {
+      const token = await getAccessTokenSilently();
       await discountCodeService.create({
         name: newCode.name, // ✅ ahora coincide con lo que espera el backend
         percentage: newCode.percentage,
         validUntil: newCode.validUntil,
-      });
+      }, token);
       toast.success("Código de descuento creado correctamente");
       setNewCode({ name: "", percentage: 0, validUntil: "" });
       await fetchCodes();
@@ -56,11 +60,12 @@ const DiscountCodeManagement = () => {
 
   const toggleActive = async (id: string, active: boolean) => {
     try {
+      const token = await getAccessTokenSilently();
       if (active) {
-        await discountCodeService.inactivate(id);
+        await discountCodeService.inactivate(id, token);
         toast.info("Código inactivado");
       } else {
-        await discountCodeService.activate(id);
+        await discountCodeService.activate(id, token);
         toast.success("Código activado");
       }
       fetchCodes();
