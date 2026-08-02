@@ -6,8 +6,10 @@ import CategoryForm from "../../components/CategoryForm";
 import { ICategories } from "@/types/Categories";
 import { categoriesServices } from "@/services/CategoryService";
 import Image from "next/image";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function CategoryListPage() {
+  const { getAccessTokenSilently } = useAuth0();
   const [categories, setCategories] = useState<ICategories[]>([]);
   const [editingCategory, setEditingCategory] = useState<ICategories | null>(
     null
@@ -32,10 +34,11 @@ export default function CategoryListPage() {
   const handleToggleActive = async (category: ICategories) => {
     try {
       setLoading(true);
+      const token = await getAccessTokenSilently();
       if (category.isActive) {
-        await categoriesServices.inactivate(category.id);
+        await categoriesServices.inactivate(category.id, token);
       } else {
-        await categoriesServices.activate(category.id);
+        await categoriesServices.activate(category.id, token);
       }
       await fetchCategories();
     } catch (err) {
@@ -54,9 +57,10 @@ export default function CategoryListPage() {
     try {
       setLoading(true);
       if (editingCategory && editingCategory.id) {
+        const token = await getAccessTokenSilently();
         await categoriesServices.update(editingCategory.id, {
           name: formData.name,
-        });
+        }, token);
       }
       setEditingCategory(null);
       await fetchCategories();

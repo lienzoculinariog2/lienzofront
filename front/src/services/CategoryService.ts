@@ -44,6 +44,7 @@ export const categoriesServices = {
   // Crear categoría (con o sin imagen)
   async create(
     category: ICategoryCreate,
+    token: string,
     file?: File
   ): Promise<{ message: string; category: ICategories }> {
     try {
@@ -61,7 +62,10 @@ export const categoriesServices = {
         message: string;
         category: ICategories;
       }>("/categories", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
       return data;
     } catch (error) {
@@ -74,6 +78,7 @@ export const categoriesServices = {
   async update(
     id: string,
     category: ICategoryUpdate,
+    token: string,
     file?: File
   ): Promise<{ message: string; updatedCategory: ICategories }> {
     try {
@@ -91,7 +96,10 @@ export const categoriesServices = {
         message: string;
         updatedCategory: ICategories;
       }>(`/categories/${id}`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       return data;
@@ -103,13 +111,16 @@ export const categoriesServices = {
 
   // Inactivar categoría
   async inactivate(
-    id: string
+    id: string,
+    token: string
   ): Promise<{ message: string; category: ICategories }> {
     try {
       const { data } = await api.put<{
         message: string;
         category: ICategories;
-      }>(`/categories/inactivate/${id}`);
+      }>(`/categories/inactivate/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       return data;
     } catch (error) {
       console.error(`Error al inactivar la categoría con ID ${id}:`, error);
@@ -120,13 +131,16 @@ export const categoriesServices = {
   
   // Activar categoría
 async activate(
-  id: string
+  id: string,
+  token: string
 ): Promise<{ message: string; category: ICategories }> {
   try {
     const { data } = await api.put<{
       message: string;
       category: ICategories;
-    }>(`/categories/activate/${id}`);
+    }>(`/categories/activate/${id}`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return data;
   } catch (error) {
     console.error(`Error al activar la categoría con ID ${id}:`, error);
@@ -134,11 +148,12 @@ async activate(
   }
 },
 
-  async createWithImage(formData: FormData): Promise<ICategories> {
+  async createWithImage(formData: FormData, token: string): Promise<ICategories> {
     try {
       const { data } = await api.post<ICategories>("/categories", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
         },
       });
       return data;
@@ -156,10 +171,13 @@ async activate(
     }
   },
 
-  async updateWithImage(id: string, formData: FormData): Promise<ICategories> {
+  async updateWithImage(id: string, formData: FormData, token: string): Promise<ICategories> {
   try {
     const { data } = await api.put<ICategories>(`/categories/${id}`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
     });
     return data;
   } catch (error: unknown) {

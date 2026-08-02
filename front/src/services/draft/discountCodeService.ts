@@ -8,8 +8,10 @@ export const discountCodeService = {
    * Crea un nuevo código de descuento.
    * @param payload Los datos del nuevo código.
    */
-  async create(payload: ICreateDiscountCodeDto) {
-    return axios.post(`${BASE_URL}/discount-codes`, payload);
+  async create(payload: ICreateDiscountCodeDto, token: string) {
+    return axios.post(`${BASE_URL}/discount-codes`, payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
   },
   /**
    * Obtiene todos los códigos de descuento, con soporte para filtros.
@@ -17,13 +19,17 @@ export const discountCodeService = {
    * @returns Una promesa que resuelve a un array de IDiscountCode.
    */
   async getAll(
+    token: string,
     filters: { partialCode?: string; isActive?: boolean } = {}
   ): Promise<IDiscountCode[]> {
     const params = {
       partialCode: filters.partialCode,
       isActive: filters.isActive !== undefined ? filters.isActive : undefined,
     };
-    const { data } = await axios.get(`${BASE_URL}/discount-codes`, { params });
+    const { data } = await axios.get(`${BASE_URL}/discount-codes`, {
+      params,
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return data;
   },
   /**
@@ -40,21 +46,27 @@ export const discountCodeService = {
    * @param id El ID del código de descuento.
    * @param payload Los datos a actualizar.
    */
-  async update(id: string, payload: Partial<Omit<IDiscountCode, "id">>) {
-    return axios.put(`${BASE_URL}/discount-codes/${id}`, payload);
+  async update(id: string, payload: Partial<Omit<IDiscountCode, "id">>, token: string) {
+    return axios.put(`${BASE_URL}/discount-codes/${id}`, payload, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
   },
   /**
    * Inactiva un código de descuento.
    * @param id El ID del código a inactivar.
    */
-  async inactivate(id: string) {
-    return axios.put(`${BASE_URL}/discount-codes/inactivate/${id}`, {});
+  async inactivate(id: string, token: string) {
+    return axios.put(`${BASE_URL}/discount-codes/inactivate/${id}`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
   },
   /**
    * Activa un código de descuento.
    * @param id El ID del código a activar.
    */
-  async activate(id: string) {
-    return axios.put(`${BASE_URL}/discount-codes/activate/${id}`, {});
+  async activate(id: string, token: string) {
+    return axios.put(`${BASE_URL}/discount-codes/activate/${id}`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
   },
 };

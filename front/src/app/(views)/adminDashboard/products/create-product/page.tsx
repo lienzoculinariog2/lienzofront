@@ -4,13 +4,16 @@ import { useRouter } from "next/navigation";
 import { productService } from "@/services/ProductService";
 import ProductForm from "../../components/ProductForm";
 import { toast } from 'react-toastify'; // <-- Importación de toastify
+import { useAuth0 } from "@auth0/auth0-react";
 
 const CreateNewProduct = () => {
   const router = useRouter();
+  const { getAccessTokenSilently } = useAuth0();
 
   const handleCreateProduct = async (formData: FormData) => {
     try {
-      await productService.create(formData);
+      const token = await getAccessTokenSilently();
+      await productService.create(formData, token);
       toast.success("¡Producto creado con éxito!"); // <-- Reemplazado alert() con toast.success()
       router.push("/adminDashboard/edit-products");
     } catch (error) {

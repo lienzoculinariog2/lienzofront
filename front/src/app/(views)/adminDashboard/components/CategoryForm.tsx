@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import imageCompression from "browser-image-compression";
 import { categoriesServices } from "@/services/CategoryService";
+import { useAuth0 } from "@auth0/auth0-react";
 
 interface CategoryFormProps {
   categoryId?: string; // <-- ahora sí TypeScript lo reconoce
@@ -41,6 +42,7 @@ const ImagePreview = ({
 
 const CategoryForm = ({ categoryId }: CategoryFormProps) => {
   const router = useRouter();
+  const { getAccessTokenSilently } = useAuth0();
   const [formData, setFormData] = useState<Partial<ICategories>>({
     name: "",
     description: "",
@@ -165,11 +167,12 @@ const CategoryForm = ({ categoryId }: CategoryFormProps) => {
       formDataToSend.append("description", formData.description || "");
       formDataToSend.append("isActive", String(formData.isActive));
       if (selectedImage) formDataToSend.append("file", selectedImage);
+      const token = await getAccessTokenSilently();
 
       if (categoryId) {
-        await categoriesServices.updateWithImage(categoryId, formDataToSend);
+        await categoriesServices.updateWithImage(categoryId, formDataToSend, token);
       } else {
-        await categoriesServices.createWithImage(formDataToSend);
+        await categoriesServices.createWithImage(formDataToSend, token);
       }
 
       setSuccess(true);

@@ -10,8 +10,10 @@ import ProductForm from "../../components/ProductForm";
 import Image from "next/image";
 import SearchBar from "@/components/ui/SerchBar";
 import { toast } from "react-toastify";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function ProductListPage() {
+  const { getAccessTokenSilently } = useAuth0();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -123,7 +125,8 @@ export default function ProductListPage() {
       payload.append("categoryId", formData.get("categoryId") as string);
 
       if (editingProduct && editingProduct.id) {
-        await productService.update(editingProduct.id, payload);
+        const token = await getAccessTokenSilently();
+        await productService.update(editingProduct.id, payload, token);
         toast.success("Producto actualizado con éxito 🎉");
       }
 
