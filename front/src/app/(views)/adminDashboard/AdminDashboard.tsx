@@ -66,8 +66,10 @@ export const AdminDashboardPage = () => {
     };
 
     const fetchDiscountCodes = async () => {
+      if (!isAuthenticated) return;
       try {
-        const allDiscountCodes = await discountCodeService.getAll();
+        const accessToken = await getAccessTokenSilently();
+        const allDiscountCodes = await discountCodeService.getAll(accessToken);
         setDiscountCodes(allDiscountCodes.slice(0, 4));
       } catch (error) {
         console.error("Error al obtener los códigos de descuento:", error);

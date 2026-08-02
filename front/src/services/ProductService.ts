@@ -67,10 +67,13 @@ export const productService = {
   },
 
   // Actualizar producto
-  async update(id: string, product: FormData): Promise<IProduct> {
+  async update(id: string, product: FormData, token: string): Promise<IProduct> {
     try {
       const { data } = await api.put<IProduct>(`/products/${id}`, product, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
       return data;
     } catch (error) {
@@ -88,9 +91,13 @@ export const productService = {
   },
 
   // Inactivar producto
-  async inactivate(id: string): Promise<IProduct> {
+  async inactivate(id: string, token: string): Promise<IProduct> {
     try {
-      const { data } = await api.put<IProduct>(`/products/inactivate/${id}`);
+      const { data } = await api.put<IProduct>(
+        `/products/inactivate/${id}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       return data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -107,10 +114,13 @@ export const productService = {
   },
 
   // Crear producto sin imagen
-  async create(product: FormData): Promise<IProduct> {
+  async create(product: FormData, token: string): Promise<IProduct> {
     try {
       const { data } = await api.post<IProduct>("/products", product, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
       return data;
     } catch (error) {
@@ -128,10 +138,13 @@ export const productService = {
   },
 
   // Crear producto con imagen
-  async createWithImage(formData: FormData): Promise<IProduct> {
+  async createWithImage(formData: FormData, token: string): Promise<IProduct> {
     try {
       const { data } = await api.post<IProduct>("/products", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
       return data;
     } catch (error) {
@@ -150,10 +163,14 @@ export const productService = {
 
   updateWithImage: async (
     id: string,
-    formData: FormData
+    formData: FormData,
+    token: string
   ): Promise<ICategories> => {
     const { data } = await api.put<ICategories>(`/categories/${id}`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
     });
     return data;
   },
