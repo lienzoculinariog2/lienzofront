@@ -92,8 +92,8 @@ export const AdminDashboardPage = () => {
     router.push(`/adminDashboard/categories/edit-category?id=${id}`);
   };
 
-   const handleEditDiscountCode = (id: string) => {
-    router.push(`/adminDashboard/discountCodes/edit-discount?id=${id}`);
+   const handleOpenDiscountCodes = () => {
+    router.push("/adminDashboard/discountCode");
   };
 
   return (
@@ -323,7 +323,7 @@ export const AdminDashboardPage = () => {
             {discountCodes.map((discount) => (
               <div
                 key={discount.id}
-                onClick={() => handleEditDiscountCode(discount.id)}
+                onClick={handleOpenDiscountCodes}
                 className="p-4 overflow-hidden transition-shadow shadow-lg cursor-pointer bg-black/40 rounded-xl hover:shadow-xl"
               >
                 <h3 className="font-bold">{discount.code}</h3>
