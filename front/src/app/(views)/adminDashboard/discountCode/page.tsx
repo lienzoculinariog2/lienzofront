@@ -45,6 +45,17 @@ const DiscountCodeManagement = () => {
   }, [fetchCodes]);
 
   const handleCreate = async () => {
+    if (
+      !newCode.name.trim() ||
+      !newCode.validUntil ||
+      newCode.percentage === null ||
+      newCode.percentage <= 0 ||
+      newCode.percentage > 100
+    ) {
+      toast.error("Completa el código, una fecha válida y un descuento entre 1 y 100%.");
+      return;
+    }
+
     try {
       const token = await getAccessTokenSilently();
       await discountCodeService.create({
@@ -125,12 +136,8 @@ const DiscountCodeManagement = () => {
             className="w-full px-4 py-2 text-gray-200 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-daily-menu-500"
           />
           <input
-            type="text"
-            placeholder="Valido hasta"
-            onFocus={(e) => (e.target.type = "date")}
-            onBlur={(e) => {
-              if (!e.target.value) e.target.type = "text";
-            }}
+            type="date"
+            aria-label="Válido hasta"
             value={newCode.validUntil}
             onChange={(e) =>
               setNewCode({ ...newCode, validUntil: e.target.value })
