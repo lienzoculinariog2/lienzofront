@@ -11,7 +11,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export const useStripeCheckout = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { user, isAuthenticated } = useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   const createPaymentIntent = useCallback(
     async (shippingAddress: string, discountCode?: string | null) => {
@@ -24,24 +24,34 @@ export const useStripeCheckout = () => {
 
       setIsLoading(true);
       try {
+        const accessToken = await getAccessTokenSilently();
         const response = await axios.post(
           `${API_URL}/checkout/${encodeURIComponent(userId)}/complete`,
           {
             shippingAddress: shippingAddress, // 💡 Usa el argumento que recibiste
             discountCode: discountCode, // 💡 Usa el argumento que recibiste
+          },
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
           }
         );
 
         return response.data.paymentIntent.clientSecret as string;
       } catch (error) {
         console.error("Error creating PaymentIntent:", error);
-        toast.error("Error al iniciar el pago. Intenta de nuevo.");
+        if (axios.isAxiosError(error) && error.response?.status === 401) {
+          toast.error("Tu sesión expiró. Inicia sesión nuevamente para pagar.");
+        } else if (axios.isAxiosError(error) && error.response?.status === 403) {
+          toast.error("No tienes permiso para completar este pago.");
+        } else {
+          toast.error("Error al iniciar el pago. Intenta de nuevo.");
+        }
         return null;
       } finally {
         setIsLoading(false);
       }
     },
-    [isAuthenticated, user?.sub]
+    [getAccessTokenSilently, isAuthenticated, user?.sub]
   );
 
   return {
