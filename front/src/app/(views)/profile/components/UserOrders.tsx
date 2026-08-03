@@ -5,6 +5,7 @@ import { Order } from "@/types/Order";
 import Spinner from "@/components/ui/Spinner";
 import { orderService } from "@/services/draft/OrderService";
 import { useAuth0 } from "@auth0/auth0-react";
+import { formatOrderReference } from "@/utils/formatOrderReference";
 
 interface Props {
   userId: string;
@@ -77,7 +78,7 @@ export function UserOrders({ userId }: Props) {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <p className="font-semibold text-primary-txt-100">
-                Orden #{order.id.slice(0, 8).toUpperCase()}
+                Orden #{formatOrderReference(order.id)}
               </p>
               <span
                 className={`px-3 py-1 text-sm font-medium rounded-lg capitalize

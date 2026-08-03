@@ -17,6 +17,7 @@ import { Order } from "@/types/Order";
 import { orderService } from "@/services/draft/OrderService";
 import { discountCodeService } from "@/services/draft/discountCodeService";
 import { IDiscountCode } from "@/types/DiscountCode";
+import { formatOrderReference } from "@/utils/formatOrderReference";
 
 export const AdminDashboardPage = () => {
   const router = useRouter();
@@ -91,8 +92,8 @@ export const AdminDashboardPage = () => {
     router.push(`/adminDashboard/categories/edit-category?id=${id}`);
   };
 
-   const handleEditDiscountCode = (id: string) => {
-    router.push(`/adminDashboard/discountCodes/edit-discount?id=${id}`);
+   const handleOpenDiscountCodes = () => {
+    router.push("/adminDashboard/discountCode");
   };
 
   return (
@@ -272,7 +273,9 @@ export const AdminDashboardPage = () => {
                 key={order.id}
                 className="p-4 overflow-hidden shadow-lg bg-black/40 rounded-xl"
               >
-                <h3 className="font-bold">Orden #{order.id}</h3>
+                <h3 className="font-bold" title={order.id}>
+                  Orden #{formatOrderReference(order.id)}
+                </h3>
                 <p className="mt-1 text-sm text-gray-300">
                   Usuario: {order.user?.name ?? "N/A"}
                 </p>
@@ -320,7 +323,7 @@ export const AdminDashboardPage = () => {
             {discountCodes.map((discount) => (
               <div
                 key={discount.id}
-                onClick={() => handleEditDiscountCode(discount.id)}
+                onClick={handleOpenDiscountCodes}
                 className="p-4 overflow-hidden transition-shadow shadow-lg cursor-pointer bg-black/40 rounded-xl hover:shadow-xl"
               >
                 <h3 className="font-bold">{discount.code}</h3>
