@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth0 } from "@auth0/auth0-react";
+import { formatOrderReference } from "@/utils/formatOrderReference";
 
 const formatCurrency = (value: string | number) => {
   const num = typeof value === "string" ? parseFloat(value) : value;
@@ -132,7 +133,9 @@ const OrdersPage = () => {
         className="relative overflow-hidden border border-gray-700 shadow-lg rounded-xl bg-black/70"
       >
         <div className="flex items-center justify-between px-6 py-3 bg-secondary-background-900">
-          <h3 className="text-lg font-bold text-white">Orden #{order.id}</h3>
+          <h3 className="text-lg font-bold text-white" title={order.id}>
+            Orden #{formatOrderReference(order.id)}
+          </h3>
           <span
             className={`px-3 py-1 text-sm font-medium rounded-lg capitalize border border-black/20 ${statusCfg.color}`}
           >

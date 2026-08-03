@@ -17,6 +17,7 @@ import { Order } from "@/types/Order";
 import { orderService } from "@/services/draft/OrderService";
 import { discountCodeService } from "@/services/draft/discountCodeService";
 import { IDiscountCode } from "@/types/DiscountCode";
+import { formatOrderReference } from "@/utils/formatOrderReference";
 
 export const AdminDashboardPage = () => {
   const router = useRouter();
@@ -272,7 +273,9 @@ export const AdminDashboardPage = () => {
                 key={order.id}
                 className="p-4 overflow-hidden shadow-lg bg-black/40 rounded-xl"
               >
-                <h3 className="font-bold">Orden #{order.id}</h3>
+                <h3 className="font-bold" title={order.id}>
+                  Orden #{formatOrderReference(order.id)}
+                </h3>
                 <p className="mt-1 text-sm text-gray-300">
                   Usuario: {order.user?.name ?? "N/A"}
                 </p>
