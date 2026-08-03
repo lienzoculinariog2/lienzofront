@@ -1,121 +1,112 @@
-## Lienzo Culinario
+# Lienzo Culinario — Frontend
 
-Lienzo Culinario es una aplicación de comidas donde la estética y la funcionalidad se integran para ofrecer una experiencia visualmente rica y útil al usuario.  
-La interfaz comunica información mediante sutilezas gráficas, como el uso de colores en los bordes de las cards de productos para transmitir propiedades nutricionales o categorías.
+Aplicación web de Lienzo Culinario para consultar el catálogo, gestionar el carrito, aplicar descuentos, pagar con Stripe y administrar productos, usuarios, órdenes y códigos promocionales.
 
-Este frontend está construído con Next.js y consume una API REST desarrollada en NestJS.
+## Stack
+
+- Next.js 15 con App Router
+- React 19 y TypeScript
+- Tailwind CSS 3
+- Auth0 para autenticación y roles
+- Stripe Elements para pagos
+- Axios para consumir la API REST
+- Vercel para previews y producción
 
 ## Requisitos
 
-Antes de iniciar el proyecto, asegurate de tener instalado:
+- Node.js 24
+- npm
+- Backend disponible localmente en `http://localhost:3001` o mediante una URL pública
+- Aplicaciones configuradas en Auth0 y Stripe
 
-- [Node.js](https://nodejs.org/) versión 18 o superior
-- npm (viene con Node) o yarn
-- Acceso al backend corriendo en `http://localhost:3001`
-
-## Instalación
-
-El repositorio debe ser clonado y deben ejecutarse los siguientes comandos:
+## Configuración local
 
 ```bash
-npm install
+git clone https://github.com/lienzoculinariog2/lienzofront.git
+cd lienzofront/front
+cp .env.example .env.local
+npm ci
 npm run dev
-
-La aplicación estará disponible en http://localhost:3000
-
 ```
 
-## Tecnologías clave
-
-Este proyecto utiliza las siguientes herramientas y librerías:
-
-- **Next.js 15.4.5**: Framework principal para el frontend, con soporte para rutas en `app/` y server components.
-- **React 19.1.0**: Librería base para la construcción de interfaces.
-- **Axios 1.11.0**: Cliente HTTP para consumir la API REST del backend.
-- **Tailwind CSS 3.4.17**: Utilizado para estilos utilitarios. Aún no se migró a Tailwind 4, por lo que se mantienen convenciones de la versión 3.
-- **ESLint 9**: Configurado con `eslint-config-next` para mantener consistencia en el código. Se puede ejecutar con `npm run lint`.
-
-> También se utilizan herramientas como Formik y Yup para formularios y validación, y Lucide para íconos SVG.
+Abre `http://localhost:3000`.
 
 ## Variables de entorno
 
-Crea un archivo `.env.local` en la raíz del proyecto con el siguiente contenido:
+| Variable | Uso |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | URL pública del backend, sin `/` final |
+| `NEXT_PUBLIC_AUTH0_DOMAIN` | Dominio del tenant de Auth0 |
+| `NEXT_PUBLIC_AUTH0_CLIENT_ID` | Client ID de la aplicación SPA |
+| `NEXT_PUBLIC_AUTH0_AUDIENCE` | Audience de la API protegida |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Clave publicable de Stripe |
 
-```env
-NEXT_PUBLIC_API_URL=http://localhost:3001
-NEXT_PUBLIC_AUTH0_DOMAIN=dev-o0214d7ljnyrdg3m.us.auth0.com
-NEXT_PUBLIC_AUTH0_CLIENT_ID=iqCxbjcAamMcNFXBuVt6CepjP2zpNYD3
+Todas llevan el prefijo `NEXT_PUBLIC_`, por lo que se incorporan al bundle del navegador. Nunca coloques secretos de Stripe, contraseñas o claves privadas en estas variables.
+
+En Auth0 configura como URLs permitidas tanto `http://localhost:3000` como los dominios correspondientes de Vercel.
+
+## Comandos
+
+```bash
+npm run dev    # servidor de desarrollo
+npm run build  # build de producción y comprobación de tipos
+npm run start  # sirve el build
+npx eslint .   # lint con la configuración actual
 ```
 
-## Estructura del proyecto
+## Estructura
 
-La estructura sigue el patrón de rutas de Next.js 13+ con el directorio `app/`. A continuación se detallan las carpetas principales:
-
+```text
 src/
-├── app/ # Rutas y vistas principales
-│ ├── (static)/test # Vistas estáticas y testing
-│ ├── (views)/ # Vistas dinámicas organizadas por feature
-│ ├── layout.tsx # Layout global de la aplicación
-│ └── not-found.tsx # Página 404 personalizada
-├── components/ # Componentes reutilizables
-├── services/ # Servicios Axios para consumo de API
-├── types/ # Interfaces tipadas del proyecto
-├── constants/ # Constantes globales
-├── helpers/ # Funciones auxiliares y validadores
-
-Cada carpeta está pensada para mantener la modularidad y escalabilidad del proyecto. Los servicios y validadores están alineados con las entidades del backend para asegurar coherencia en los datos.
-
-## Integración con el backend
-
-La carpeta `services/` contiene los servicios Axios que consumen los endpoints REST del backend. Cada archivo representa una entidad o feature del sistema:
-
-src/services/
-├── CategoryService.ts # Servicio de obtencion de categorias de productos
-├── ProductPoster.ts # Servicio de posteo de productos
-├── ProductService.ts # Servicio de obtencion de productos individuales y completo
-├── ProductServiceLocal.ts # Servicio de obtencion de productos mock para testing
-└── draft/ # Servicios en desarrollo
-│ ├── AuthService.ts # Servicio de logueo y obtencion de usuarios
-│ ├── discountCodeService.ts # Servicio de aplicacion de codigos de descuento
-│ ├── orderDetailService.ts # Servicio de obtencion de detalles de ordenes
-│ ├── OrderService.ts # Servicio de creacion y obtencion de ordenes
-│ ├── reviewService.ts # Servicio de creacion y obtencion de reviews asociadas a usuarios y productos
-│ └── userService.ts # Servicio de creacion y obtencion de usuarios
-
-Los servicios están tipados con interfaces definidas en `types/` y validados con esquemas manuales en `helpers/`. Esto asegura coherencia entre frontend y backend.
-
-### Ejemplo de consumo
-
-```ts
-import { getUserById } from "@/services/userService";
-
-const user = await getUserById("123");
+├── app/          # rutas, layouts y páginas
+├── components/   # componentes compartidos y protección de rutas
+├── context/      # estado global del carrito
+├── hooks/        # carrito, descuentos, roles y Stripe
+├── services/     # clientes HTTP del backend
+├── types/        # contratos TypeScript
+├── helpers/      # validadores y transformaciones
+└── utils/        # formatos reutilizables
 ```
 
-Todos los servicios utilizan NEXT_PUBLIC_API_URL como base, definida en .env.local.
+Las vistas principales están dentro de `src/app/(views)`:
 
-## Validaciones de datos
+- catálogo y detalle de productos;
+- carrito y checkout;
+- perfil y órdenes del usuario;
+- reseñas;
+- panel administrativo de catálogo, usuarios, órdenes y descuentos.
 
-La carpeta `helpers/` contiene los validadores manuales que aseguran la coherencia entre los datos del frontend y las entidades del backend. Se ejecutan antes de enviar información a los servicios.
+## Autenticación y autorización
 
-src/helpers/
-├── products.ts # Validación de productos (listado completo)
-├── categories.ts # Validación de categorías
-├── validateProduct.ts # Validación de producto individual
-├── draft/ # Validadores en etapa prototípica
-│ ├── validateAuth.ts # Validación de credenciales y sesión
-│ ├── validateDiscountCode.ts # Validación de códigos de descuento
-│ ├── validateOrder.ts # Validación de órdenes
-│ ├── validateOrderDetail.ts # Validación de detalles de órdenes
-│ ├── validateReview.ts # Validación de reviews (usuario y producto)
-│ └── validateUser.ts # Validación de usuarios
+Auth0 entrega el access token desde el frontend. Los servicios protegidos lo envían como `Authorization: Bearer <token>`. El backend vuelve a validar identidad, audiencia y permisos; ocultar una opción en la interfaz no sustituye la autorización del servidor.
 
-> Todos los validadores están alineados con los modelos del backend y permiten un control granular de los datos.
+Los UUID completos se conservan para llamadas a la API. En pantalla las órdenes muestran una referencia abreviada de ocho caracteres para mejorar legibilidad.
 
-## Estado actual
+## Flujo de compra
 
-La aplicación aún no está desplegada en producción. El entorno de desarrollo se ejecuta localmente mediante el comando npm run dev. La API base se define en el archivo .env.local con la variable NEXT_PUBLIC_API_URL=http://localhost:3001.
+1. El usuario inicia sesión y agrega productos al carrito.
+2. El frontend solicita al backend el checkout autenticado y puede incluir un cupón.
+3. El backend calcula el total y devuelve el `clientSecret` de Stripe.
+4. Stripe Elements confirma el pago.
+5. El webhook del backend marca la orden como pagada y actualiza el inventario.
 
-El despliegue será gestionado en etapas posteriores, una vez estabilizados los servicios y validadores.
+El frontend no debe calcular el importe definitivo ni descontar stock.
 
-Este archivo será actualizado conforme se incorporen nuevas funcionalidades, endpoints y procesos de despliegue.
+## Despliegue en Vercel
+
+La rama de producción es `main`. Cada PR crea un preview de Vercel y los cambios fusionados despliegan producción según la configuración del proyecto.
+
+Configura todas las variables `NEXT_PUBLIC_*` en **Project Settings → Environment Variables** para Production, Preview y Development según corresponda. Después de cambiarlas, genera un nuevo deployment.
+
+## Verificación antes de fusionar
+
+- `npm run build` termina correctamente;
+- el preview de Vercel está aprobado;
+- inicio de sesión y roles funcionan;
+- carrito, cupón y pago completan el flujo;
+- órdenes muestran una referencia legible;
+- las tarjetas administrativas navegan a rutas existentes.
+
+## Repositorio relacionado
+
+Backend: [lienzoculinariog2/nuevolienzoback-](https://github.com/lienzoculinariog2/nuevolienzoback-)
