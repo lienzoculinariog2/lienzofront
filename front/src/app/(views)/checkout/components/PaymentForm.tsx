@@ -6,6 +6,7 @@ import {
   PaymentElement,
 } from "@stripe/react-stripe-js";
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface PaymentFormProps {
   clientSecret: string;
@@ -14,6 +15,7 @@ interface PaymentFormProps {
 export function PaymentForm({ clientSecret }: PaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,6 +43,7 @@ export function PaymentForm({ clientSecret }: PaymentFormProps) {
     const result = await stripe.confirmPayment({
       elements,
       clientSecret,
+      redirect: "if_required",
       confirmParams: {
         return_url: `${window.location.origin}/checkout/success`,
       },
@@ -52,8 +55,7 @@ export function PaymentForm({ clientSecret }: PaymentFormProps) {
         result.error.message || "Error desconocido durante la confirmación."
       );
     } else {
-      // La redirección a `return_url` ocurrirá automáticamente aquí.
-      console.log("Pago enviado. Redireccionando...");
+      router.push("/checkout/success");
     }
 
     setLoading(false);
